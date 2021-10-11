@@ -258,7 +258,7 @@ t:t,([] company:`bmw`skoda; employees:200 300)
 
 <hr> 
 
-### What is an ADVERB? What are some examples?
+### What is an ADVERB?
 
 ```q
 An adverb modifies an existing verb or function to alter how its applied to its arguments
@@ -268,6 +268,78 @@ x,\: y / each left
 x,/: y / each right	
 x \ y / scan
 x / y / over
+```
+
+### Each Both
+
+```q
+x,'y
+Joins corresponding elements from two vectors of the same length
+```
+```q
+1 2 3 ,' 10 20 30
+1 10
+2 20
+3 30
+```
+```q
+("car"; "far"; "mar") ,' "e"
+"care"
+"fare"
+"mare"
+```
+
+### Each Left
+```q
+x,\:y 
+
+The top of the \ points LEFT
+Adds EACH element of LEFT (x) to ENTIRE y 
+```
+
+```q
+1 2 3 ,\: `a`b`c
+
+1`a`b`c
+2`a`b`c
+3`a`b`c
+```
+
+### each right ,/:
+```q
+x,/:y 
+
+The top of the / points RIGHT
+Adds each element of y to the entirety of x
+```
+
+```q
+1 2 3 ,/: `a`b`c
+
+1 2 3`a
+1 2 3`b
+1 2 3`c
+```
+
+### Scan
+
+```q
+1 +\ 0 1 2 3
+
+1 2 4 7
+
+/ scan is an accumulating iterator.
+/ returns the result of each result
+```
+
+### Over
+
+```q
+1 +/ 0 1 2 3
+
+7
+/ over is an accumulating iterator
+/ returns the final result
 ```
 
 
