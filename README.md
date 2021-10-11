@@ -89,21 +89,6 @@ string `a`b`c
 
 <hr> 
 
-### What is a common reason for casting time to seconds or minutes?
-
-A common use of casting is for performing aggregations. We can bucket data stored from milliseconds to seconds to minutes (effectively, rounding up). This allows us to get the average price per minute.
-
-```q
-select avg price by `minute$time from t
-time | price
------| -----
-11:31| 100.5
-11:32| 104.5
-11:33| 108.5
-```
-
-<hr> 
-
 ### What is parsing?
 
 Parsing is converting a string to another datatype.
@@ -272,6 +257,19 @@ t:t,([] company:`bmw`skoda; employees:200 300)
 ```
 
 <hr> 
+
+### What is an ADVERB? What are some examples?
+
+```q
+An adverb modifies an existing verb or function to alter how its applied to its arguments
+
+x,'y / each both
+x,\: y / each left
+x,/: y / each right	
+x \ y / scan
+x / y / over
+```
+
 
 ### How do you load a file with column headers?
 
