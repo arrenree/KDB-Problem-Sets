@@ -342,6 +342,42 @@ Adds each element of y to the entirety of x
 / returns the final result
 ```
 
+### What are Attributes?
+
+```q
+Attributes describe how the underlying data in lists are structured.
+This speeds up queries and optimizes memory usage.
+
+1. Sorted 's#
+2. Unique 'u#
+3. Grouped 'g#
+4. Parted 'p#
+```
+
+### Attribute - Sorted
+```q
+'s#listname
+requires elements to be sorted
+allows binary search instead of fully scanning (much faster)
+```
+### Attribute - Unique
+```q
+'u#listname
+requires elements to be unique
+creates unique hash table in the background, allowing for constant time lookup of elements
+```
+### Attribute - Grouped
+```q
+'g#listname
+a lookup table from each distinct value in the table is created to map to the positions where value occurs.
+allows for much faster lookup
+```
+### Attribute - Parted
+```q
+'p#listname
+requires all elements of same value to occur together
+allows for faster queries
+```
 
 ### How do you load a file with column headers?
 
