@@ -46,6 +46,25 @@ A string - is a list of chars. Represented by " " double parathesis
 
 <hr> 
 
+### Define the following variables
+
+```q
+
+a = 5
+b = a -3
+c = 3b + 1
+
+a: 5
+b: a -3
+c: (3*b)-1 or 1+3*b
+
+/ now re-write as single statement
+
+c: 1 + 3 * b: -3 + a:5
+
+/ right to left 
+```
+
 ### What is casting? Cast an int to a float
 
 ```q
@@ -89,6 +108,68 @@ string `a`b`c
 
 <hr> 
 
+### Cast the Following
+
+```q
+/ "2014.01.01" to a date
+
+"D" $ "2014.01.01"
+-14h
+
+/ "2014.01.01" was originally a string
+/ use capital "D" to cast strings to date
+
+/ `2013.01.01 to a date
+
+"D" $ string `2013.01.01
+
+/ `2013.01.01 is a sym
+/ requires first to cast to string, then cast to date
+
+/ 3.14 to an int
+
+`int $ 3.14 
+3
+
+/ note rounding for ints
+/ alternatively "I" $ 3.14
+
+/ "abcde" to a sym
+
+`$"abcde"
+```
+
+### Get today's date store it as variable d
+
+```q
+d: .z.d
+2021-11-01d
+```
+
+### Calculate the number of days since last christmas
+
+```q
+d-2020.12.25
+311i
+
+/ can use algebra with dates (ints underneath)
+```
+
+### What day of the week was Jan 10, 2011?
+
+```q
+2011.01.10 mod 7
+2i
+
+/ since dates start on sunday, 2 days from sunday = Monday
+
+.z.d mod 7
+2i
+
+/ todays date = monday, Nov 11
+/ 2 days from sunday = Monday
+```
+
 ### What is parsing?
 
 Parsing is converting a string to another datatype.
@@ -104,6 +185,18 @@ l:("1.00001"; "200"; "3.1417")
 
 <hr> 
 
+### show all variables definied in current session of q
+
+```q
+\v
+`a`b`c`d
+```
+
+### Close the current session
+```q
+\\
+```
+
 ### What are the common operators?
 
 ```q
@@ -117,6 +210,206 @@ $   / cast, enumerate
 ^   / fill
 ```
 <hr> 
+
+### Create Empty List d
+```q
+
+d: ()
+
+/ redefine d to be empty list of type integer
+
+d: `int $ ()
+
+/ add 5 random elements to d
+
+d, 5 ? til 10
+
+/ 5?til 10 = randomly select 5 numbers from 0-9
+/ d , joins these 2 lists, thereby adding into list
+```
+
+### Create list e with 1 element
+
+```q
+
+e: enlist 10
+
+/ have to use enlist on single elements
+/ or e:(), 10
+```
+
+### Create list l with 20 random values from 3 to 30
+```q
+
+l: 20 ? 3_til 31
+
+/ drop first 3 elements, so range is 3-30
+/ alternatively can do 1:20?3+til 28
+
+/ find the 20th number in list l
+
+l[19]
+
+/ use indexing to retrieve 19th index position = 20th number
+/ since starts on 0
+
+/ are any of these numbers in the list? 3 5 7 11 13 17
+
+3 5 7 11 13 17 in l
+```
+
+### Add each element of l to its index position. for ex, 0 to index 0, 1 to index 1, etc.
+
+```q
+l+: til count l
+
+/ count l = 20 elements in list l
+/ til 20 = 0 - 19, gives you the index position
+/ so now you have 2 lists, just need to add together
+```
+### How many even numbers are there? 
+
+```q
+
+l mod 2
+1 1 0 1 0 1 1 0 0 1 0 1 0 1 0 1 0 1 1 0
+
+/ mod 2 tells us when the remainder is
+/ so 0 = no remainder = even number
+/ now need to count the 0s
+
+count where not l mod 2
+
+/ not = 0, so counts all the 0s (even numbers)
+```
+
+### what do you get dates when casting int to date?
+
+```q
+
+dates are stored as integers (days) from 2000.01.01
+```
+
+### Creating Matrix
+
+```q
+m:(1 2 3; 4 5 6; 7 8 9)
+1 2 3
+4 5 6
+7 8 9
+
+/ get middle column of m and save it as new variable a
+
+a: m[;1]
+
+/ [row;column]
+/ blank for row; 1 = index position 2, so 2nd row
+
+/ replace middle row of me with a
+
+m[1]:a
+
+/ [row;column] 
+/ index position 1 = 2nd row
+
+/ transpose m and store as mm
+
+mm: flip m
+
+/ transpose is a fancy way of saying flip
+
+/ join extra row to mm, consisting of all 10s
+
+mm,: 3#10
+
+/ the syntax ,: appends items to list
+
+```
+
+### Nested Lists
+
+```q
+
+nest: (1 2 3; `a`c`b;10 11 12 14f; 100011b)
+
+/ find the datatype of each row
+
+type each nest
+
+/ collapse this nested list
+
+raze nest
+```
+
+### Define strings s1: "Hello" and s2: "Wrold"
+
+```q
+s1: "hello"
+s2: "world"
+
+/ join the 2 strings together and save to s
+
+s:s1, " ",s2
+"hello world"
+
+/ find index position of "w"
+
+s?"w"
+6
+
+/ find index positions of all "l" in s
+
+ss[s;"l"]
+2 3 9
+
+/ ss = search string function. returns index position
+
+/ find index position of last l
+
+last ss[s;"l"]
+
+/ remove "hello" and add " of warcraft" to s
+
+ssr["hello world"; "hello ";""], " of warcraft"
+world of warcraft
+
+ssr[s;"hello ";""], " of warcraft"
+world of warcraft
+```
+
+```q
+games:`crash`streets`echo`crash2`sonic`micro`pokemon`supermario`bomber`zelda
+platform: `ps1`sega`sega`ps1`sega`ps1`gameboy`gameboy`sega`gameboy
+level: (7 9 6i; 2 5i; 4 4i; 10 2 1i; 1 10i; 8i; 0 3i; 6 0i; 8 4i; 1 10i)
+
+/ count number of users per game
+
+users: count each level
+3 2 2 3 2 1 2 2 2 2
+
+/ calc average user level each game
+
+userlevel: avg each level
+7.3 3.5 4 4.3 5.5 8 1.5 3 6 5.5
+
+/ create boolean list indicating where avg user level > 6
+
+6 < avg each level
+1000010000b
+
+/ calc games where avg user level > 6
+
+games where 6 < avg each level
+`crash`micro
+
+/ sum the users for each platform. which one most popular?
+
+sum users where platform in `ps1
+sum users where platform in `sega
+sum users where platform in `gameboy
+
+/ sum the total count where column platform = ps1, etc.
+```
 
 ### Show 3 ways to retrieve values from a dictionary
 
