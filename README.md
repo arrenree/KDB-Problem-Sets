@@ -440,6 +440,158 @@ d: `a`b`c!1 2 3
 (enlist `c) # d / have to use enlist when retrieving single domain
 ```
 
+
+### Dictionary Problem Set AquaQ
+
+```q
+
+d1: `london`paris`athens`toronto`sydney`tokyo`chicago!0 1 2 -5 9 8 -6
+
+key      value
+---------------
+london  |	0
+paris	  | 1
+athens	| 2
+toronto	|-5
+sydney	| 9
+tokyo	  | 8
+chicago	|-6
+
+/ extract the hours for tokyo and athens
+
+d1[`tokyo`athens]
+8 2
+```
+
+```q
+/ if it's 12:30 in Paris, what time is it in Chicago?
+
+(d1`paris)-d1`chicago = 7
+
+/ paris vs chicago 7 hour difference
+/ need to convert to hours (cuz 7 is just a long)
+
+((d1`paris) - d1`chicago)*01:00
+07:00u
+
+/ then calculate difference from 12:30 (paris)
+
+12:30 - 07:00
+05:30u
+
+12:30 - (((d1`paris) - d1`chicago)*01:00)
+
+/ final answer
+/ alternatively syntax could be:
+
+12:30 + 01:00 *(d1`chicago)-d1`paris
+
+/ right to left
+```
+```q
+/ change London's time from 0 to 1
+
+d1[`london]:1
+```
+```q
+/ add in rome +1
+
+d1[`rome]:1
+
+/ or alternative syntax
+
+d1,:(enlist `rome)!enlist 1
+
+/ when using join assign, must enlist if single atom!
+```
+```q
+d3:`belfast`cardiff`edinburg`london!(12 10 11 9; 11 10 10 10; 10 10 12 9; 15 12)
+
+/ what's the average temp in each city?
+
+avg each d3
+
+/ convert all temp from C to F (temp x 9/5 + 32)
+
+(d3*(9%5))+32
+
+/ find the max temp for belfast
+
+max d3[`belfast]
+
+/ Given new dict d4, find max temp for belfast
+
+d4:(enlist `temperature)!enlist d3
+
+max d4[`temperature;`belfast]
+
+/ so d4 is a dict within a dict
+/ first column = temperature
+/ 2nd column is the entire dict of 3
+
+
+/ to add a row to d4:
+
+d4,:(enlist`rainfall)!enlist`belfast`cardiff`edinburgh`london!60 65 58 40
+```
+
+### Tables Problem Set
+```q
+
+tab1:([id:"abc"]pupil:`john`paul`rachel;subject:`maths`physics`chem;mark:96 55 82)
+
+id pupil   subject mark
+-----------------------
+a	 john	   maths	 96
+b	 paul	   physics 55
+c	 rachel  chem	   82
+
+/ extract dictionary corresponding to id = b
+
+tab1["b"]
+/ note - id columns are chars not sym! 
+
+/ add the 2 rows of information to tab1
+(id = d;pupil = emma; subject = maths; mark = 76)
+(id = e;pupil = michael;subject = bio; mark = 63)
+
+tab1,:([id:"de"]pupil:`emma`michael; subject:`maths`bio;mark:76 63)
+
+id pupil   subject mark
+-----------------------
+a	 john	   maths	 96
+b	 paul	   physics 55
+c	 rachel  chem	   82
+d	 emma	   maths	 76
+e	 michael bio	   63
+
+/ id are keyed strings so need " "
+/ other values are `syms
+
+/ remove entire keyed column from tab1 rename new table tab2
+
+tab2: value tab1
+
+/ value + table will only return its values
+
+pupil   subject mark
+-----------------------
+john	   maths	 96
+paul	   physics 55
+rachel   chem	   82
+emma	   maths	 76
+michael  bio	   63
+
+
+/ find first index where chem appears in tab2
+
+tab2[`subject]?`chem
+2
+
+/ index position 2 is where subject = `chem appears
+/ utilize the ? find operator to search for index position of value
+```
+
 <hr> 
 
 ### How do you upsert different keys/values from the original dict's datatype?
