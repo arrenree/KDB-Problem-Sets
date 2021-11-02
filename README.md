@@ -534,6 +534,207 @@ max d4[`temperature;`belfast]
 
 d4,:(enlist`rainfall)!enlist`belfast`cardiff`edinburgh`london!60 65 58 40
 ```
+### Dictionary Problem Set (AquaQ)
+
+```q
+/ create dictionary with letters from a-z with corresponding numbers
+
+dict: .Q.a ! 1+til 26
+
+key value
+---------
+a  |  1
+b  |  2
+c  |  3
+...
+
+/ .Q.a = returns list of lowercase alphabets
+```
+```q
+/ retrieve values of abc
+
+dict "abc"
+1 2 3
+
+/ sum values of abc
+
+sum dict "abc"
+6
+
+/ sum values of "yourname"
+
+sum dict "yourname"
+112
+```
+```q
+/ rename keys to capital letters
+
+dict:.Q.A ! value dict
+
+key value
+---------
+A  |  1
+B  |  2
+C  |  3
+
+/ can simply override existing dict
+/ .Q.A = capital letters
+/ value dict = retrieves existing values of dict
+```
+```q
+/ create another dict, change uppercase "HELLO WORLD" to lowercase
+
+dict2: .Q.A ! .Q.a
+
+/ this dict maps all uppercase to lowercase
+
+dict2 "HELLO WORLD"
+"hello world"
+
+/ the uppcase letters act as KEYS
+/ retrieves the lower case value
+```
+```q
+/ create dictionary morse, which contains letters n-s as keys, and a code for the values
+
+morse: "nopqrs"! (10; 111; 0110; 1101;010;0)
+
+key value
+---------
+n	  10
+o	  111
+p	  110
+q	  1101
+r	  10
+s	  0
+
+/ the key is simply a string of chars
+/ the values are just random "codes" you make up
+
+/ join numbers 0 to 4 onto the existing dictionary
+
+morse,:("01234")!(1; 10; 100; 1000; 10000)
+
+key value
+---------
+0	   1
+1	   10
+2	   100
+3	   1000
+4	   10000
+
+/ don't get confused, you add "01234" as strings, each with their own "codes"
+
+/ phrase SOS using your code
+
+morse "sos"
+0 111 0
+
+/ you are querying keys "sos" to retrieve associated values
+
+```
+```q
+/ create 2 dictionaries, one for r13, one for r12
+
+places:`london`edinbugh`belfast`manchester`tobermory`portsmouth`cardiff
+r13:557 704 944 867 1681 674 1152
+r12: 600 854 1020 955 1789 544
+
+d1: places!r13
+d2:(-1_places)!r12
+
+/ have to drop last one since value length longer than keys
+
+d1
+key       value
+----------------
+london	   557
+edinbugh	 704
+belfast	   944
+manchester 867
+tobermory  1681
+portsmouth 674
+cardiff	   1152
+
+d2
+key        value
+----------------
+london	   600
+edinbugh	 854
+belfast	   1020
+manchester 955
+tobermory	 1789
+portsmouth 544
+
+/ extract keys from first dictionary
+key d1
+
+extract values from first dictionary
+value d1
+```
+```q
+/ create new dict with sum of annual rainful over both years
+
+d3: d1+d2
+
+d3
+key        value
+-----------------
+london	    600
+edinbugh	  854
+belfast	    1020
+manchester	955
+tobermory	  1789
+portsmouth	544
+
+/ can simply add together both dict since they are keyed (dict always keyed)
+/ will find some keys, and add values together
+/ if no match, will leave as is
+```
+```q
+/ find the average rainfall over the two years for each city
+
+avg (d1;d2)
+
+/ since the dict is keyed, can perform operations like avg easily
+
+key         value
+------------------
+london	    578.5
+edinbugh	  779.0
+belfast	    982.0
+manchester	911.0
+tobermory 	1735.0
+portsmouth	609.0
+cardiff	    576.0
+```
+```q
+/ which location had more rainfall over the 2 years?
+
+d1>d2
+
+/ can simply use comparison operator to check if true or false
+
+key         value
+------------------
+london	    0b
+edinbugh	  0b
+belfast	    0b
+manchester	0b
+tobermory	  0b
+portsmouth	1b
+cardiff	    1b
+```
+```q
+/ find the average rainfall over 2 years
+
+sum(d1+d2)%2
+
+
+
+
+
+
 
 ### Tables Problem Set
 ```q
