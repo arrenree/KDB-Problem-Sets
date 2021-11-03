@@ -1039,6 +1039,73 @@ tab2[`subject]?`chem
 / utilize the ? find operator to search for index position of value
 ```
 
+### Functions Problem Set AQUA Q
+```q
+/ write function that calculates square of a number
+
+f:{[a] a*a}
+
+/ execute f with a:5 and assign result to new variable b
+
+a:5
+b:f[a]
+
+/ write new funciton g, which takes square of first argument divided by square of second argument
+
+g:{(x*x) % y*y}
+
+/ execute g with arguments a and b, store this to c
+
+c:g[a;b] 
+
+/ create dyadic function f1 indicating whether product of 2 numbers is greater than sum
+
+f1: {(x*y) > x+y}
+
+/ write formual g1: x^5-3x^2 + 5
+/ when x=4
+
+g1:{((x xexp 5) - 3*(x xexp 2))+5}
+g1[4]
+981f
+
+/ create function that calculates area of triangle. height = 7, base = 10
+
+t:{x*y%2}
+t[7;10]
+35
+
+/ create function that calculates the sum of 2 squares of a number x
+
+f:{x xexp 2 + x xexp 2}
+f:{2*(x xexp 2)}
+
+/ create a function that calculates a^3+b^2+c
+/ find value of function at 13,3,6
+
+f:{(x xexp 3) + (y xexp 2) + z}
+f[13;3;6]
+
+/ BMI is weight divide by height squared. create an implicit formula
+
+bmi: {x%y*y}
+
+/ create a func called perimeters, which will take perimeter of a square
+/ and return its area
+
+perimeter:{(x%4) xexp 2}
+perimeter[8]
+4
+
+/ car depreciates 15% first 3 years, then 8% next 3 years
+/ create func k to find value after 6 years (original value 15000)
+
+k:{x*(0.85 xexp 3)*(0.92 xexp 3)}
+k[15000]
+7173.1765
+```
+
+
 <hr> 
 
 ### How do you upsert different keys/values from the original dict's datatype?
