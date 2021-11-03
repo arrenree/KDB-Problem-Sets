@@ -1,4 +1,4 @@
-# Allen's KDB Interview Prep
+# Allen's KDB Practice Problems
 <a name="top"></a>
 
 <br>
@@ -726,17 +726,263 @@ portsmouth	1b
 cardiff	    1b
 ```
 ```q
-/ find the average rainfall over 2 years
+/ find the average rainfall over the 2 years for the UK
 
 sum(d1+d2)%2
+6170.5
 
 
+/ d1+d1 will simply add each row together
+/ the sum will aggregate all values together into 1 single value
+```
+
+```q
+/ create a dict of variables in the workspace as keys, and values as values
+
+system "v"
+
+/ this shows all keys in the workspace
+
+value each (system "v")
+
+/ this shows all values for each key in the workspace
+
+vars: (system "v")! (value each (system "v"))
+
+/ maps keys = variables and values  = values for each key
+
+key   | value
+--------------------------------------------------------------------------
+d1	  | `lond`edin`bel`man`tober`port`cardiff!557 704 944 867 1681 674 1152
+d2	  | `lond`edin`bel`man`tober`port!600 854 1020 955 1789 544
+d3	  | `lond`edin`bel`man`tober`port`car!578.5 779 982 911 1735 609 576
+places| `lond`edin`bel`manc`tober`port`car
+r12	  | 600 854 1020 955 1789 544
+r13	  | 557 704 944 867 1681 674 1152
+```
+
+### Tables Problem Set 2 AQ
+
+```q
+/ create 3 lists of 4 elements each for a, b, c
+
+a: 1 2 3 4
+b: `a`b`c`d
+c: 100 200 300 400
+
+/ create a table using these 3 lists
+
+t:([] a;b;c)
+
+a b c
+--------
+1	a	100
+2	b	200
+3	c	300
+4	d	400
+
+/ create a dictionary using this table
+
+flip t
+key|value
+-----------------
+a	 | 1 2 3 4
+b	 | `a`b`c`d
+c	 | 100 200 300 400
+```
+```q
+/ create empty table sym (sym), side (char), size (int), price (float)
+
+trade:([] sym:`$(); side:`char$(); size:`int$(); price:`float$())
+
+/ note for sym all you need is ` to cast
+
+/ create another table, lasttrade, which is a copy of trade, but sym is keyed
+
+lasttrade: 1!trade
+
+/ is there a difference in the metadata between 2 tables?
+
+meta trade ~ meta lasttrade
+1b (true)
+
+/ is there a difference in type?
+
+type trade ~ type lasttrade
+0b (false)
+
+/ trade = 98h = table
+/ lasttrade = 99 = dict (since you keyed)
+```
+```q
+/ use 3 join commands to add rows to trade 
+     / sym IBM, MSFT, AAPL
+     / side "B" or "S"
+     / consistent values for other columns
+
+trade
+sym|side|size|price
+-------------------
+
+trade,:(`IBM;"B";10i; 100f)
+trade,:(`MSFT;"S";20i;200f)
+trade,:(`APPL,"B";30i;300f)
+
+/ note - when using ,:join assign to insert data into table, you HAVE TO
+/ specify datatype, otherwise will fail
+/ for ex, simply appending 10, 100 will fail
+```
+```q
+/ use a single join command to add 3 more rows into join
+
+trade:([] sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10 20 30; price: 100 200 300)
+
+/ note - when upserting into table, you don't need to specify datatype
+/ need to separate chars with comma
+```
+```q
+/ fill lasttrade with data from trade
+
+lasttrade:trade
+lasttrade,:trade
+```
+```q
+/ create the following table
+
+stock:([] item:`soda`bacon`mush`eggs;brand:`fry`prok`veg`veg;price:1.5 1.99 0.88 1.55; order:50 82 45 92)
+
+item   brand price order
+------------------------
+soda	 fry	 1.5	 50
+bacon	 prok	 1.99	 82
+mush	 veg	 0.88	 45
+eggs	 veg	 1.55	 92
 
 
+/ add row of tomato, veg, 1.35 70
+
+stock,:(`tomato;`veg;1.35;70)
+
+item   brand price order
+------------------------
+soda	 fry	 1.5	 50
+bacon	 prok	 1.99	 82
+mush	 veg	 0.88	 45
+eggs	 veg	 1.55	 92
+tomato veg	 1.35	 70
+
+/ key the table according to item and brand
+
+2!stock
+`item`brand xkey stock
+
+/ does the meta data change when you key/unkey tables?
+
+no, it does not
+```
+```q
+trader:([]item:`soda`bacon`mush`eggs`tomato;brand:`fry`prok`veg`veg`veg;price:1.5 1.99 0.88 1.55 1.35; order:200 180 110 210 100)
+
+item   brand price order
+------------------------
+soda	 fry	 1.5	 200
+bacon	 prok	 1.99	 180
+mush	 veg	 0.88	 110
+eggs   veg	 1.55	 210
+tomato veg	 1.35	 100
+
+/ create new table, totalorders, which has sum of both orders from traders
+/ drop the price column before adding together
+
+totalorders:(2!(enlist `price)_stock)+(2!(enlist `price)_trader)
+
+item   brand order
+------------------
+soda	 fry	 250
+bacon	 prok	 262
+mush	 veg	 155
+eggs	 veg	 302
+tomato veg	 170
+
+/ need to key the tables before adding together
+/ but also need to drop the column
+/ since only dropping 1 column, need to use enlist + col name
+```
+```q
+/ create new list called newprices, which is 75% of original price
+
+newprices:0.75*stock`price
+1.125 1.4925 0.66 1.1625 1.0125
+
+/ syntax for operations on columns is tablename`colname
+
+/ join newprices to the totalorders table
+
+totalorders:totalorders,' ([] newp:newprices)
+
+item   brand order newprices
+---------------------------
+soda   fry	 250	 1.125
+bacon	 prok	 262	 1.4925
+mush	 veg	 155	 0.66
+eggs	 veg	 302	 1.1625
+tomato veg	 170	 1.0125
+
+/ this method you are appending the column to existing table
+
+update newprices from totalorders
+
+item   brand order newprices
+---------------------------
+soda   fry	 250	 1.125
+bacon	 prok	 262	 1.4925
+mush	 veg	 155	 0.66
+eggs	 veg	 302	 1.1625
+tomato veg	 170	 1.0125
+
+/ this is the SQL method (probably cleaner
+/ update col that doesnt exist will append it to table
+```
+```q
+/ how much savings per week will the manager and trader have?
+
+sum ((0!stock)`price)*((0!stock)`order) *0.25
+128.72
+
+sum ((0!trader)`price)*((0!trader)`order) *0.25
+303.875
+
+/ 75% off, so savings = 0.25
+/ syntax is table+`colname
+/ calc operations within a table cannot be keyed (need to unkey first 0!)
+/ notional = price * qty, though not explicitly explained
+
+/ if you are performing operations within a table, it cannot be keyed
+
+stock
+item   brand price order
+------------------------
+soda	 fry	 1.5	 50
+bacon	 prok	 1.99	 82
+mush	 veg	 0.88	 45
+eggs	 veg	 1.55	 92
+tomato veg	 1.35	 70
+
+(stock`price)*(stock`order)
+75 163.18 39.6 142.6 94.5
+
+/ this works
+/ however, if you key it:
+
+1!`stock
+(stock`price)*(stock`order)
+type
+
+/ this doesnt work anymore (since its keyed)
+```
 
 
-
-### Tables Problem Set
+### Tables Problem Set AQ
 ```q
 
 tab1:([id:"abc"]pupil:`john`paul`rachel;subject:`maths`physics`chem;mark:96 55 82)
