@@ -1105,6 +1105,71 @@ k[15000]
 7173.1765
 ```
 
+### QSQL Problem Set Aqua Q
+
+```q
+\l salestable.q
+tables[]
+`quote`sales`stock`trade
+
+/ tables [] shows you what tables are within the script
+```
+```q
+/ add new column to sales containing profit
+/ profit = price * qty
+
+update profit:price*quantity from `sales
+
+trader product price quantity profit
+------------------------------------
+Bob	  pencil	3	 84	     252
+Bob	  pen	3	 82	     246
+Paul	  book	3	 64	     192
+```
+```q
+/ work out total profit for each trader and product
+/ (group by trader and product)
+
+select sum profit by trader, product from sales
+
+trader product profit
+---------------------
+Bob    book    79
+Bob    paper   1353
+Bob    pen     728
+
+```
+```q
+/ sort by profit
+
+select [<profit] profit:sum profit by trader, product from sales
+
+trader product profit
+---------------------
+John   book	34
+Bob    book	79
+Paul   pencil	105
+/ can also use xasc
+
+`profit xasc select profit:sum profit by trader, product from sales
+
+trader product profit
+---------------------
+John   book	34
+Bob    book	79
+Paul   pencil	105
+
+/ or alternatively:
+
+select [<profit] profit:sum quantity*price by trader, product from sales
+
+trader product profit
+---------------------
+John   book	34
+Bob    book	79
+Paul   pencil	105
+
+```
 
 <hr> 
 
