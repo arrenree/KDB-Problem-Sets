@@ -1171,6 +1171,46 @@ Paul   pencil	105
 
 ```
 
+### QSQL Problem Set Aqua Q
+
+```q
+/ extract all the following results:
+/ gender - male and grade - A
+/ gender - female and grade - B
+/ gender - female and grade - A
+
+results:([]name:`John`Paul`Rachel`Jane`Emma;gender:"MMFFF";grade:"ABBAC")
+
+name  |gender|grade
+--------------------
+John  |   M  | 	A
+Paul  |   M  |	B
+Rachel|   F  |	B
+Jane  |   F  |	A
+Emma  |   F  | 	C
+
+/ individually this would be the syntax for each query
+
+select from results where gender="M", grade="A"
+select from results where gender="F", grade="B"
+select from results where gender="F", grade="A"
+
+/ however, can use a table search function
+/ usually it goes: where col_name in value (where gender = "A")
+/ so you can go where (table of col names) in (table of values)
+
+select from results where ([]gender;grade) in ([] gender:"MFF";grade:"ABA")
+
+name  |gender|grade
+--------------------
+John  |   M  | 	A
+Rachel|   F  |	B
+Jane  |   F  |	A
+```
+
+
+
+
 <hr> 
 
 ### How do you upsert different keys/values from the original dict's datatype?
