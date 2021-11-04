@@ -1208,7 +1208,57 @@ Rachel|   F  |	B
 Jane  |   F  |	A
 ```
 
+### QSQL Problem Set Aqua Q
 
+```q
+f:{([]subject:(4*x)#`maths`english`french`ict;class:raze 4#/:x?"ABCDE";gender:raze 4#/:x?"MF";mark:35+(4*x)?60;id:raze 4#/:til x)}
+marks:f[300]
+
+/2 find marks for class A
+select from marks where class ="A"
+
+/3 find marks for males of class B
+select from marks where gender="M",mark="B"
+
+/4 find avg french mark in class c
+select avg mark from marks where class = "C", subject=`french
+
+/5 find avg mark for each subject, ignoring classes
+select avg mark by subject from marks
+
+/6 for class A, produce table of avg, min, max and sd of math marks
+select average:avg mark, low: min mark, high: max mark, sd:dev mark from marks where subject =`maths, class ="A"
+
+/7 display lowest, median and highest mark according to gender and subject
+select low:min mark, median:med mark, high: max mark by gender, subject from marks
+
+/8 how many people are in each class (use id)?
+select count distinct id by class from marks
+
+/9 for class b ict marks, find med, range, sum of marks and num of distinct marks
+select median:med mark, range:(max mark) - min mark, total: sum mark, num: count distinct mark from marks where class = "B", subject =`ict
+
+/9 calc avg mark by subject for class E
+select avg mark by subject from marks where class ="E"
+
+/10 calc highest avg subject mark for class e, calling it topmark
+select topmark: max mark from select avg mark by subject from marks where class = "E"  
+
+/11 calc average mark for french in class d without using avg
+select average:(sum mark % count mark) from marks where class="D", subject=`french
+
+/12 calc the range of marks among males in class D in ict and french
+select range:((max mark) - min mark) by subject from marks where class = "D", subject in `ict`french, gender="M"
+
+/13 delete class E results
+delete from marks where class="E"
+
+/14 add 5 marks to each of class A french paper
+update mark:5+mark from `marks where class="A",subject=`french
+
+/15 add new col called average, contains average mark for class and subject
+update average:avg mark by class, subject from marks 
+```
 
 
 <hr> 
