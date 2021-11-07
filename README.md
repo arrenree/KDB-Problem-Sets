@@ -4,7 +4,7 @@
 <br>
 
 
-### What is an Atom vs a List?
+### [list] What is an Atom vs a List?
 
 ```q
 An atom - is an irreducible value of a specific data type
@@ -13,7 +13,7 @@ A list -  is an ordered sequence of items
 
 <hr> 
 
-### What is a dictionary and a table? How are they related?
+### [dict] What is a dictionary and a table? How are they related?
 
 ```q
 Dictionaries are a data structure that maps from a domain to a range of values. 
@@ -25,7 +25,7 @@ Tables are encased by parathesis ( ) and contain brackets [ ] which assigns the 
 
 <hr> 
 
-### what is the difference between a table and a keyed table?
+### [table] what is the difference between a table and a keyed table?
 
 ```q
 A table - is a flipped dictionary. Vectors of data are organized by columns.
@@ -35,7 +35,7 @@ A keyed table - is a table of keyed records mapped to a table of value records.
 
 <hr> 
 
-### What is the difference between a sym and a string?
+### [cast] What is the difference between a sym and a string?
 
 ```q
 A sym -  is an atomic entity holding text. Represented with a back tick. 
@@ -65,7 +65,7 @@ c: 1 + 3 * b: -3 + a:5
 / right to left 
 ```
 
-### What is casting? Cast an int to a float
+### [cast] What is casting? Cast an int to a float
 
 ```q
 casting converts one datatype to another
@@ -78,7 +78,7 @@ casting converts one datatype to another
 
 <hr> 
 
-### What happens when you cast a date to an int?
+### [cast] What happens when you cast a date to an int?
 
 ```q
 `int$2000.10.04
@@ -88,7 +88,7 @@ casting converts one datatype to another
 
 <hr> 
 
-### Convert syms a b c to a String
+### [cast] Convert syms a b c to a String
 
 ```q
 string `a`b`c
@@ -98,7 +98,7 @@ string `a`b`c
 
 <hr>
 
-### How do you cast a string to a sym?
+### [cast] How do you cast a string to a sym?
 
 ```q
 `$"a","b","c"
@@ -108,7 +108,7 @@ string `a`b`c
 
 <hr> 
 
-### Cast the Following
+### [cast] Cast the Following
 
 ```q
 / "2014.01.01" to a date
@@ -139,14 +139,14 @@ string `a`b`c
 `$"abcde"
 ```
 
-### Get today's date store it as variable d
+### [temporal] Get today's date store it as variable d
 
 ```q
 d: .z.d
 2021-11-01d
 ```
 
-### Calculate the number of days since last christmas
+### [temporal] Calculate the number of days since last christmas
 
 ```q
 d-2020.12.25
@@ -155,7 +155,7 @@ d-2020.12.25
 / can use algebra with dates (ints underneath)
 ```
 
-### What day of the week was Jan 10, 2011?
+### [temporal] What day of the week was Jan 10, 2011?
 
 ```q
 2011.01.10 mod 7
@@ -170,7 +170,7 @@ d-2020.12.25
 / 2 days from sunday = Monday
 ```
 
-### What is parsing?
+### [casting] What is parsing?
 
 Parsing is converting a string to another datatype.
 
@@ -185,19 +185,19 @@ l:("1.00001"; "200"; "3.1417")
 
 <hr> 
 
-### show all variables definied in current session of q
+### [system] show all variables definied in current session of q
 
 ```q
 \v
 `a`b`c`d
 ```
 
-### Close the current session
+### [system] Close the current session
 ```q
 \\
 ```
 
-### What are the common operators?
+### [system] What are the common operators?
 
 ```q
 #   / take
@@ -211,7 +211,7 @@ $   / cast, enumerate
 ```
 <hr> 
 
-### Create Empty List d
+### [list] Create Empty List d
 ```q
 
 d: ()
@@ -228,7 +228,7 @@ d, 5 ? til 10
 / d , joins these 2 lists, thereby adding into list
 ```
 
-### Create list e with 1 element
+### [list] Create list e with 1 element
 
 ```q
 
@@ -238,7 +238,7 @@ e: enlist 10
 / or e:(), 10
 ```
 
-### Create list l with 20 random values from 3 to 30
+### [list] Create list l with 20 random values from 3 to 30
 ```q
 
 l: 20 ? 3_til 31
@@ -258,7 +258,7 @@ l[19]
 3 5 7 11 13 17 in l
 ```
 
-### Add each element of l to its index position. for ex, 0 to index 0, 1 to index 1, etc.
+### [list] Add each element of l to its index position. for ex, 0 to index 0, 1 to index 1, etc.
 
 ```q
 l+: til count l
@@ -267,7 +267,7 @@ l+: til count l
 / til 20 = 0 - 19, gives you the index position
 / so now you have 2 lists, just need to add together
 ```
-### How many even numbers are there? 
+### [list] How many even numbers are there? 
 
 ```q
 
@@ -283,14 +283,14 @@ count where not l mod 2
 / not = 0, so counts all the 0s (even numbers)
 ```
 
-### what do you get dates when casting int to date?
+### [cast] what do you get dates when casting int to date?
 
 ```q
 
 dates are stored as integers (days) from 2000.01.01
 ```
 
-### Creating Matrix
+### [list] Creating Matrix
 
 ```q
 m:(1 2 3; 4 5 6; 7 8 9)
@@ -326,7 +326,7 @@ mm,: 3#10
 
 ```
 
-### Nested Lists
+### [list] Nested Lists
 
 ```q
 
@@ -341,7 +341,7 @@ type each nest
 raze nest
 ```
 
-### Define strings s1: "Hello" and s2: "Wrold"
+### [string] Define strings s1: "Hello" and s2: "Wrold"
 
 ```q
 s1: "hello"
@@ -411,7 +411,7 @@ sum users where platform in `gameboy
 / sum the total count where column platform = ps1, etc.
 ```
 
-### Show 3 ways to retrieve values from a dictionary
+### [dict] Show 3 ways to retrieve values from a dictionary
 
 ```q
 d: `a`b`c!1 2 3
@@ -423,7 +423,7 @@ d `a = 1
 
 <hr> 
 
-### What happens when you try retrieving from a dictionary that has non-unique keys?
+### [dict] What happens when you try retrieving from a dictionary that has non-unique keys?
 
 ```q
 d: `a`b`c`a!1 2 3 4
@@ -432,7 +432,7 @@ d[`a] = 1 / returns the first entry
 
 <hr> 
 
-### Take first 2 items from dict. retrieve value from key 'c
+### [dict] Take first 2 items from dict. retrieve value from key 'c
 
 ```q
 d: `a`b`c!1 2 3
@@ -441,7 +441,7 @@ d: `a`b`c!1 2 3
 ```
 
 
-### Dictionary Problem Set AquaQ
+### [dict] Dictionary Problem Set AquaQ
 
 ```q
 
@@ -534,7 +534,7 @@ max d4[`temperature;`belfast]
 
 d4,:(enlist`rainfall)!enlist`belfast`cardiff`edinburgh`london!60 65 58 40
 ```
-### Dictionary Problem Set (AquaQ)
+### [dict] Dictionary Problem Set (AquaQ)
 
 ```q
 / create dictionary with letters from a-z with corresponding numbers
@@ -761,7 +761,7 @@ r12	  | 600 854 1020 955 1789 544
 r13	  | 557 704 944 867 1681 674 1152
 ```
 
-### Tables Problem Set 2 AQ
+### [tables] Tables Problem Set 2 AQ
 
 ```q
 / create 3 lists of 4 elements each for a, b, c
@@ -982,7 +982,7 @@ type
 ```
 
 
-### Tables Problem Set AQ
+### [tables] Tables Problem Set AQ
 ```q
 
 tab1:([id:"abc"]pupil:`john`paul`rachel;subject:`maths`physics`chem;mark:96 55 82)
@@ -1039,7 +1039,7 @@ tab2[`subject]?`chem
 / utilize the ? find operator to search for index position of value
 ```
 
-### Functions Problem Set AQUA Q
+### [func] Functions Problem Set AQUA Q
 ```q
 / write function that calculates square of a number
 
@@ -1105,7 +1105,7 @@ k[15000]
 7173.1765
 ```
 
-### QSQL Problem Set Aqua Q
+### [QSQL] Problem Set Aqua Q
 
 ```q
 \l salestable.q
@@ -1171,7 +1171,7 @@ Paul   pencil	105
 
 ```
 
-### QSQL Problem Set Aqua Q
+### [QSQL] Problem Set Aqua Q
 
 ```q
 / extract all the following results:
@@ -1208,7 +1208,7 @@ Rachel|   F  |	B
 Jane  |   F  |	A
 ```
 
-### QSQL Problem Set Aqua Q
+### [QSQL] Problem Set Aqua Q
 
 ```q
 f:{([]subject:(4*x)#`maths`english`french`ict;class:raze 4#/:x?"ABCDE";gender:raze 4#/:x?"MF";mark:35+(4*x)?60;id:raze 4#/:til x)}
@@ -1260,8 +1260,151 @@ update mark:5+mark from `marks where class="A",subject=`french
 update average:avg mark by class, subject from marks 
 ```
 
+### [func] More Complicated problem set - AquaQ
 
+```q
+/ 1 create function takes 3 parameters (startdate, enddate, symbols) which extracts the trade data 
+/ for the date range and symbol list
+
+tradeticks:{[startdate;enddate;symbols] 
+            select date, sym, time, size, price 
+            from trade
+            where date within (startdate;enddate), sym in symbols}
+            
+tradeticks[2021.11.03;2021.11.04;`MS]
+
+date      sym time         size  price
+--------------------------------------
+2021-11-03 MS 09:30:01.423 63000 58.46
+2021-11-03 MS 09:30:01.768 95500 81.06
+2021-11-03 MS 09:30:01.928 13400 82.90
+
+/ hints:
+/ date range = date within startdate/enddate
+/ symbol list = sym in list of symbols
+```
+```q
+/ 2.1 extracting temporal data from timestamp
+/ assume table called depth
+
+depth
+time                       sym  price
+-------------------------------------
+2021-11-07T08:04:21.425000 YHOO 33.99
+2021-11-07T08:14:59.215000 ORCL 35.16
+2021-11-07T08:21:30.944000 NOK  42.01
+
+meta depth
+
+c    |t|f|a
+------------
+time	|p| |		
+sym	|s| |g
+bid1	| |f|		
+
+/ time column is datatype p = timestamp
+
+/ extract the timestamp
+
+select time from depth
+
+time
+--------------------------
+2021-11-07T08:04:21.425000
+2021-11-07T08:14:59.215000
+2021-11-07T08:21:30.944000
+
+/ extract the date from timestamp
+
+select `date$time from depth
+
+time
+----------
+2021-11-07
+2021-11-07
+2021-11-07
+
+/ extract the time from timestamp
+
+select time.time from depth
+select `time$time from depth
+
+time
+------------
+08:04:21.425
+08:14:59.215
+08:21:30.944
+```
+
+```q
+/2 create func2, which adds additional parameters: start time and end time. 
+/ this func will only extract the trades that fall within time range
+/ hint - need to extract the time portion from timestamp e.g time.time or `time$time
+
+tradeticks2:{[startdate;enddate;symbols;starttime;endtime] 
+            select date, sym, time, size, price 
+            from trade
+            where date within (startdate;enddate), sym in symbols,
+            `time$time within (starttime;endtime)}
+
+tradeticks2[2021.11.03;2021.11.04;`MS; 09:30:00;09:31:00]
+
+date      sym time         size  price
+--------------------------------------
+2021-11-03 MS 09:30:17.569 11400 79.89
+2021-11-03 MS 09:30:17.573 18400 96.09
+2021-11-03 MS 09:30:21.264 8500 101.73
+
+/ so in this case, time is in the temporal format of 2021.01.01D09:00:00
+/ need to extract only the time portion
+/ so that your argument inputs for starttime;endtime make sense
+```
+```q
+/3 create function which is same as func1, but uses a start timestamp and end timestamp as the parameters
+/ it should query across the date boundaries (should include all ticks within that period)
+/ make sure it uses date partitions correctly. date portion should be run first and separately from timestamp query
+
+tradeticks3:{[starttimestamp;endtimestamp;symbols] 
+            select date, sym, time, size, price 
+            from trade 
+            where date within `date$(starttimestamp;endtimestamp), sym in symbols,
+            time within (starttimestamp;endtimestamp)}
+
+/ inputs are timestamps, which include date+time
+/ need to filter first by date within the timestamp
+/ then time within the timestamp
+
+tradeticks3[2021.11.07D09:00;2021.11.07D10:00;`AAPL]
+
+date       sym  time         size  price
+----------------------------------------
+2021-11-07 AAPL 09:30:21.088 20600 62.30
+2021-11-07 AAPL 09:30:21.490 900   59.15
+2021-11-07 AAPL 09:30:22.052 1500  95.94
+
+```
+```q
+/ i dont get this
+
+/4 Update func3 such that if the start timestamp is = first second of day, and end timestamp = last second of day
+/ then it doesnt execute the where filter on the time column
+
+/ hint start of day timestamp = 1d xbar timestamp or
+/ `timestamp$00:00+`date$timestamp
+/ to get endtime, subtract 1 from the start of next date
+/ -1+`timestamp$1+`date$endtimestamp
+tradeticks3:{[starttimestamp;endtimestamp;symbols] 
+            $[starttimestamp=`timestamp$00:00+`date$starttimestamp)and
+            (endtimestamp=-1+`timestamp$1+`date$endtimestamp);
+            /call tradeticks
+            tradeticks[`date\$starttimestamp;`date$endtimestamp;symbols];
+            /call tradetick3
+            tradeticks3[starttimestamp;endtimestamp;symbols]]}
+
+```
 <hr> 
+
+
 
 ### How do you upsert different keys/values from the original dict's datatype?
 
