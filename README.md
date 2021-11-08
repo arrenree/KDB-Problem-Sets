@@ -3,7 +3,21 @@
 
 <br>
 
-# 🔴 General Knowledge
+## 1. [General Knowledge](#gen)
+## 2. [Casting / Datatypes / Temporal](#cast)
+## 3. [Lists](#list)
+## 4. [Dictionary](#dictionary)
+## 5. [Tables](#tables)
+## 6. [Functions](#functions)
+## 7. [qSQL](#qsql)
+
+
+
+<a name="gen"></a>
+### 🔴 General Knowledge
+[Top](#top)
+
+
 
 ### [gen] What is an Atom vs a List?
 
@@ -66,9 +80,12 @@ Tables are encased by parathesis ( ) and contain brackets [ ] which assigns the 
 \\
 ```
 
+<hr>
 
+<a name="cast"></a>
+### 🔴 Casting / Datatypes / Temporal
+[Top](#top)
 
-# 🔴 Casting / Datatypes / Temporal
 
 ### [cast] What is the difference between a sym and a string?
 
@@ -166,6 +183,13 @@ l:("1.00001"; "200"; "3.1417")
 3.1417 / float
 ```
 
+### [cast] what do you get dates when casting int to date?
+
+```q
+
+dates are stored as integers (days) from 2000.01.01
+```
+
 ### [temporal] Get today's date store it as variable d
 
 ```q
@@ -196,26 +220,46 @@ d-2020.12.25
 / todays date = monday, Nov 11
 / 2 days from sunday = Monday
 ```
-
-
-# 🔴 Lists
-
-# 🔴 Dictionary
-
-# 🔴 Tables
-
-### [table] what is the difference between a table and a keyed table?
+### [string] Define strings s1: "Hello" and s2: "World"
 
 ```q
-A table - is a flipped dictionary. Vectors of data are organized by columns.
+s1: "hello"
+s2: "world"
 
-A keyed table - is a table of keyed records mapped to a table of value records.
+/ join the 2 strings together and save to s
+
+s:s1, " ",s2
+"hello world"
+
+/ find index position of "w"
+
+s?"w"
+6
+
+/ find index positions of all "l" in s
+
+ss[s;"l"]
+2 3 9
+
+/ ss = search string function. returns index position
+
+/ find index position of last l
+
+last ss[s;"l"]
+
+/ remove "hello" and add " of warcraft" to s
+
+ssr["hello world"; "hello ";""], " of warcraft"
+world of warcraft
+
+ssr[s;"hello ";""], " of warcraft"
+world of warcraft
 ```
+<hr>
 
-# 🔴 Functions
-
-
-
+<a name="list"></a>
+### 🔴 Lists
+[Top](#top)
 
 
 ### [list] Create Empty List d
@@ -289,14 +333,6 @@ count where not l mod 2
 
 / not = 0, so counts all the 0s (even numbers)
 ```
-
-### [cast] what do you get dates when casting int to date?
-
-```q
-
-dates are stored as integers (days) from 2000.01.01
-```
-
 ### [list] Creating Matrix
 
 ```q
@@ -348,42 +384,7 @@ type each nest
 raze nest
 ```
 
-### [string] Define strings s1: "Hello" and s2: "Wrold"
-
-```q
-s1: "hello"
-s2: "world"
-
-/ join the 2 strings together and save to s
-
-s:s1, " ",s2
-"hello world"
-
-/ find index position of "w"
-
-s?"w"
-6
-
-/ find index positions of all "l" in s
-
-ss[s;"l"]
-2 3 9
-
-/ ss = search string function. returns index position
-
-/ find index position of last l
-
-last ss[s;"l"]
-
-/ remove "hello" and add " of warcraft" to s
-
-ssr["hello world"; "hello ";""], " of warcraft"
-world of warcraft
-
-ssr[s;"hello ";""], " of warcraft"
-world of warcraft
-```
-
+### [list] list problem set
 ```q
 games:`crash`streets`echo`crash2`sonic`micro`pokemon`supermario`bomber`zelda
 platform: `ps1`sega`sega`ps1`sega`ps1`gameboy`gameboy`sega`gameboy
@@ -417,6 +418,10 @@ sum users where platform in `gameboy
 
 / sum the total count where column platform = ps1, etc.
 ```
+
+<a name="dictionary"></a>
+### 🔴 Dictionary
+[Top](#top)
 
 ### [dict] Show 3 ways to retrieve values from a dictionary
 
@@ -768,6 +773,17 @@ r12	  | 600 854 1020 955 1789 544
 r13	  | 557 704 944 867 1681 674 1152
 ```
 
+<a name="tables"></a>
+### 🔴 Tables
+[Top](#top)
+
+### [table] what is the difference between a table and a keyed table?
+
+```q
+A table - is a flipped dictionary. Vectors of data are organized by columns.
+
+A keyed table - is a table of keyed records mapped to a table of value records.
+```
 ### [tables] Tables Problem Set 2 AQ
 
 ```q
@@ -1045,6 +1061,9 @@ tab2[`subject]?`chem
 / index position 2 is where subject = `chem appears
 / utilize the ? find operator to search for index position of value
 ```
+<a name="functions"></a>
+### 🔴 Functions
+[Top](#top)
 
 ### [func] Functions Problem Set AQUA Q
 ```q
@@ -1111,6 +1130,10 @@ k:{x*(0.85 xexp 3)*(0.92 xexp 3)}
 k[15000]
 7173.1765
 ```
+
+<a name="qsql"></a>
+### 🔴 qSQL
+[Top](#top)
 
 ### [QSQL] Problem Set Aqua Q
 
