@@ -3,53 +3,18 @@
 
 <br>
 
+# 🔴 General Knowledge
 
-### [list] What is an Atom vs a List?
+### [gen] What is an Atom vs a List?
 
 ```q
 An atom - is an irreducible value of a specific data type
 A list -  is an ordered sequence of items
 ```
 
-<hr> 
-
-### [dict] What is a dictionary and a table? How are they related?
+### [gen] Order of Operations
 
 ```q
-Dictionaries are a data structure that maps from a domain to a range of values. 
-Contains a ! to separate keys and values.
-
-A table is a flipped dictionary. Vectors of data are organized by columns. 
-Tables are encased by parathesis ( ) and contain brackets [ ] which assigns the key.
-```
-
-<hr> 
-
-### [table] what is the difference between a table and a keyed table?
-
-```q
-A table - is a flipped dictionary. Vectors of data are organized by columns.
-
-A keyed table - is a table of keyed records mapped to a table of value records.
-```
-
-<hr> 
-
-### [cast] What is the difference between a sym and a string?
-
-```q
-A sym -  is an atomic entity holding text. Represented with a back tick. 
-Smaller in size than a char.
-
-A string - is a list of chars. Represented by " " double parathesis
-```
-
-<hr> 
-
-### Define the following variables
-
-```q
-
 a = 5
 b = a -3
 c = 3b + 1
@@ -63,6 +28,55 @@ c: (3*b)-1 or 1+3*b
 c: 1 + 3 * b: -3 + a:5
 
 / right to left 
+```
+
+### [gen] What are the common operators?
+
+```q
+#   / take
+_   / drop
+?   / find, randomize
+@   / apply
+!   / dictionary, key, unkey, 
+$   / cast, enumerate
+,   / join
+^   / fill
+```
+
+### [gen] What is a dictionary and a table? How are they related?
+
+```q
+Dictionaries are a data structure that maps from a domain to a range of values. 
+Contains a ! to separate keys and values.
+
+A table is a flipped dictionary. Vectors of data are organized by columns. 
+Tables are encased by parathesis ( ) and contain brackets [ ] which assigns the key.
+```
+
+
+### [system] show all variables definied in current session of q
+
+```q
+\v
+`a`b`c`d
+```
+
+### [system] Close the current session
+```q
+\\
+```
+
+
+
+# 🔴 Casting / Datatypes / Temporal
+
+### [cast] What is the difference between a sym and a string?
+
+```q
+A sym -  is an atomic entity holding text. Represented with a back tick. 
+Smaller in size than a char.
+
+A string - is a list of chars. Represented by " " double parathesis
 ```
 
 ### [cast] What is casting? Cast an int to a float
@@ -139,6 +153,19 @@ string `a`b`c
 `$"abcde"
 ```
 
+### [cast] What is parsing?
+
+Parsing is converting a string to another datatype.
+
+```q
+l:("1.00001"; "200"; "3.1417")
+"FIF"$l
+
+1.00001 / float
+200 / int
+3.1417 / float
+```
+
 ### [temporal] Get today's date store it as variable d
 
 ```q
@@ -170,46 +197,26 @@ d-2020.12.25
 / 2 days from sunday = Monday
 ```
 
-### [casting] What is parsing?
 
-Parsing is converting a string to another datatype.
+# 🔴 Lists
 
-```q
-l:("1.00001"; "200"; "3.1417")
-"FIF"$l
+# 🔴 Dictionary
 
-1.00001 / float
-200 / int
-3.1417 / float
-```
+# 🔴 Tables
 
-<hr> 
-
-### [system] show all variables definied in current session of q
+### [table] what is the difference between a table and a keyed table?
 
 ```q
-\v
-`a`b`c`d
+A table - is a flipped dictionary. Vectors of data are organized by columns.
+
+A keyed table - is a table of keyed records mapped to a table of value records.
 ```
 
-### [system] Close the current session
-```q
-\\
-```
+# 🔴 Functions
 
-### [system] What are the common operators?
 
-```q
-#   / take
-_   / drop
-?   / find, randomize
-@   / apply
-!   / dictionary, key, unkey, 
-$   / cast, enumerate
-,   / join
-^   / fill
-```
-<hr> 
+
+
 
 ### [list] Create Empty List d
 ```q
