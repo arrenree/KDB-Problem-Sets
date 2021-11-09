@@ -10,6 +10,7 @@
 7. [qSQL](#qsql)
 8. [Adverbs](#adverbs)
 9. [Attributes](#attributes)
+10. [Joins](#joins)
 
 <hr>
 
@@ -2101,7 +2102,80 @@ requires all elements of same value to occur together
 allows for faster queries
 ```
 
+<a name="joins"></a>
+### 🔴 Joins
+[Top](#top)
 
+### [join] What are some differences between left join and union join?
 
+```q
+A. (no match) nulls
+      1. lj - if no match on key, then columns added to end of table, values = null
+      2. uj - if no match on key, then row is REMOVED (no nulls)
+
+B. Key
+      1. lj - lookup table must be keyed
+      2. uj - lookup table can be keyed or unkeyed
+
+```
+### [join] Keyed UJ + xbar Problem Set
+
+```q
+/ union join + xbar example
+
+/ calc avgmid price from quotes table for `GOOG
+
+t1:select avgmid:avg .5*bid+ask by 5 xbar time.minute from quote where sym =`GOOG
+
+/ avg mid quote = (bid + ask) /2
+/ since you're grouping into 5 xbar, avg will calc avg over 5 min bucket
+/ by = group, so this becomes keyed by 5 xbar time
+
+minute| avgmid
+--------------
+09:30 | 79.7
+09:35 |	80.4
+09:40 |	79.5
+09:45 |	79.4
+09:50 |	80.4
+
+/ calc avg price in 5 minute time window for `GOOG
+
+t2:select avgprice: avg price by 5 xbar time.minute from trade where sym=`GOOG
+
+/ notice some buckets have nulls = no trades during this bucket
+
+minute| avgprice
+----------------
+09:30 | 80.0
+09:35 |	
+09:40 |	79.7
+09:45 |	
+09:50 |	80.4
+
+/ combine the 2 tables together
+
+t1 uj t2
+
+minute| avgmid | avgprice
+--------------------------
+09:30 |  79.7  |  80.0
+09:35 |	 80.4  |
+09:40 |	 79.5  |  79.7
+09:45 |	 79.4  |
+09:50 |	 80.4  |  80.4
+
+/ fill nulls with prev price (since no trades)
+
+fills t1 uj t2
+
+minute| avgmid | avgprice
+--------------------------
+09:30 |  79.7  |  80.0
+09:35 |	 80.4  |  80.0
+09:40 |	 79.5  |  79.7
+09:45 |	 79.4  |  79.7
+09:50 |	 80.4  |  80.4
+```
 
 [Top](#top)
