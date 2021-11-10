@@ -2455,8 +2455,6 @@ MS  | 255
 
 ```
 
-<hr>
-
 ### [join-TS] Find the average daily price for each sym in trade table. Join the newsItems table to show only those items where the sym had a newsItem on that date
 
 ```q
@@ -2629,5 +2627,39 @@ dt         |  sym   | title                   | price
 2015-01-06 |   MS   | traders did it!         | 260 
 2015-01-04 |   C    | regulators investigating| 10  
 ```
+
+### [join] Join Problem Set
+
+```q
+\l fakedb.q
+makedb[1000;1000]
+tables[]
+```
+```q
+/ select avg price by sym and save to t1
+
+t1:select avg price by sym from trades
+
+/ join this data onto the trades table
+
+trades lj t1
+
+/ select max bid, min ask for `IBM`MSFT`NOK from quotes
+
+t2:select maxbid:max bid, minask:min ask by sym from quotes where sym in`IBM`MSFT`NOK
+
+/ join this data onto the trades table
+
+trades lj t2
+
+/ join t1 onto t2 showing the data for all syms
+
+t2 uj t1
+
+/ need to use uj to show all data for all syms
+```
+
+
+
 
 [Top](#top)
