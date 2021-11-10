@@ -2060,6 +2060,111 @@ Adds each element of y to the entirety of x
 / returns the final result
 ```
 
+### [adverb] Create a function that calculates the moving sum with window size of 2
+
+```q
+/ each prior = perform action on each element with its prior element
+
+L: 20 30 4 6 1 2
++': [L]
+20 50 34 10 7 3
+
+/ alternatively:
+
+2 msum L
+
+/ or 
+ 
+{x+y}': [L]
+ 
+```
+
+### [adverb] Join the 2 lists together to form a nested list
+
+```q
+/ use each both to join 2 lists together
+
+numbers: 5 7 9
+powers: 8 3 4
+
+numbers, 'powers
+(5 8;7 3;9 4)
+```
+
+### [adverb] Raise the first element of list1 to first element of list2 and so on. 
+
+```q
+numbers xexp' powers
+390625 343 6561f
+```
+
+### [adverb] A bank account pays 5% interest a year. Write a function that takes the current balance and returns the new balance after one year. Then use scan\ with that function to display the interest every year, up to 7 years in the future
+
+```q
+/ assume starting balance of 100
+
+{x * 1.05} 100
+105
+
+{x * 1.05} \ [7; 100.]
+
+105 
+110.25
+115.7625
+...
+140.71
+
+/ use monadic version of scan that takes 2 arguments
+/ first argument = how many times to run
+/ second argument = starting value for function
+```
+
+### [adverb] Create a function, fib, that takes a fibonnaci sequence as its argument and returns the sequence complete with the next entry
+
+```q
+/ the fib seq = 1 + prior 
+/ 1 1 2 3 5 8 ...
+
+fib: {sum -2#x}
+fib 1 1
+
+1 1 2
+
+/ take last 2 elements of argument and sum it
+```
+
+### [adverb] Use the over function to create a function, fibn, to generate a fib sequence n numbers long where n is the functions argument
+
+```q
+fibn: {x fib/ 1 1}
+fibn 5
+1 1 2 3 5 8 13
+```
+
+### [adverb] Use the scan to calculate the depreciation of cars 
+
+```q
+/ c = initial car value
+/ r = depreciation rate per year
+
+depr:{[c;r] c*1-r%100}
+depr[100;8]
+92
+
+/ What is the value after 5 years?
+
+depr[;8]\[5;100]
+100
+92
+84.64
+77.86
+71.63
+65.90
+
+/ use scan to iterate the function 5x
+```
+
+
 <a name="attributes"></a>
 ### 🔴 Attributes
 [Top](#top)
