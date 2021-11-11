@@ -2754,13 +2754,124 @@ list2
 @[list1; where mod[til count list1;2];+; 5]
 1 7 3 9 5 11 7 13 9 15
 ```
-### [@operator] add "..." to the end of each word for ("quick","brown","fox")
+### [@ Operator] add "..." to the end of each word for ("quick","brown","fox")
 ```q
 @[("quick";"brown";"fox");0 1 2;,[;"..."]]
 "quick..."
 "brown..."
 "fox..."
 ```
+
+### [@ Operator] Extract values from key a in dict using @ or .
+
+```q
+dict:`a`b`c!(1 2;3 4; 5 6)
+a| 1 2
+b| 3 4
+c| 5 6
+
+@[dict;`a]
+1 2
+
+.[dict;enlist `a]
+1 2
+```
+
+### [@ Operator] turn the dict into a table using @ or .
+```q
+@[flip; dict]
+a b c
+-----
+1 3 5
+2 4 6
+```
+
+### [@ Operator] change values of key b to: 0 1 2 3 4 5 6 permanently
+
+```q
+@[`dict;`b; : ; til 7]
+
+key | value
+-------------------
+a   | 1 2
+b   | 0 1 2 3 4 5 6
+c   | 5 6
+```
+
+### [@ Operator] change the syms in the table accordingly:
+A = AAPL
+B = GOOG
+C = IBM
+
+```q
+t:([] sym:`A`B`B`C`A; price: 11.2 15.6 15.4 4.0 11.9; size: 101 97 151 403 149)
+
+sym  | price | size
+-------------------
+A    |	11.2 |	101
+B    |	15.6 |	97
+B    |	15.4 |	151
+C    |	4.0  |	403
+A    |	11.9 |	149
+
+@[t;`sym; :; `AAPL`GOOG`GOOG`IBM`AAPL]
+
+sym   | price | size
+-------------------
+AAPL  |	11.2 |	101
+GOOG  |	15.6 |	97
+GOOG  |	15.4 |	151
+IBM   |	4.0  |	403
+AAPL  |	11.9 |	149
+```
+
+### [@ Operator] update the price with the volume traded (price * size) without using an update statement
+```q
+@[t;`price;{x*y}; @[t;`size]]
+
+sym | price | size
+-------------------
+AAPL| 1131.2| 101
+GOOG| 1513.2| 97
+GOOG| 2325.4| 151
+IBM | 1612.0| 403
+AAPL| 1773.1| 149
+```
+
+### [@ Operator] permanently key the table by the sym column
+
+```q
+.[!;(1;`t)]
+
+sym  | price  size
+------------------
+AAPL | 11.2   101
+GOOG | 15.6   97
+GOOG | 15.4   151
+IBM  | 4.0    403
+AAPL | 11.9   149
+
+/ or
+
+.[xkey;(`sym;`t)]
+
+sym  | price  size
+------------------
+AAPL | 11.2   101
+GOOG | 15.6   97
+GOOG | 15.4   151
+IBM  | 4.0    403
+AAPL | 11.9   149
+
+```
+### [@ Operator] extract the price and size for IBM from the table
+
+```q
+.[t; (`IBM;`price`size)]
+4f
+403
+```
+
 
 
 [Top](#top)
