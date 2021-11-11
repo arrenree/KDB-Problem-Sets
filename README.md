@@ -11,6 +11,7 @@
 8. [Adverbs](#adverbs)
 9. [Attributes](#attributes)
 10. [Joins](#joins)
+11. [@ & . Operator](#at)
 
 <hr>
 
@@ -2700,7 +2701,66 @@ t2 uj t1
 / need to use uj to show all data for all syms
 ```
 
+<a name="at"></a>
+### 🔴 @ & . Operator
+[Top](#top)
 
+### [@ Operator] Problem Set from AQ
+```q
+list1: 1 2 3 4 5 6 7 8 9 10
+list2:((1 2 3 4; 4 3 2 1);(5 6 7 8;25 36 49 64); (9 10; 11 12); (13 14 15; 16 17 18; 19 20 21))
+```
+### [@ Operator] use @ operator to retrieve elements at index 3, 6 and 7 from list1
+```q
+@[list1;3 6 7]
+4 7 8
+```
+
+### [@ Operator] use @ and . to retrieve value 11 from list2
+```q
+list2
+(1 2 3 4;4 3 2 1)
+(5 6 7 8;25 36 49 64)
+(9 10; 11 12)
+(13 14 15; 16 17 18; 19 20 21)
+
+.[list2; 2 1 0]
+11
+```
+
+### [@ Operator] return the first list from each nested list in list2
+```q
+.[list2;(::;0)]
+1 2 3 4
+5 6 7 8
+9 10
+13 14 15
+
+/ :: return in place
+```
+
+### [@ Operator] calc the square of number at index 1 and 3 of list1
+```q
+@[list1;1 3;{x*x}]
+1 4 3 16 5 6 7 8 9 10
+
+/ still returns list1, but replaces values at index pos
+/ 1 and 3 with their squares (2 -> 4 and 4-> 16)
+```
+
+### [@ Operator] add 5 to all items at odd indices of list1
+
+```q
+@[list1; where mod[til count list1;2];+; 5]
+1 7 3 9 5 11 7 13 9 15
+```
+### [@operator] add "..." to the end of each word for ("quick","brown","fox")
+```q
+@[("quick";"brown";"fox");0 1 2;,[;"..."]]
+"quick..."
+"brown..."
+"fox..."
+```
 
 
 [Top](#top)
