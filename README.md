@@ -999,7 +999,7 @@ r13	  | 557 704 944 867 1681 674 1152
 ```
 
 <a name="tables"></a>
-### 🔴 Tables
+### 🔴 5. Tables
 [Top](#top)
 
 ### [table] what is the difference between a table and a keyed table?
@@ -1595,7 +1595,7 @@ update d: ({exec max num from active where ex=x`ex, time within x`start`end} eac
 ```
 
 <a name="functions"></a>
-### 🔴 Functions
+### 🔴 6. Functions
 [Top](#top)
 
 ### [func] Functions Problem Set AQUA Q
@@ -1709,6 +1709,191 @@ f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, tim
 / you want to filter the LAST PRICE by sym, then
 / you want to filter the MAX TIMESTAMP by the date
 ```
+### [func] More Complicated problem set - AquaQ
+
+```q
+/ 1 create function takes 3 parameters (startdate, enddate, symbols) which extracts the trade data 
+/ for the date range and symbol list
+
+tradeticks:{[startdate;enddate;symbols] 
+            select date, sym, time, size, price 
+            from trade
+            where date within (startdate;enddate), sym in symbols}
+            
+tradeticks[2021.11.03;2021.11.04;`MS]
+
+date      sym time         size  price
+--------------------------------------
+2021-11-03 MS 09:30:01.423 63000 58.46
+2021-11-03 MS 09:30:01.768 95500 81.06
+2021-11-03 MS 09:30:01.928 13400 82.90
+
+/ hints:
+/ date range = date within startdate/enddate
+/ symbol list = sym in list of symbols
+```
+```q
+/ 2.1 extracting temporal data from timestamp
+/ assume table called depth
+
+depth
+time                       sym  price
+-------------------------------------
+2021-11-07T08:04:21.425000 YHOO 33.99
+2021-11-07T08:14:59.215000 ORCL 35.16
+2021-11-07T08:21:30.944000 NOK  42.01
+
+meta depth
+
+c    |t|f|a
+------------
+time	|p| |		
+sym	|s| |g
+bid1	| |f|		
+
+/ time column is datatype p = timestamp
+
+/ extract the timestamp
+
+select time from depth
+
+time
+--------------------------
+2021-11-07T08:04:21.425000
+2021-11-07T08:14:59.215000
+2021-11-07T08:21:30.944000
+
+/ extract the date from timestamp
+
+select `date$time from depth
+
+time
+----------
+2021-11-07
+2021-11-07
+2021-11-07
+
+/ extract the time from timestamp
+
+select time.time from depth
+select `time$time from depth
+
+time
+------------
+08:04:21.425
+08:14:59.215
+08:21:30.944
+```
+
+```q
+/2 create func2, which adds additional parameters: start time and end time. 
+/ this func will only extract the trades that fall within time range
+/ hint - need to extract the time portion from timestamp e.g time.time or `time$time
+
+tradeticks2:{[startdate;enddate;symbols;starttime;endtime] 
+            select date, sym, time, size, price 
+            from trade
+            where date within (startdate;enddate), sym in symbols,
+            `time$time within (starttime;endtime)}
+
+tradeticks2[2021.11.03;2021.11.04;`MS; 09:30:00;09:31:00]
+
+date      sym time         size  price
+--------------------------------------
+2021-11-03 MS 09:30:17.569 11400 79.89
+2021-11-03 MS 09:30:17.573 18400 96.09
+2021-11-03 MS 09:30:21.264 8500 101.73
+
+/ so in this case, time is in the temporal format of 2021.01.01D09:00:00
+/ need to extract only the time portion
+/ so that your argument inputs for starttime;endtime make sense
+```
+```q
+/3 create function which is same as func1, but uses a start timestamp and end timestamp as the parameters
+/ it should query across the date boundaries (should include all ticks within that period)
+/ make sure it uses date partitions correctly. date portion should be run first and separately from timestamp query
+
+tradeticks3:{[starttimestamp;endtimestamp;symbols] 
+            select date, sym, time, size, price 
+            from trade 
+            where date within `date$(starttimestamp;endtimestamp), sym in symbols,
+            time within (starttimestamp;endtimestamp)}
+
+/ inputs are timestamps, which include date+time
+/ need to filter first by date within the timestamp
+/ then time within the timestamp
+
+tradeticks3[2021.11.07D09:00;2021.11.07D10:00;`AAPL]
+
+date       sym  time         size  price
+----------------------------------------
+2021-11-07 AAPL 09:30:21.088 20600 62.30
+2021-11-07 AAPL 09:30:21.490 900   59.15
+2021-11-07 AAPL 09:30:22.052 1500  95.94
+
+```
+```q
+/ i dont get this
+
+/4 Update func3 such that if the start timestamp is = first second of day, and end timestamp = last second of day
+/ then it doesnt execute the where filter on the time column
+
+/ hint start of day timestamp = 1d xbar timestamp or
+/ `timestamp$00:00+`date$timestamp
+/ to get endtime, subtract 1 from the start of next date
+/ -1+`timestamp$1+`date$endtimestamp
+tradeticks3:{[starttimestamp;endtimestamp;symbols] 
+            $[starttimestamp=`timestamp$00:00+`date$starttimestamp)and
+            (endtimestamp=-1+`timestamp$1+`date$endtimestamp);
+            /call tradeticks
+            tradeticks[`date\$starttimestamp;`date$endtimestamp;symbols];
+            /call tradetick3
+            tradeticks3[starttimestamp;endtimestamp;symbols]]}
+```
+### Complicated Problem Set - AQ
+```q
+/ 1 write a func that calc the avg spread between bid and ask per date 
+/ and sym from the quote table for a given date range and sym list
+
+avgspread:{[startdate;enddate;symbols]
+           select avgspread:avg ask-bid
+	   by date, sym
+	   from quote
+	   where date within (startdate;enddate), sym in symbols}
+
+avgspread[2021.11.09;2021.11.11;`GOOG]
+
+date       | sym  | avgspread
+-----------------------------
+2021-11-09 | GOOG | 1.59
+2021-11-10 | GOOG | 1.60
+2021-11-11 | GOOG | 1.60
+```
+
+```q
+/ 2 create func, dailystats1, which calcs the HLOC values for a given date range and list of instruments
+
+/ HLOC buckets by date and sym
+
+dailystats1: {[startdate;enddate;symbols]
+              select high: max price, low:min price, open: first price,
+              close: last price
+              by date, sym
+              from trade
+              where date within (startdate;enddate), sym in symbols}
+
+dailystats1[2021.10.01;2021.11.11;`AAPL]
+
+date       | sym  | high  | low  | open | close
+-------------------------------------------------
+2021-11-07 | AAPL | 109.9 | 50.0 | 78.6 | 68.0
+2021-11-08 | AAPL | 109.9 | 50.0 | 60.8 | 90.4
+2021-11-09 | AAPL | 109.9 | 50.0 | 55.1	| 77.0
+2021-11-10 | AAPL | 109.9 | 50.0 | 72.2	| 93.3
+2021-11-11 | AAPL | 109.9 | 50.0 | 62.3	| 76.1
+```
+
+
 
 <a name="qsql"></a>
 ### 🔴 qSQL
@@ -1867,149 +2052,6 @@ update mark:5+mark from `marks where class="A",subject=`french
 
 /15 add new col called average, contains average mark for class and subject
 update average:avg mark by class, subject from marks 
-```
-
-### [func] More Complicated problem set - AquaQ
-
-```q
-/ 1 create function takes 3 parameters (startdate, enddate, symbols) which extracts the trade data 
-/ for the date range and symbol list
-
-tradeticks:{[startdate;enddate;symbols] 
-            select date, sym, time, size, price 
-            from trade
-            where date within (startdate;enddate), sym in symbols}
-            
-tradeticks[2021.11.03;2021.11.04;`MS]
-
-date      sym time         size  price
---------------------------------------
-2021-11-03 MS 09:30:01.423 63000 58.46
-2021-11-03 MS 09:30:01.768 95500 81.06
-2021-11-03 MS 09:30:01.928 13400 82.90
-
-/ hints:
-/ date range = date within startdate/enddate
-/ symbol list = sym in list of symbols
-```
-```q
-/ 2.1 extracting temporal data from timestamp
-/ assume table called depth
-
-depth
-time                       sym  price
--------------------------------------
-2021-11-07T08:04:21.425000 YHOO 33.99
-2021-11-07T08:14:59.215000 ORCL 35.16
-2021-11-07T08:21:30.944000 NOK  42.01
-
-meta depth
-
-c    |t|f|a
-------------
-time	|p| |		
-sym	|s| |g
-bid1	| |f|		
-
-/ time column is datatype p = timestamp
-
-/ extract the timestamp
-
-select time from depth
-
-time
---------------------------
-2021-11-07T08:04:21.425000
-2021-11-07T08:14:59.215000
-2021-11-07T08:21:30.944000
-
-/ extract the date from timestamp
-
-select `date$time from depth
-
-time
-----------
-2021-11-07
-2021-11-07
-2021-11-07
-
-/ extract the time from timestamp
-
-select time.time from depth
-select `time$time from depth
-
-time
-------------
-08:04:21.425
-08:14:59.215
-08:21:30.944
-```
-
-```q
-/2 create func2, which adds additional parameters: start time and end time. 
-/ this func will only extract the trades that fall within time range
-/ hint - need to extract the time portion from timestamp e.g time.time or `time$time
-
-tradeticks2:{[startdate;enddate;symbols;starttime;endtime] 
-            select date, sym, time, size, price 
-            from trade
-            where date within (startdate;enddate), sym in symbols,
-            `time$time within (starttime;endtime)}
-
-tradeticks2[2021.11.03;2021.11.04;`MS; 09:30:00;09:31:00]
-
-date      sym time         size  price
---------------------------------------
-2021-11-03 MS 09:30:17.569 11400 79.89
-2021-11-03 MS 09:30:17.573 18400 96.09
-2021-11-03 MS 09:30:21.264 8500 101.73
-
-/ so in this case, time is in the temporal format of 2021.01.01D09:00:00
-/ need to extract only the time portion
-/ so that your argument inputs for starttime;endtime make sense
-```
-```q
-/3 create function which is same as func1, but uses a start timestamp and end timestamp as the parameters
-/ it should query across the date boundaries (should include all ticks within that period)
-/ make sure it uses date partitions correctly. date portion should be run first and separately from timestamp query
-
-tradeticks3:{[starttimestamp;endtimestamp;symbols] 
-            select date, sym, time, size, price 
-            from trade 
-            where date within `date$(starttimestamp;endtimestamp), sym in symbols,
-            time within (starttimestamp;endtimestamp)}
-
-/ inputs are timestamps, which include date+time
-/ need to filter first by date within the timestamp
-/ then time within the timestamp
-
-tradeticks3[2021.11.07D09:00;2021.11.07D10:00;`AAPL]
-
-date       sym  time         size  price
-----------------------------------------
-2021-11-07 AAPL 09:30:21.088 20600 62.30
-2021-11-07 AAPL 09:30:21.490 900   59.15
-2021-11-07 AAPL 09:30:22.052 1500  95.94
-
-```
-```q
-/ i dont get this
-
-/4 Update func3 such that if the start timestamp is = first second of day, and end timestamp = last second of day
-/ then it doesnt execute the where filter on the time column
-
-/ hint start of day timestamp = 1d xbar timestamp or
-/ `timestamp$00:00+`date$timestamp
-/ to get endtime, subtract 1 from the start of next date
-/ -1+`timestamp$1+`date$endtimestamp
-tradeticks3:{[starttimestamp;endtimestamp;symbols] 
-            $[starttimestamp=`timestamp$00:00+`date$starttimestamp)and
-            (endtimestamp=-1+`timestamp$1+`date$endtimestamp);
-            /call tradeticks
-            tradeticks[`date\$starttimestamp;`date$endtimestamp;symbols];
-            /call tradetick3
-            tradeticks3[starttimestamp;endtimestamp;symbols]]}
-
 ```
 
 <hr>
