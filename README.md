@@ -2,7 +2,7 @@
 <a name="top"></a>
 
 1. [General Knowledge / System](#gen)
-2. [Casting / Datatypes / Temporal](#cast)
+2. [Casting / Datatypes / Temporal/ Enumeration](#cast)
 3. [Lists](#list)
 4. [Dictionary](#dictionary)
 5. [Tables](#tables)
@@ -15,7 +15,7 @@
 <hr>
 
 <a name="gen"></a>
-### 🔴 General Knowledge / System
+### 🔴 1. General Knowledge / System
 [Top](#top)
 
 ### [gen] What is an Atom vs a List?
@@ -23,6 +23,15 @@
 ```q
 An atom - is an irreducible value of a specific data type
 A list -  is an ordered sequence of items
+```
+
+### [gen] What is the difference between a sym and a string?
+
+```q
+A sym -  is an atomic entity holding text. Represented with a back tick. 
+Smaller in size than a char.
+
+A string - is a list of chars. Represented by " " double parathesis
 ```
 
 ### [gen] Order of Operations
@@ -59,7 +68,7 @@ $   / cast, enumerate
 ### [gen] What is a dictionary and a table? How are they related?
 
 ```q
-Dictionaries are a data structure that maps from a domain to a range of values. 
+Dictionaries are data structures that map from a domain of keys to a range of values. 
 Contains a ! to separate keys and values.
 
 A table is a flipped dictionary. Vectors of data are organized by columns. 
@@ -212,101 +221,99 @@ ric  | size
 AAPL | 120
 ```
 
-
 <hr>
 
 <a name="cast"></a>
-### 🔴 Casting / Datatypes / Temporal
+### 🔴 2. Casting / Datatypes / Temporal
 [Top](#top)
 
 
-### [cast] What is the difference between a sym and a string?
-
-```q
-A sym -  is an atomic entity holding text. Represented with a back tick. 
-Smaller in size than a char.
-
-A string - is a list of chars. Represented by " " double parathesis
-```
-
-### [cast] What is casting? Cast an int to a float
-
+### [cast] What is casting?
 ```q
 casting converts one datatype to another
 ```
 
+### [cast] Show 3 ways to conver float 4.5 to an integer
 ```q
-`int$3.0 / cast float to int
-3
+`int$4.5
+"i"$4.5
+6h$4.5
 ```
-
-<hr> 
 
 ### [cast] What happens when you cast a date to an int?
 
 ```q
 `int$2000.10.04
 3
+
 / casts as dates from 2000.01.01
 ```
-
-<hr> 
 
 ### [cast] Convert syms a b c to a String
 
 ```q
 string `a`b`c
 ("a","b","c")
+
 / simply use the string function
 ```
-
-<hr>
 
 ### [cast] How do you cast a string to a sym?
 
 ```q
+
+/ a string is a list of chars
+
 `$"a","b","c"
 "S"$"a","b","c"
 `abc
 ```
 
-<hr> 
-
 ### [cast] Cast the Following
 
 ```q
-/ "2014.01.01" to a date
+/ cast "2014.01.01" to a date
 
 "D" $ "2014.01.01"
 -14h
 
 / "2014.01.01" was originally a string
 / use capital "D" to cast strings to date
+```
 
-/ `2013.01.01 to a date
+```q
+/ cast `2013.01.01 to a date
 
 "D" $ string `2013.01.01
 
 / `2013.01.01 is a sym
 / requires first to cast to string, then cast to date
+```
 
-/ 3.14 to an int
+```q
+/ cast 3.14 to an int
 
 `int $ 3.14 
 3
 
 / note rounding for ints
 / alternatively "I" $ 3.14
+```
 
-/ "abcde" to a sym
+```q
+/ cast "abcde" to a sym
 
 `$"abcde"
+
+/ can simply use backtick to cast to sym
 ```
 
 ### [cast] What is parsing?
+```q
+/ parsing is converting a string to another datatype.
+```
 
-Parsing is converting a string to another datatype.
-
+### [cast] Given mixed list L: ("100.1";"hello";"10"), convert elements to float, char, and int
 ```q
 l:("1.00001"; "200"; "3.1417")
 "FIF"$l
@@ -316,11 +323,20 @@ l:("1.00001"; "200"; "3.1417")
 3.1417 / float
 ```
 
-### [cast] what do you get dates when casting int to date?
+### [cast] Given strings "2001.02.02" and "2003.08.09", parse the strings into KDB dates
+```q
+"D"$("2001.02.02";"2003.08.09")
+
+/ these are strings which you are trying to parse into the date datatype
+/ have to use upper case when parsing
+```
+
+
+
+### [cast] why do you get dates when casting int to date?
 
 ```q
-
-dates are stored as integers (days) from 2000.01.01
+/ dates are stored as integers (days) from 2000.01.01
 ```
 
 ### [temporal] Get today's date store it as variable d
@@ -333,7 +349,7 @@ d: .z.d
 ### [temporal] Calculate the number of days since last christmas
 
 ```q
-d-2020.12.25
+d - 2020.12.25
 311i
 
 / can use algebra with dates (ints underneath)
@@ -368,6 +384,7 @@ s:s1, " ",s2
 
 s?"w"
 6
+/ utilize the ? find operator to search index position within string
 
 / find index positions of all "l" in s
 
@@ -388,6 +405,30 @@ world of warcraft
 ssr[s;"hello ";""], " of warcraft"
 world of warcraft
 ```
+### [enumeration] Create an enumeration t2 containing values p q r that is restricted to domain t1
+
+```q
+t1: `symbol$()
+t2: `t1$`p`q`r
+
+/ t2 is now an enumeration which only contain domain t1 (syms)
+```
+
+### [enumeration] Insert new value `u into t2
+
+```q
+t2,:`u
+error
+
+/ since t2 is restricted to domain t1, need to first add `u into t1 before adding to t2
+
+t1,:`u
+t2,:`u
+`p`q`r`u
+
+/ now it works
+```
+
 ## [datatypes] Turn 2 lists of symbols into one longer list. 
 
 ```q
@@ -425,7 +466,7 @@ S1,'S2 / using EACH BOTH joins each element of s1 to each element of s2
 <hr>
 
 <a name="list"></a>
-### 🔴 Lists
+### 🔴 3. Lists
 [Top](#top)
 
 
@@ -587,7 +628,7 @@ sum users where platform in `gameboy
 ```
 
 <a name="dictionary"></a>
-### 🔴 Dictionary
+### 🔴 4. Dictionary
 [Top](#top)
 
 ### How do you upsert different keys/values from the original dict's datatype?
