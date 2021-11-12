@@ -464,6 +464,22 @@ S1,'S2 / using EACH BOTH joins each element of s1 to each element of s2
  `AAPL.O`IBM.N`VOD.L
 ```
 
+### How do you convert a list of syms to strings?
+
+```q
+string `a`b`c
+"a","b","c"
+```
+
+### How do you convert a list of strings to a list of chars?
+
+```q
+raze string `a`b`c
+"abc"
+
+/ use raze function to collapse 1 layer
+```
+
 <hr>
 
 <a name="list"></a>
@@ -471,16 +487,18 @@ S1,'S2 / using EACH BOTH joins each element of s1 to each element of s2
 [Top](#top)
 
 
-### [list] Create Empty List d
+### [list] Problem Set (easy)
+
 ```q
+/1 create Empty List d
 
 d: ()
 
-/ redefine d to be empty list of type integer
+/2 redefine d to be empty list of type integer
 
 d: `int $ ()
 
-/ add 5 random elements to d
+/3  add 5 random elements to d
 
 d, 5 ? til 10
 
@@ -526,10 +544,8 @@ l+: til count l
 / count l = 20 elements in list l
 / til 20 = 0 - 19, gives you the index position
 / so now you have 2 lists, just need to add together
-```
-### [list] How many even numbers are there? 
 
-```q
+/2 How many even numbers are there? 
 
 l mod 2
 1 1 0 1 0 1 1 0 0 1 0 1 0 1 0 1 0 1 1 0
@@ -542,7 +558,7 @@ count where not l mod 2
 
 / not = 0, so counts all the 0s (even numbers)
 ```
-### [list] Creating Matrix
+### [list] Matrix Problem Set
 
 ```q
 m:(1 2 3; 4 5 6; 7 8 9)
@@ -550,27 +566,27 @@ m:(1 2 3; 4 5 6; 7 8 9)
 4 5 6
 7 8 9
 
-/ get middle column of m and save it as new variable a
+/1 get middle column of m and save it as new variable a
 
 a: m[;1]
 
 / [row;column]
 / blank for row; 1 = index position 2, so 2nd row
 
-/ replace middle row of me with a
+/2 replace middle row of me with a
 
 m[1]:a
 
 / [row;column] 
 / index position 1 = 2nd row
 
-/ transpose m and store as mm
+/3 transpose m and store as mm
 
 mm: flip m
 
 / transpose is a fancy way of saying flip
 
-/ join extra row to mm, consisting of all 10s
+/4 join extra row to mm, consisting of all 10s
 
 mm,: 3#10
 
@@ -584,48 +600,126 @@ mm,: 3#10
 
 nest: (1 2 3; `a`c`b;10 11 12 14f; 100011b)
 
-/ find the datatype of each row
+/1 find the datatype of each row
 
 type each nest
 
-/ collapse this nested list
+/2 collapse this nested list
 
 raze nest
 ```
 
-### [list] list problem set
+### [list] Calculate the average size where price is greater than 5
+
+```q
+size: 100 300 50 70
+price: 4 8 6 2
+
+avg size where price > 5
+```
+
+### [list] List Problem Set AQ
 ```q
 games:`crash`streets`echo`crash2`sonic`micro`pokemon`supermario`bomber`zelda
 platform: `ps1`sega`sega`ps1`sega`ps1`gameboy`gameboy`sega`gameboy
 level: (7 9 6i; 2 5i; 4 4i; 10 2 1i; 1 10i; 8i; 0 3i; 6 0i; 8 4i; 1 10i)
 
-/ count number of users per game
+/1 count number of users per game
 
 users: count each level
 3 2 2 3 2 1 2 2 2 2
 
-/ calc average user level each game
+/2 calc average user level each game
 
 userlevel: avg each level
 7.3 3.5 4 4.3 5.5 8 1.5 3 6 5.5
 
-/ create boolean list indicating where avg user level > 6
+/3 create boolean list indicating where avg user level > 6
 
 6 < avg each level
 1000010000b
 
-/ calc games where avg user level > 6
+/4 calc games where avg user level > 6
 
 games where 6 < avg each level
 `crash`micro
 
-/ sum the users for each platform. which one most popular?
+/5 sum the users for each platform. which one most popular?
 
 sum users where platform in `ps1
 sum users where platform in `sega
 sum users where platform in `gameboy
 
 / sum the total count where column platform = ps1, etc.
+```
+
+### [list] what is the difference between 3 ? 10 and 3 ? 10 20 30
+
+```q
+/ atom ? atom
+3 ? 10
+
+/ returns 3 random numbers from 0-10
+
+/ atom ? list
+3 ? 10 20 30
+10 10 30
+
+/ returns 3 random numbers from the list
+```
+
+### [list] List Problem Set - TS
+
+```q
+/1 Retrieve the first 3 items from list p
+
+p: 100 200 300 400 500 600
+t: "say hello world to bob"
+m: (1 2 3; 10 20 30; 100 200 300)
+
+3#p
+100 200 300
+/ use # take function to retrieve items from list
+
+/2 From t, retrieve the list "sold"
+
+t[0 8 6 14]
+"sold"
+/ retrieving characters from their index position
+
+/3 Create the nested list ("shoot";"bob") by indexing into t
+
+t?"shoot"
+0 4 8 8 16
+/ find index positions of each element in string "shoot"
+
+t? "bob"
+19 8 19
+/ find index positions of each element in string "bob"
+
+t(0 4 8 8 16; 19 8 19)
+("shoot";"bob")
+
+/ you are finding the index locations of those chars from list t
+/ then retrieving those index positions (letters) to spell out 
+/ retrieve values using index position of a nested list
+/ notice use parathesis ( ) instead of square bracket [ ]
+
+/4 Change the last number in p to 1000
+
+p[5]: 1000
+/ upsert. find index location 5, replace value with 1000
+
+/5 Find the 3 highest numbers in p
+
+3#desc p
+100 500 400
+/ take 3 numbers from descending list p
+
+/6 Find values of p that are below the mean
+
+p where p<avg p
+100 200 300 400
 ```
 
 <a name="dictionary"></a>
