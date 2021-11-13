@@ -1066,6 +1066,9 @@ avg each d3
 /7 find the max temp for belfast
 
 max d3[`belfast]
+/ or
+max d3`belfast
+12
 ```
 
 ```q
