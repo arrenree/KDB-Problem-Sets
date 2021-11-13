@@ -76,7 +76,6 @@ A table is a flipped dictionary. Vectors of data are organized by columns.
 Tables are encased by parathesis ( ) and contain brackets [ ] which assigns the key.
 ```
 
-
 ### [system] show all variables definied in current session of q
 
 ```q
@@ -189,9 +188,6 @@ ric    |brokerside | brokerquantity
 
 / this is the end result. these are the lines where you can cross 
 ```
-
-<hr>
-
 ### [system] Netting off buys and sells from same Stock
 
 ```q
@@ -273,7 +269,7 @@ string `a`b`c
 ### [cast] Cast the Following
 
 ```q
-/ cast "2014.01.01" to a date
+/1 cast "2014.01.01" to a date
 
 "D" $ "2014.01.01"
 -14h
@@ -283,7 +279,7 @@ string `a`b`c
 ```
 
 ```q
-/ cast `2013.01.01 to a date
+/2 cast `2013.01.01 to a date
 
 "D" $ string `2013.01.01
 
@@ -292,7 +288,7 @@ string `a`b`c
 ```
 
 ```q
-/ cast 3.14 to an int
+/3 cast 3.14 to an int
 
 `int $ 3.14 
 3
@@ -302,7 +298,7 @@ string `a`b`c
 ```
 
 ```q
-/ cast "abcde" to a sym
+/4 cast "abcde" to a sym
 
 `$"abcde"
 
@@ -331,8 +327,6 @@ l:("1.00001"; "200"; "3.1417")
 / these are strings which you are trying to parse into the date datatype
 / have to use upper case when parsing
 ```
-
-
 
 ### [cast] why do you get dates when casting int to date?
 
@@ -375,30 +369,36 @@ d - 2020.12.25
 ```q
 s1: "hello"
 s2: "world"
-
-/ join the 2 strings together and save to s
+```
+```q
+/2 join the 2 strings together and save to s
 
 s:s1, " ",s2
 "hello world"
-
-/ find index position of "w"
+```
+```q
+/3 find index position of "w"
 
 s?"w"
 6
 / utilize the ? find operator to search index position within string
+```
 
-/ find index positions of all "l" in s
+```q
+/4 find index positions of all "l" in s
 
 ss[s;"l"]
 2 3 9
 
 / ss = search string function. returns index position
-
-/ find index position of last l
+```
+```q
+/5 find index position of last l
 
 last ss[s;"l"]
-
-/ remove "hello" and add " of warcraft" to s
+```
+```q
+/6 remove "hello" and add " of warcraft" to s
 
 ssr["hello world"; "hello ";""], " of warcraft"
 world of warcraft
@@ -406,6 +406,7 @@ world of warcraft
 ssr[s;"hello ";""], " of warcraft"
 world of warcraft
 ```
+
 ### [enumeration] Create an enumeration t2 containing values p q r that is restricted to domain t1
 
 ```q
@@ -493,16 +494,18 @@ raze string `a`b`c
 /1 create Empty List d
 
 d: ()
-
+```
+```q
 /2 redefine d to be empty list of type integer
 
 d: `int $ ()
-
+```
+```q
 /3  add 5 random elements to d
 
 d, 5 ? til 10
 
-/ 5?til 10 = randomly select 5 numbers from 0-9
+/ 5 ? til 10 = randomly select 5 numbers from 0-9
 / d , joins these 2 lists, thereby adding into list
 ```
 
@@ -523,17 +526,23 @@ l: 20 ? 3_til 31
 
 / drop first 3 elements, so range is 3-30
 / alternatively can do 1:20?3+til 28
-
-/ find the 20th number in list l
+```
+```q
+/2 find the 20th number in list l
 
 l[19]
 
 / use indexing to retrieve 19th index position = 20th number
 / since starts on 0
+```
 
-/ are any of these numbers in the list? 3 5 7 11 13 17
+```q
+/3 are any of these numbers in the list? 3 5 7 11 13 17
 
 3 5 7 11 13 17 in l
+0011001
+
+/ will return list of booleans
 ```
 
 ### [list] Add each element of l to its index position. for ex, 0 to index 0, 1 to index 1, etc.
@@ -544,7 +553,8 @@ l+: til count l
 / count l = 20 elements in list l
 / til 20 = 0 - 19, gives you the index position
 / so now you have 2 lists, just need to add together
-
+```
+```q
 /2 How many even numbers are there? 
 
 l mod 2
@@ -572,26 +582,31 @@ a: m[;1]
 
 / [row;column]
 / blank for row; 1 = index position 2, so 2nd row
+```
 
-/2 replace middle row of me with a
+```q
+/2 replace middle row of m with a
 
 m[1]:a
 
 / [row;column] 
 / index position 1 = 2nd row
+```
 
+```q
 /3 transpose m and store as mm
 
 mm: flip m
 
 / transpose is a fancy way of saying flip
+```
 
+```q
 /4 join extra row to mm, consisting of all 10s
 
 mm,: 3#10
 
 / the syntax ,: appends items to list
-
 ```
 
 ### [list] Nested Lists
@@ -603,7 +618,8 @@ nest: (1 2 3; `a`c`b;10 11 12 14f; 100011b)
 /1 find the datatype of each row
 
 type each nest
-
+```
+```q
 /2 collapse this nested list
 
 raze nest
@@ -628,22 +644,34 @@ level: (7 9 6i; 2 5i; 4 4i; 10 2 1i; 1 10i; 8i; 0 3i; 6 0i; 8 4i; 1 10i)
 
 users: count each level
 3 2 2 3 2 1 2 2 2 2
-
+```
+```q
 /2 calc average user level each game
 
 userlevel: avg each level
 7.3 3.5 4 4.3 5.5 8 1.5 3 6 5.5
+```
 
+```q
 /3 create boolean list indicating where avg user level > 6
 
 6 < avg each level
 1000010000b
 
+/ or
+
+userlevel > 6
+1000010000
+```
+
+```q
 /4 calc games where avg user level > 6
 
 games where 6 < avg each level
 `crash`micro
+```
 
+```q
 /5 sum the users for each platform. which one most popular?
 
 sum users where platform in `ps1
@@ -659,7 +687,7 @@ sum users where platform in `gameboy
 / atom ? atom
 3 ? 10
 
-/ returns 3 random numbers from 0-10
+/ returns 3 random numbers from 0-9
 
 / atom ? list
 3 ? 10 20 30
@@ -680,13 +708,22 @@ m: (1 2 3; 10 20 30; 100 200 300)
 3#p
 100 200 300
 / use # take function to retrieve items from list
+```
 
+```q
 /2 From t, retrieve the list "sold"
+
+t?"sold"
+0 8 6 14
+
+/ find the index position where the character exists
 
 t[0 8 6 14]
 "sold"
-/ retrieving characters from their index position
 
+/ then retrieve it using indexing to return "sold"
+```
+```q
 /3 Create the nested list ("shoot";"bob") by indexing into t
 
 t?"shoot"
@@ -704,18 +741,23 @@ t(0 4 8 8 16; 19 8 19)
 / then retrieving those index positions (letters) to spell out 
 / retrieve values using index position of a nested list
 / notice use parathesis ( ) instead of square bracket [ ]
-
+```
+```q
 /4 Change the last number in p to 1000
 
 p[5]: 1000
 / upsert. find index location 5, replace value with 1000
+```
 
+```q
 /5 Find the 3 highest numbers in p
 
 3#desc p
 100 500 400
 / take 3 numbers from descending list p
+```
 
+```q
 /6 Find values of p that are below the mean
 
 p where p<avg p
@@ -725,6 +767,172 @@ p where p<avg p
 <a name="dictionary"></a>
 ### 🔴 4. Dictionary
 [Top](#top)
+
+### [dict] What is a dictionary?
+```q
+a dictionary is a data structure that maps domains to a range of values. The keys and values are separated by !
+```
+
+### [dict] Dictionary Problem Set 1 (easy) TS
+```q
+/1 given the below dictionary, find the type, the keys, and its values
+
+d:`p`q`r`s!10 20 40 100
+
+key|value
+---------
+p  | 10
+q  | 20
+r  | 40
+s  | 100
+
+type d
+99h
+
+key d
+p q r s
+
+value d
+10 20 40 100
+```
+
+```q
+/2 add new entry u 200 to dict d
+
+d[`u]: 200
+
+key|value
+---------
+p  | 10
+q  | 20
+r  | 40
+s  | 100
+u  | 200
+
+/ upsert. will update if key exists, if not, will append it
+```
+
+```q
+/3 Change value of p to 2
+
+d[`p]:2
+
+key|value
+---------
+p  | 2
+q  | 20
+r  | 40
+s  | 100
+u  | 200
+```
+
+```q
+/4 Create dictionary d2, only containing values of p q r from dictionary d
+
+d2:`p`q`r#d
+
+key|value
+---------
+p  | 2
+q  | 20
+r  | 40
+
+/ use # take function to take values of p q r from dictionary d
+```
+
+```q
+/5 Add common elements in d2 and d, only return common keys and values
+
+d+d2
+
+key|value
+---------
+p  | 4
+q  | 40
+r  | 80
+s  | 100
+u  | 200
+
+/ adds all values together where there is a match in keys
+
+d inter d2
+2 20 40
+
+/ dict inter dict will return values occuring in both dicts
+
+key[d] inter k[d2]
+`p`q`r
+
+/ have to use key[dict_name] inter key[dict2_name] to return keys in both dict
+
+(key[d] inter key[d2]) # d + d2
+
+key|value
+---------
+p  | 4
+q  | 40
+r  | 80
+
+/ combining together, you take the keys occuring in both dict from d1 + d2
+/ and show its values
+```
+### [dict] Dictionary Problem Set 2 (Easy) - TS
+
+```q
+/1 Given the 2 dictionaries below, find those who are greater than 1.7m in height
+
+dheight:`john`mark`luke`paul`ian`peter!1.5 1.6 1.7 1.8 1.9 1.4
+dweight:`john`mark`luke`paul`ian`peter!81 72 88 91 55 110
+
+dheight
+key  | value
+------------
+john | 1.5
+mark | 1.6
+luke | 1.7
+paul | 1.8
+ian  | 1.9
+peter| 1.4
+
+dweight
+key  | value
+------------
+john | 81
+mark | 72
+luke | 88
+paul | 91
+ian  | 55
+peter| 110
+
+dheight > 1.7
+/ dictionary + condition = examines values as booleans, returns as true/false
+
+key  |value
+-----------
+john | 0b
+mark | 0b
+luke | 0b
+paul | 1b
+ian  | 1b
+peter| 0b
+
+where dheight > 1.7
+paul ian
+
+/ where = returns the keys
+```
+```q
+/2 Find the average height of people who weight over 90
+
+where dweight > 90
+paul peter
+
+dheight where dweight > 90
+1.8 1.4
+
+avg dheight where dweight > 90
+1.6
+```
 
 ### How do you upsert different keys/values from the original dict's datatype?
 
@@ -752,25 +960,27 @@ d@`a = 1
 d `a = 1
 ```
 
-<hr> 
-
 ### [dict] What happens when you try retrieving from a dictionary that has non-unique keys?
 
 ```q
 d: `a`b`c`a!1 2 3 4
-d[`a] = 1 / returns the first entry
-```
+d[`a] = 1 
 
-<hr> 
+/ returns the first entry
+```
 
 ### [dict] Take first 2 items from dict. retrieve value from key 'c
 
 ```q
 d: `a`b`c!1 2 3
-2 # d / returns a dictionary of first 2 rows
-(enlist `c) # d / have to use enlist when retrieving single domain
-```
+2 # d 
 
+/ returns a dictionary of first 2 rows
+
+(enlist `c) # d 
+
+/ have to use enlist when retrieving single domain
+```
 
 ### [dict] Dictionary Problem Set AquaQ
 
@@ -778,24 +988,24 @@ d: `a`b`c!1 2 3
 
 d1: `london`paris`athens`toronto`sydney`tokyo`chicago!0 1 2 -5 9 8 -6
 
-key      value
+key     | value
 ---------------
-london  |	0
-paris	  | 1
+london  | 0
+paris	| 1
 athens	| 2
 toronto	|-5
 sydney	| 9
-tokyo	  | 8
+tokyo	| 8
 chicago	|-6
 
-/ extract the hours for tokyo and athens
+/1 extract the hours for tokyo and athens
 
 d1[`tokyo`athens]
 8 2
 ```
 
 ```q
-/ if it's 12:30 in Paris, what time is it in Chicago?
+/2 if it's 12:30 in Paris, what time is it in Chicago?
 
 (d1`paris)-d1`chicago = 7
 
@@ -819,13 +1029,15 @@ d1[`tokyo`athens]
 
 / right to left
 ```
+
 ```q
-/ change London's time from 0 to 1
+/3 change London's time from 0 to 1
 
 d1[`london]:1
 ```
+
 ```q
-/ add in rome +1
+/4 add in rome +1
 
 d1[`rome]:1
 
@@ -835,22 +1047,29 @@ d1,:(enlist `rome)!enlist 1
 
 / when using join assign, must enlist if single atom!
 ```
+
 ```q
 d3:`belfast`cardiff`edinburg`london!(12 10 11 9; 11 10 10 10; 10 10 12 9; 15 12)
 
-/ what's the average temp in each city?
+/5 what's the average temp in each city?
 
 avg each d3
+```
 
-/ convert all temp from C to F (temp x 9/5 + 32)
+```q
+/6 convert all temp from C to F (temp x 9/5 + 32)
 
 (d3*(9%5))+32
+```
 
-/ find the max temp for belfast
+```q
+/7 find the max temp for belfast
 
 max d3[`belfast]
+```
 
-/ Given new dict d4, find max temp for belfast
+```q
+/8 Given new dict d4, find max temp for belfast
 
 d4:(enlist `temperature)!enlist d3
 
@@ -859,16 +1078,16 @@ max d4[`temperature;`belfast]
 / so d4 is a dict within a dict
 / first column = temperature
 / 2nd column is the entire dict of 3
-
-
-/ to add a row to d4:
+```
+```q
+/9 to add a row to d4:
 
 d4,:(enlist`rainfall)!enlist`belfast`cardiff`edinburgh`london!60 65 58 40
 ```
 ### [dict] Dictionary Problem Set (AquaQ)
 
 ```q
-/ create dictionary with letters from a-z with corresponding numbers
+/1 create dictionary with letters from a-z with corresponding numbers
 
 dict: .Q.a ! 1+til 26
 
@@ -877,28 +1096,33 @@ key value
 a  |  1
 b  |  2
 c  |  3
-...
 
 / .Q.a = returns list of lowercase alphabets
 ```
+
 ```q
-/ retrieve values of abc
+/2 retrieve values of abc
 
 dict "abc"
 1 2 3
+```
 
-/ sum values of abc
+```q
+/3 sum values of abc
 
 sum dict "abc"
 6
+```
 
-/ sum values of "yourname"
+```q
+/4 sum values of "yourname"
 
 sum dict "yourname"
 112
 ```
+
 ```q
-/ rename keys to capital letters
+/5 rename keys to capital letters
 
 dict:.Q.A ! value dict
 
@@ -912,8 +1136,9 @@ C  |  3
 / .Q.A = capital letters
 / value dict = retrieves existing values of dict
 ```
+
 ```q
-/ create another dict, change uppercase "HELLO WORLD" to lowercase
+/6 create another dict, change uppercase "HELLO WORLD" to lowercase
 
 dict2: .Q.A ! .Q.a
 
@@ -925,8 +1150,9 @@ dict2 "HELLO WORLD"
 / the uppcase letters act as KEYS
 / retrieves the lower case value
 ```
+
 ```q
-/ create dictionary morse, which contains letters n-s as keys, and a code for the values
+/7 create dictionary morse, which contains letters n-s as keys, and a code for the values
 
 morse: "nopqrs"! (10; 111; 0110; 1101;010;0)
 
@@ -941,18 +1167,19 @@ s	  0
 
 / the key is simply a string of chars
 / the values are just random "codes" you make up
-
-/ join numbers 0 to 4 onto the existing dictionary
+```
+```q
+/8 join numbers 0 to 4 onto the existing dictionary
 
 morse,:("01234")!(1; 10; 100; 1000; 10000)
 
-key value
+key| value
 ---------
-0	   1
-1	   10
-2	   100
-3	   1000
-4	   10000
+0  | 1
+1  | 10
+2  | 100
+3  | 1000
+4  | 10000
 
 / don't get confused, you add "01234" as strings, each with their own "codes"
 
@@ -962,10 +1189,10 @@ morse "sos"
 0 111 0
 
 / you are querying keys "sos" to retrieve associated values
-
 ```
+
 ```q
-/ create 2 dictionaries, one for r13, one for r12
+/9 create 2 dictionaries, one for r13, one for r12
 
 places:`london`edinbugh`belfast`manchester`tobermory`portsmouth`cardiff
 r13:557 704 944 867 1681 674 1152
@@ -977,87 +1204,92 @@ d2:(-1_places)!r12
 / have to drop last one since value length longer than keys
 
 d1
-key       value
-----------------
-london	   557
-edinbugh	 704
-belfast	   944
-manchester 867
-tobermory  1681
-portsmouth 674
-cardiff	   1152
+key       | value
+-----------------
+london	  | 557
+edinbugh  | 704
+belfast	  | 944
+manchester| 867
+tobermory | 1681
+portsmouth| 674
+cardiff	  | 1152
 
 d2
-key        value
-----------------
-london	   600
-edinbugh	 854
-belfast	   1020
-manchester 955
-tobermory	 1789
-portsmouth 544
-
-/ extract keys from first dictionary
-key d1
-
-extract values from first dictionary
-value d1
+key        | value
+------------------
+london	   | 600
+edinbugh   | 854
+belfast	   | 1020
+manchester | 955
+tobermory  | 1789
+portsmouth | 544
 ```
 ```q
-/ create new dict with sum of annual rainful over both years
+/10 extract keys from first dictionary
+key d1
+
+/11 extract values from first dictionary
+value d1
+```
+
+```q
+/12 create new dict with sum of annual rainful over both years
 
 d3: d1+d2
 
 d3
-key        value
+key        | value
 -----------------
-london	    600
-edinbugh	  854
-belfast	    1020
-manchester	955
-tobermory	  1789
-portsmouth	544
+london	   | 600
+edinbugh   | 854
+belfast	   | 1020
+manchester | 955
+tobermory  | 1789
+portsmouth | 544
 
 / can simply add together both dict since they are keyed (dict always keyed)
 / will find some keys, and add values together
 / if no match, will leave as is
 ```
+
 ```q
-/ find the average rainfall over the two years for each city
+/13 find the average rainfall over the two years for each city
 
 avg (d1;d2)
 
 / since the dict is keyed, can perform operations like avg easily
 
-key         value
+key         | value
 ------------------
-london	    578.5
-edinbugh	  779.0
-belfast	    982.0
-manchester	911.0
-tobermory 	1735.0
-portsmouth	609.0
-cardiff	    576.0
+london	    | 578.5
+edinbugh    | 779.0
+belfast	    | 982.0
+manchester  | 911.0
+tobermory   | 1735.0
+portsmouth  | 609.0
+cardiff	    | 576.0
 ```
+
 ```q
-/ which location had more rainfall over the 2 years?
+/14 which location had more rainfall over the 2 years?
 
 d1>d2
 
 / can simply use comparison operator to check if true or false
 
-key         value
+key        | value
 ------------------
-london	    0b
-edinbugh	  0b
-belfast	    0b
-manchester	0b
-tobermory	  0b
-portsmouth	1b
-cardiff	    1b
+london	   | 0b
+edinbugh   | 0b
+belfast	   | 0b
+manchester | 0b
+tobermory  | 0b
+portsmouth | 1b
+cardiff	   | 1b
 ```
+
 ```q
-/ find the average rainfall over the 2 years for the UK
+/15 find the average rainfall over the 2 years for the UK
 
 sum(d1+d2)%2
 6170.5
@@ -1068,7 +1300,7 @@ sum(d1+d2)%2
 ```
 
 ```q
-/ create a dict of variables in the workspace as keys, and values as values
+/16 create a dict of variables in the workspace as keys, and values as values
 
 system "v"
 
@@ -1084,12 +1316,12 @@ vars: (system "v")! (value each (system "v"))
 
 key   | value
 --------------------------------------------------------------------------
-d1	  | `lond`edin`bel`man`tober`port`cardiff!557 704 944 867 1681 674 1152
-d2	  | `lond`edin`bel`man`tober`port!600 854 1020 955 1789 544
-d3	  | `lond`edin`bel`man`tober`port`car!578.5 779 982 911 1735 609 576
+d1    | `lond`edin`bel`man`tober`port`cardiff!557 704 944 867 1681 674 1152
+d2    | `lond`edin`bel`man`tober`port!600 854 1020 955 1789 544
+d3    | `lond`edin`bel`man`tober`port`car!578.5 779 982 911 1735 609 576
 places| `lond`edin`bel`manc`tober`port`car
-r12	  | 600 854 1020 955 1789 544
-r13	  | 557 704 944 867 1681 674 1152
+r12   | 600 854 1020 955 1789 544
+r13   | 557 704 944 867 1681 674 1152
 ```
 
 <a name="tables"></a>
