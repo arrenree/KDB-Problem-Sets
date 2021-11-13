@@ -1338,7 +1338,179 @@ A table - is a flipped dictionary. Vectors of data are organized by columns.
 
 A keyed table - is a table of keyed records mapped to a table of value records.
 ```
-### [tables] Tables Problem Set 2 AQ
+
+### [table] show 3 ways to add rows to table cars
+```q
+/ empty table cars 
+
+cars:([] brand:`$();model:`$();date:`date$())
+
+/ method 1:
+
+`cars insert(`bmw;`505;2021.11.13)
+
+brand| model| date
+------------------------
+bmw  | 505  | 2021-11-13
+
+/ method 2:
+
+insert[`cars;(`audi;`s5;2021.11.13)]
+
+brand| model| date
+------------------------
+bmw  | 505  | 2021-11-13
+audi | s4   | 2021-11-13
+
+/ method 3:
+
+`cars upsert(`bmw;`505;2021.11.13)
+
+brand| model| date
+------------------------
+bmw  | 505  | 2021-11-13
+
+/ note - you cannot upsert multiple rows; have to upsert a dictionary
+```
+
+### [table] how do you add multiple rows into a table at once?
+```
+/ method 1
+
+`cars insert(`ferrari`benz;`F50`S500;2021.11.13 2021.11.13)
+
+brand  | model| date
+------------------------
+bmw    | 505  | 2021-11-13
+audi   | s4   | 2021-11-13
+ferrari| F50  | 2021-11-13
+benz   | S500 | 2021-11-13
+
+/ method 2:
+
+insert[`cars;(`ferrari`benz;`F500`S500;2021.11.13 2021.11.13)]
+
+brand  | model| date
+------------------------
+bmw    | 505  | 2021-11-13
+audi   | s4   | 2021-11-13
+ferrari| F50  | 2021-11-13
+benz   | S500 | 2021-11-13
+```
+
+### [table] how do you upsert multiple rows into a table?
+
+```q
+/ you cannot upsert multiple rows into a table
+/ instead must upsert a dictionary
+
+t:([]fruit:`apple`orange; price: 11 23; quantity:100 200)
+
+fruit | price | quantity
+--------------------
+apple |	11    |	100
+orange| 23    |	200
+
+`t upsert ([] fruit:`pear`banana; price: 20 30)
+
+fruit | price | quantity
+--------------------
+apple |	11    |	100
+orange| 23    |	200
+pear  |	20    |	
+banana|	30    |	
+
+/ notice you can skip columns when upserting (quantity left blank)
+
+```
+
+### [table] What are some common table functions?
+
+```q
+t:([] company:`ford`bmw; employees:300 100)
+t
+type t               / what datatypes the table is
+count t              / return total number of rows in table
+cols t               / retrieve list of column names
+meta t               / shows info on type, foreign keys, and attributes
+`employees xasc t    / sorts table by employee column
+```
+
+### [table] Show examples of union, except, and inter function on tables
+
+```q
+t:([] company:`ford`bmw`benz; employees:100 200 300)
+u: ([] company:`ford`bmw`ferrari; employees:100 200 400)
+
+table t
+company | employees
+-------------------
+ferrari | 100
+ford    | 100 
+rover   | 100
+
+table u
+company | employees
+--------------------
+ferrari | 100
+bmw     | 5 
+ford    | 5
+```
+
+```q
+/1 table union merges 2 tables together, but does NOT dupe values!
+
+t union u
+
+company | employees
+-------------------
+ferrari | 100
+ford    | 100 
+rover   | 100
+bmw     | 5 
+ford    | 5
+
+/ returns values that are same (ferrari 100) 
+/ does NOT dupe same values
+/ any values that do NOT equal, adds as new row
+/ ford = 100 and 5. so new tables contains both values
+```
+
+```q
+/2 except table = only returns values NOT found in both
+/ think of it as opposite of inner join
+
+t except u / returns item in t NOT in u
+
+benz 300
+```
+
+```q
+t inter u / returns only common elements in both t and u
+
+ford 100
+bmw 200
+```
+
+### [table] Show how to append using table joins , (comma)
+
+```q
+t:([] company:(); employees:())
+/ empty table t
+
+t: t, ([] company:`bmw`skoda; employees:200 300)
+
+company | employee
+------------------
+bmw	| 200
+benz	| 300
+
+/ joins empty table t with new table
+
+```
+
+
+### [tables] Tables Problem Set AQ
 
 ```q
 / create 3 lists of 4 elements each for a, b, c
@@ -1615,80 +1787,6 @@ tab2[`subject]?`chem
 / utilize the ? find operator to search for index position of value
 ```
 
-
-### [table] What are some common table functions?
-
-```q
-t:([] company:`ford`bmw; employees:300 100)
-t
-type t               / what datatypes the table is
-count t              / return number of rows
-cols t               / retrieve symbol list of column names
-meta t               / shows info on type, foreign keys, and attributes
-`employees xasc t    / sorts table by employee column
-```
-
-### [table] Show examples of union, except, and inter function on tables
-
-```q
-t:([] company:`ford`bmw`benz; employees:100 200 300)
-u: ([] company:`ford`bmw`ferrari; employees:100 200 400)
-```
-table t
-
-company | employees
--|-
-ford	|100
-bmw	|200
-benz	|300
-
-table u
-company | employees
--|-
-ford	|100
-bmw	|200
-ferrari	|400
-
-```q
-t union u / combines every key and value
-
-ford 100
-bmw 200
-benz 300
-ferrari	400
-```
-
-```q
-t except u / returns item in t NOT in u
-
-benz 300
-```
-
-```q
-t inter u / returns only common elements in both t and u
-
-ford 100
-bmw 200
-```
-
-### [table] Show 2 ways to insert data into a table
-
-```q
-t:([] company:(); employees:())
-insert[`t; (`ferrari;8)]
-insert[`t; ([] company:`subaru`hyundai; employees:55 56)]
-```
-both work; second example specifies column names
-
-<hr> 
-
-### [table] Show how to append using table joins , (comma)
-
-```q
-t:([] company:(); employees:())
-t:t,([] company:`bmw`skoda; employees:200 300)
-```
-
 ### [tables] Tables Problem Set (GS)
 
 ```q
@@ -1742,25 +1840,25 @@ ps2:2!last ps
 
 ps1
 
-sym| ex |price
+sym| ex | price
 --------------
-`a`|`x` |	1.1
-`b`|	`x`|	2.1
-`c`|	`x`|	3.1
-`a`|	`y`|	1.2
-`b`|	`y`|	2.0
-`c`|	`y`|	3.3
+`a`| `x`| 1.1
+`b`| `x`| 2.1
+`c`| `x`| 3.1
+`a`| `y`| 1.2
+`b`| `y`| 2.0
+`c`| `y`| 3.3
 
 ps2
 
-sym| ex |size
+sym| ex | size
 -------------
-`a`|`x` |	200
-`b`|	`x`|	100
-`c`|	`x`|	300
-`a`|	`y`|	200
-`b`|	`y`|	50
-`c`|	`y`|	200
+`a`| `x`| 200
+`b`| `x`| 100
+`c`| `x`| 300
+`a`| `y`| 200
+`b`| `y`| 50
+`c`| `y`| 200
 
 ps3:ps1 lj ps2
 
@@ -1779,14 +1877,14 @@ t4: t3 lj ps3
 
 / use left join to join ps3 to t3
 
-sym|ex|prirce|size
--|-|-|-
-x|	a|	1.1|	200
-x|	b|	2.1|	100
-x|	c|	3.1|	300
-y|	a|	1.2|	200
-y|	b|	2.0|	50
-y|	c|	3.3|	200
+sym|ex|price|size
+------------------
+ x |a |	1.1 |200
+ x |b |	2.1 |100
+ x |c |	3.1 |300
+ y |a |	1.2 |200
+ y |b |	2.0 |50
+ y |c |	3.3 |200
 
 / Part 3: Add 3 new columns: avg_price_by_sym, avg_size_by_ex, wavg_price_by_sym (weighted by size)
 
@@ -1794,25 +1892,25 @@ Desired Result:
 
 sym|ex|prirce|size|avg_price_by_sym|avg_size_by_ex|wavg_price_by_sym
 --------------------------------------------------------------------
- x | a|  1.1 |	200|      1.15      |      200     |    1.15
- x |	b|  2.1 |	100|      2.05      |      200     |    2.0667
- x |	c|  3.1 |	300|      3.2       |      200     |    3.18
- y |	a|  1.2 |	200|      1.15      |      150     |    1.15
- y |	b|  2.0 |	 50|      2.05      |      150     |    2.06667
- y |	c|  3.3 |	200|      3.2       |      150     |    3.18
+ x |a | 1.1 | 200 |      1.15      |      200     |    1.15
+ x |b | 2.1 | 100 |      2.05      |      200     |    2.0667
+ x |c | 3.1 | 300 |      3.2       |      200     |    3.18
+ y |a | 1.2 | 200 |      1.15      |      150     |    1.15
+ y |b | 2.0 |  50 |      2.05      |      150     |    2.06667
+ y |c | 3.3 | 200 |      3.2       |      150     |    3.18
 
 update avg_price_by_sym: avg price by sym from `t4
 update avg_price_by_ex: avg size by ex from `t4
 update wavg_price_by_sym: size wavg price by sym from `t4
 
-sym|ex|prirce|size|avg_price_by_sym|avg_size_by_ex|wavg_price_by_sym
+sym|ex|price|size|avg_price_by_sym|avg_size_by_ex|wavg_price_by_sym
 --------------------------------------------------------------------
- x | a|  1.1 |	200|      1.15      |      200     |    1.15
- x |	b|  2.1 |	100|      2.05      |      200     |    2.0667
- x |	c|  3.1 |	300|      3.2       |      200     |    3.18
- y |	a|  1.2 |	200|      1.15      |      150     |    1.15
- y |	b|  2.0 |	 50|      2.05      |      150     |    2.06667
- y |	c|  3.3 |	200|      3.2       |      150     |    3.18
+ x | a| 1.1 |200 |      1.15      |      200     |    1.15
+ x |b | 2.1 |100 |      2.05      |      200     |    2.0667
+ x |c | 3.1 |300 |      3.2       |      200     |    3.18
+ y |a | 1.2 |200 |      1.15      |      150     |    1.15
+ y |b | 2.0 | 50 |      2.05      |      150     |    2.06667
+ y |c | 3.3 |200 |      3.2       |      150     |    3.18
 ```
 ### [tables] Tables Problem Set 4 (GS)
 
@@ -1861,8 +1959,8 @@ NASDAQ  13:30	2
 NASDAQ  14:30	1
 NASDAQ  15:30	1
 NASDAQ  19:00	1
-NYSE	   11:00	1
-NYSE	   13:00	1
+NYSE	11:00	1
+NYSE	13:00	1
 
 startcount-endcount
 
@@ -1873,22 +1971,22 @@ startcount-endcount
 
 `ex`time xasc startcount-endcount
 
-ex     time   num
------------------
-NASDAQ 08:00	1
-NASDAQ 09:00	1
-NASDAQ 10:00	1
-NASDAQ 11:30  -1
-NASDAQ 12:30	1
-NASDAQ 13:30  -1
-NASDAQ 14:30  -1
-NASDAQ 15:30  -1
-NASDAQ 18:00	1
-NASDAQ 19:00  -1
-NYSE	  08:00	1
-NYSE	  09:00	1
-NYSE	  11:00  -1
-NYSE	  13:00  -1
+ex    | time | num
+-------------------
+NASDAQ| 08:00|  1
+NASDAQ| 09:00|  1
+NASDAQ| 10:00|  1
+NASDAQ| 11:30| -1
+NASDAQ| 12:30|  1
+NASDAQ| 13:30| -1
+NASDAQ| 14:30| -1
+NASDAQ| 15:30| -1
+NASDAQ| 18:00|  1
+NASDAQ| 19:00| -1
+NYSE  | 08:00|  1
+NYSE  | 09:00|  1
+NYSE  | 11:00| -1
+NYSE  | 13:00| -1
 
 / Part 1 = create a table that has the number of active orders for each time bucket.
 / Update the num column using the fby function, which filters by exchange, an aggregate 
@@ -1909,10 +2007,10 @@ NASDAQ 14:30	1
 NASDAQ 15:30	0
 NASDAQ 18:00	1
 NASDAQ 19:00	0
-NYSE	  08:00	1
-NYSE	  09:00	2
-NYSE	11:00	1
-NYSE	13:00	0
+NYSE   08:00	1
+NYSE   09:00	2
+NYSE   11:00	1
+NYSE   13:00	0
 
 / now that i have this active table, i can go back to my original orders table,
 / check EACH row, for the max num from the ACTIVE table,
