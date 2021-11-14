@@ -1424,6 +1424,46 @@ banana|	30    |
 
 ```
 
+### [table] what is the difference between xcol and xcols?
+
+```q
+/ xcol is used to rename table columns
+/ xcols is used to rearrange table columns
+
+company | employee
+------------------
+ford    |   300
+bmw     |   100
+
+`a`b xcol t
+
+a   | b
+---------
+ford| 300
+bmw | 100
+
+/ renames first 2 columns from company/employee to a/b
+/ xcol will only change col names from left to right
+
+/2 xcols example:
+
+company | employee
+------------------
+ford    |   300
+bmw     |   100
+
+`employees`company xcols t
+
+employee | company
+------------------
+300      |  ford 
+100      |  bmw  
+
+/ reorders columns
+/ doesn't have to be complete list of columns
+/ just moves it to left of table
+```
+
 ### [table] What are some common table functions?
 
 ```q
@@ -1440,56 +1480,98 @@ meta t               / shows info on type, foreign keys, and attributes
 
 ```q
 t:([] company:`ford`bmw`benz; employees:100 200 300)
-u: ([] company:`ford`bmw`ferrari; employees:100 200 400)
+u: ([] company:`ford`bmw`ferrari; employees:5 200 400)
 
 table t
 company | employees
 -------------------
-ferrari | 100
-ford    | 100 
-rover   | 100
+ford    | 100
+bmw     | 200 
+benz    | 300
 
 table u
 company | employees
 --------------------
-ferrari | 100
-bmw     | 5 
 ford    | 5
+bmw     | 200 
+ferrari | 400
 ```
 
 ```q
-/1 table union merges 2 tables together, but does NOT dupe values!
+/1 UNION TABLE = merges 2 tables together, but does NOT dupe values!
 
 t union u
 
 company | employees
 -------------------
-ferrari | 100
 ford    | 100 
-rover   | 100
-bmw     | 5 
+bmw     | 200 
+benz    | 300
 ford    | 5
+ferrari | 400
 
-/ returns values that are same (ferrari 100) 
+/ ford is 100 in t and 5 in u = returns 2 different rows of values
+/ bmw is 200 in both = returns single row of 200
+/ benz only appears in t = appends row
+/ ferrari only appears in u = appends new row
+
 / does NOT dupe same values
 / any values that do NOT equal, adds as new row
-/ ford = 100 and 5. so new tables contains both values
 ```
 
 ```q
-/2 except table = only returns values NOT found in both
-/ think of it as opposite of inner join
+/2 EXCEPT TABLE = only returns values in left table NOT in right table
 
-t except u / returns item in t NOT in u
+table t
+company | employees
+-------------------
+ford    | 100
+bmw     | 200 
+benz    | 300
 
-benz 300
+table u
+company | employees
+--------------------
+ford    | 5
+bmw     | 200 
+ferrari | 400
+
+t except u 
+
+company | employees
+-------------------
+ford    | 100 
+benz    | 300
+
+/ returns item in t NOT in u
+/ although the key matches in ford, the values dont match
+/ bmw matches, so removes
+/ no match in benz, returns
 ```
 
 ```q
-t inter u / returns only common elements in both t and u
+/3 INTER TABLE = only returns common elements in both t and u (inner join) 
 
-ford 100
-bmw 200
+table t
+company | employees
+-------------------
+ford    | 100
+bmw     | 200 
+benz    | 300
+
+table u
+company | employees
+--------------------
+ford    | 5
+bmw     | 200 
+ferrari | 400
+
+t inter u 
+
+company | employees
+--------------------
+bmw     | 200 
+
 ```
 
 ### [table] Show how to append using table joins , (comma)
@@ -1509,6 +1591,282 @@ benz	| 300
 
 ```
 
+### [table] How do you join 2 tables, keeping columns the same and adding new rows?
+
+```q
+/ both tables must have same schema (column names + datatype)
+
+t1
+sym  side price size
+---------------------
+IBM  buy   10 	 100
+AAPL sell  20    200
+
+t2
+sym  side price size
+---------------------
+GOOG buy   30 	 300
+MSFT sell  40	 400
+
+t1,t2
+
+sym  side price size
+---------------------
+IBM  buy   10 	 100
+AAPL sell  20	 200
+GOOG buy   30 	 300
+MSFT sell  40	 400
+
+/ simply use comma to join 2 tables together with same schema
+/ this will keep column headers the same
+/ and append the new rows
+```
+### [table] How do you join 2 tables, adding columns but keeping rows the same?
+
+```q
+t1
+sym  ex
+----------
+IBM  nyse
+AAPL nyse
+GOOG nasdaq
+
+t2
+price size
+----------
+10    100
+20    200
+30    300
+
+t1,'t2
+
+sym  ex     price size
+----------------------
+IBM  nyse    10   100
+AAPL nyse    20   200
+GOOG nasdaq  30   300
+
+```
+
+### [tables] Tables Problem Set TS
+
+```q
+stock: ( [] sym: `MS`C`AAPL; sector:`Financial`Financial`Tech; employees: 100 100 100)
+
+sym |sector    |employees
+-------------------------
+MS  |Financial |100
+C   |Financial |100
+AAPL|Tech      |100
+
+/1 Extract the employees numbers (without the header)
+
+stock [ ; `employees]
+/ or
+stock[`employees]
+/ or
+stock.employees
+/ or
+stock`employees
+100 100 100
+```
+
+```q
+/2 Key the first column in stock table above
+
+1!stock
+```
+
+```q
+/3 Display only the first and second rows of the stock table
+
+2#stock
+
+sym |sector    |employees
+-------------------------
+MS  |Financial |100
+C   |Financial |100
+
+/ or
+
+stock [0 1]
+```
+
+```q
+/4 Select the last row of stock table as a dictionary
+
+last stock
+
+key       | value
+-----------------
+sym       | AAPL
+sector    | Tech
+employees | 100
+
+/ last will retrieve the last row from table stock
+/ and return it as a dictionary
+```
+
+```q
+/5 Insert GOOG in the tech sector with 100 employees
+
+insert [`stock; ([] sym: enlist `GOOG; sector: enlist `tech; employees: enlist 100)]
+
+sym |sector    |employees
+-------------------------
+MS  |Financial |100
+C   |Financial |100
+AAPL|Tech      |100
+GOOG|Tech      |100
+
+/ syntax is insert + [table name; table with corresponding columns]
+/ must use enlist when adding single row!!
+```
+
+```q
+/6 Find the average height of the bosses, the employees, and both the bosses and employees
+
+boss: ( [] name:`bob`bill`belinda; height: 188 186 174)
+employees: ( [] name:`jim`jane`john; height: 180 160 170)
+
+boss:
+name    | height
+----------------
+bob     | 188
+bill    | 186
+belinda | 174
+
+employees:
+name| height
+-----------
+jim | 180
+jane| 160
+john| 170
+
+avg boss `height
+182.667
+
+avg employees `height
+170f
+
+avg (employees, boss) `height
+176.33
+
+/ joins the 2 tables together
+/ calculate the average height from joined table
+```
+
+```q
+/7 Find the 2 tallest employees
+
+2#`height xdesc employees
+
+name | height
+-------------
+jim  | 180
+john | 170
+
+/ take 2 from employees table, sorted descending by height
+```
+
+### [tables] Tables Problem Set 2 TS
+
+```q
+stock: ( [sym:`MS`C`AAPL] sector:`Fin`Fin`Tech; employees: 100 100 100)
+trade: ( [] dt: 2021.01.01+til 5; sym:`C`C`MS`C`AAPL; price: 10 20 30 40 50; size: 100 200 300 400 500)
+
+stock:
+sym  |sector| employees
+-----------------------
+MS   |Fin   | 100
+C    |Fin   | 100
+AAPL |Tech  | 100
+
+trade:
+dt        |sym  |price| size
+----------------------------
+2021-01-01|C	|10   | 100
+2021-01-02|C	|20   | 200
+2021-01-03|MS   |30   | 300
+2021-01-04|C	|40   | 400
+2021-01-05|AAPL	|50   | 500
+```
+
+```q
+/1 Insert the following rows into trade table
+
+dt        |sym  |price| size
+----------------------------
+2021-11-01|JPM	|1    | 100
+2021-11-02|UBS	|2    | 200
+
+`trade insert( [] dt:2021.11.01+1 ; sym:`JPM`UBS; price:1 2; size: 100 200) 
+
+/ or
+
+insert [`trade; ([] dt:2021.11.01+1 ; sym:`JPM`UBS; price:1 2; size: 100 200)]
+
+dt        |sym  |price| size
+----------------------------
+2021-01-01|C	|10   | 100
+2021-01-02|C	|20   | 200
+2021-01-03|MS   |30   |	300
+2021-01-04|C	|40   | 400
+2021-01-05|AAPL	|50   |	500
+2021-11-01|JPM	|1    | 100
+2021-11-02|UBS	|2    | 200
+
+/ have to use backtick table in order to amend the underly table
+```
+
+```q
+/2 Insert the following record into stock
+
+sym|sector|employees
+--------------------
+FB |Tech  | 100
+
+`stock insert [`FB; `Tech; 100]
+
+sym  |sector|employees
+---------------------
+MS   |Fin   | 100
+C    |Fin   | 100
+AAPL |Tech  | 100
+FB   |Tech  | 100
+
+/ table name + insert (value1, value 2, value 3)
+```
+
+```q
+/3 In the stock table, change the number of employees for C to 300
+
+stock upsert (`C;`Fin;300)
+
+/ or
+
+stock upsert ([sym: enlist`C] employees: enlist 300)
+
+sym|sector|employees
+--------------------
+C  |Fin   |300
+
+/ have to use enlist to create a vector for an atom
+```
+
+```q
+/4 Sort the stock table by sym
+
+`sym xasc `stock
+
+sym |sector| employees
+--------------------
+AAPL|Tech  | 100
+C   |Fin   | 100
+MS  |Fin   | 100
+
+/ `column name + xasc + `table name
+```
 
 ### [tables] Tables Problem Set AQ
 
