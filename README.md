@@ -1842,6 +1842,8 @@ FB   |Tech  | 100
 /3 In the stock table, change the number of employees for C to 300
 
 stock upsert (`C;`Fin;300)
+/ must use parathesis
+/ using this method can bypass the enlist requirement
 
 / or
 
@@ -1871,49 +1873,54 @@ MS  |Fin   | 100
 ### [tables] Tables Problem Set AQ
 
 ```q
-/ create 3 lists of 4 elements each for a, b, c
+/1 create 3 lists of 4 elements each for a, b, c
 
 a: 1 2 3 4
 b: `a`b`c`d
 c: 100 200 300 400
 
-/ create a table using these 3 lists
+/2 create a table using these 3 lists
 
 t:([] a;b;c)
 
 a b c
 --------
-1	a	100
-2	b	200
-3	c	300
-4	d	400
+1 a 100
+2 b 200
+3 c 300
+4 d 400
 
-/ create a dictionary using this table
+/3 create a dictionary using this table
 
 flip t
 key|value
 -----------------
-a	 | 1 2 3 4
-b	 | `a`b`c`d
-c	 | 100 200 300 400
+a  | 1 2 3 4
+b  | `a`b`c`d
+c  | 100 200 300 400
 ```
 ```q
-/ create empty table sym (sym), side (char), size (int), price (float)
+/1 create empty table sym (sym), side (char), size (int), price (float)
 
 trade:([] sym:`$(); side:`char$(); size:`int$(); price:`float$())
 
 / note for sym all you need is ` to cast
-
-/ create another table, lasttrade, which is a copy of trade, but sym is keyed
+```
+```q
+/2 create another table, lasttrade, which is a copy of trade, but sym is keyed
 
 lasttrade: 1!trade
+```
 
-/ is there a difference in the metadata between 2 tables?
+```q
+/3 is there a difference in the metadata between 2 tables?
 
 meta trade ~ meta lasttrade
 1b (true)
+```
 
-/ is there a difference in type?
+```q
+/4 is there a difference in type?
 
 type trade ~ type lasttrade
 0b (false)
@@ -1921,8 +1928,9 @@ type trade ~ type lasttrade
 / trade = 98h = table
 / lasttrade = 99 = dict (since you keyed)
 ```
+
 ```q
-/ use 3 join commands to add rows to trade 
+/5 use 3 join commands to add rows to trade 
      / sym IBM, MSFT, AAPL
      / side "B" or "S"
      / consistent values for other columns
@@ -1935,18 +1943,20 @@ trade,:(`IBM;"B";10i; 100f)
 trade,:(`MSFT;"S";20i;200f)
 trade,:(`APPL,"B";30i;300f)
 
-/ note - when using ,:join assign to insert data into table, you HAVE TO
+/ note - when using ,: join assign to insert data into table, you HAVE TO
 / specify datatype, otherwise will fail
 / for ex, simply appending 10, 100 will fail
 ```
+
 ```q
-/ use a single join command to add 3 more rows into join
+/6 use a single join command to add 3 more rows into join
 
 trade:([] sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10 20 30; price: 100 200 300)
 
 / note - when upserting into table, you don't need to specify datatype
 / need to separate chars with comma
 ```
+
 ```q
 / fill lasttrade with data from trade
 
