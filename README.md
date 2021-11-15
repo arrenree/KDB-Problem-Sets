@@ -1655,6 +1655,139 @@ GOOG nasdaq  30   300
 
 ```
 
+### [tables] How do you add/change keys in a table?
+```q
+/ use 1!table or xkey
+
+kt
+id |name|employer| age
+----------------------
+a  |jane|  citi  | 11
+b  |jim |  citi  | 22
+c  |kim |    ms  | 13
+e  |john|    ts  | 15
+
+2!k2
+/or
+`id`name xkey k2
+
+`id` |`name`|employer| age
+----------------------
+`a`  |`jane`|  citi  | 11
+`b`  |`jim` |  citi  | 22
+`c`  |`kim` |    ms  | 13
+`e`  |`john`|    ts  | 15
+
+```
+
+### [tables] How do you delete/remove keys from a table?
+```q
+/ 0!table or () xkey
+
+0!kt
+/or
+() xkey kt
+```
+
+### [tables] How do you upsert keyed rows/tables into a table?
+```q
+t1:([sym:`a`b`c];ex:`one`two`three;size:100 200 300)
+t2:([sym:`c`d`e];ex:`four`five`six;size:400 500 600)
+
+upsert[t1;t2]
+
+`sym` | ex    | size
+------------------
+`a`   | one   | 100
+`b`   | two   | 200
+`c`   | four  | 400
+`d`   | five  | 500
+`e`   | six   | 600
+
+
+/ both tables have to be keyed!
+/ the schemas have to match (col names)
+/ if key exists and matches, updates value (c match, replaces old values)
+/ if new key, adds new row (d and e)
+```
+```q
+/ you can also upsert by typing out a table
+
+upsert[t1;( [sym:`f`g] ex:`seven`eight; size: 700 800)]
+
+sym | ex    | size
+------------------
+a   | one   | 100
+b   | two   | 200
+c   | four  | 400
+f   | seven | 700
+g   | eight | 800
+
+```
+
+### [table] Show 2 ways to retrieve values as a table from a keyed table
+
+```q
+t1
+`sym` | ex    | size
+------------------
+`a`   | one   | 100
+`b`   | two   | 200
+`c`   | four  | 400
+`d`   | five  | 500
+`e`   | six   | 600
+
+/ method 1
+
+t1 ( [] sym`a`b)
+
+ex  | size
+-----------
+one | 100
+two | 200
+
+/ method 2
+
+( []sym:`a`b)# t1
+
+`sym` | ex  | size
+----------------
+`a`   | one | 100
+`b`   | two | 200
+
+/ by "taking" the 2 keys from t1, you return a table including the sym column
+```
+
+### [table] Retrieve values tables from keyed table
+
+```q
+kt:([employer:`kx`ms`ms;loc:`NY`NY`HK] size: 10 20 30; area: 1 2 3)
+
+employer| loc|size|area
+-----------------------
+kx	| NY | 10 | 1
+ms	| NY | 20 | 2
+ms	| HK | 30 | 3
+
+/1 retrieve values as a dictionary for keys `ms and `HK
+
+kt`ms`HK
+
+key  | value
+-----------
+size | 30
+area | 3
+
+/2 retrieve values where keys = ms/HK and kx/NY
+
+kt(`ms`HK;`kx`NY)
+
+size| area
+-----------
+30  | 3
+10  | 1
+```
+
 ### [tables] Tables Problem Set TS
 
 ```q
@@ -1876,6 +2009,60 @@ MS  |Fin   | 100
 
 / `column name + xasc + `table name
 ```
+
+### [tables] Tables Problem Set 3 TS
+
+```q
+p: ( [book:`A`B`B`C; ticker:`MS`AAPL`MS`C] size:100 200 300 400)
+
+`book`| `ticker`| size
+----------------------
+`A`   | `MS`    | 100
+`B`   | `AAPL`  | 200
+`B`   | `MS`    | 300
+`C`   | `C`     | 400
+```
+
+```q
+/1 Retrieve entries where book is B, using select**
+
+select from p where book=`B
+
+book | ticker|size
+------------------
+`B`  | `AAPL`| 200
+`B`  | `MS`  | 300
+```
+
+```q
+/2 Retrieve entries where book is C and ticker is c, using take**
+
+( [book:enlist`C; ticker:enlist`C]) # p
+
+book | ticker| size
+-------------------
+`C`  | `C`   | 400
+
+/ need to use enlist since only one row
+```
+
+```q
+/3 Upsert the following values in **
+
+`book` | `ticker`|size
+----------------------
+`A`    | `MS`    | 100
+`B`    | `AAPL`  | 200
+`B`    | `MS`    | 300
+`C`    | `C`     |**400**
+**`D`**|**`MS`** |**500**
+
+upsert [p; ([book:`C`D; ticker:`C`MS]size:400 500)]
+
+/ for `C`C -> updates old value to 400
+/ `D`MS 500 -> adds new row
+```
+
 
 ### [tables] Tables Problem Set 1 AQ
 
