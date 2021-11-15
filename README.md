@@ -2626,118 +2626,239 @@ update d: ({exec max num from active where ex=x`ex, time within x`start`end} eac
 ### 🔴 6. Functions
 [Top](#top)
 
-### [func] Functions Problem Set AQUA Q
+
+### [func] Function Problem Set 1 TS
+
 ```q
-/ write function that calculates square of a number
+/1 Create a function that accepts 2 arguments (r and h), and returns vol of cone 
+
+/ vol of cone = 1/3 * pi * r^2 * h
+/ pi = -4 * atan -1
+
+volc: {[r;h] pi:-4*atan -1; pi*r*r*h%3}
+volc[2;3]
+12.57
+
+/ define arguments [r;h] first
+/ define variable pi as part of your function
+/ must have space after atan and before -1
+```
+
+```q
+/2 Write a function sph that takes radius and returns the area and volume
+/ output expected as a dictionary
+
+/ v = 4/3 * pi * r^3
+/ a = 4 * pi * r^2
+
+sph: { [r] pi:-4*atan -1; a:(4%3)*pi*r xexp 3; v:4*pi*r xexp 2; `area`volume ! (a;v)}
+sph[1]
+
+key    | value
+----------------
+area   | 4.18
+volume | 12.56
+
+/ define argument [r]
+/ define variable pi with formula
+/ define variable a with formula
+/ define variable v with formula
+/ show dictionary with symbols `area `volume against values a and v
+```
+
+```q
+/3 Given raise:{x xexp y}, create function that is projection of the raise. Root[9] = 3
+
+raise: {x xexp y}
+root: raise[ ; 0.5]
+root[9]
+3
+
+/ an embedded function is a function within another function
+/ root function sets y as 0.5
+/ so root 9 = x
+```
+
+```q
+/4 Convert all elements of mixed list l to a string
+
+l: (100;`price;1b)
+
+string l
+"100"
+"price"
+"1b"
+
+/ l is a list of long, sym, and boolean
+/ remember, mixed lists have to be contained in parathesis ( )
+```
+
+```q
+/5 Given the string, find and replace "cow" with "kangaroo"**
+
+st: "the cow jumped over the moon"
+
+ssr [st; "cow";"kangaroo"]
+"the kangaroo jumped over the moon"
+
+/ ssr = string search replace.
+/ syntax = ssr [listname + find this + replace with this]
+```
+
+```q
+/6 Create function sayHi that takes name and age as arguments and behaves as the following
+
+/ sayHi["joe";90]
+/ "hello 90 year old joe"
+
+sayHi:{[name;age] "hello ", string[age]," year old ", name}
+sayHi["joe";90]
+hello 90 year old joe
+
+/ name and age are your arguments
+/ "hello" and "year old" are simply strings or lists of characters
+/ you have to convert raw data values into strings (age = int), use , to concatenate the strings together
+/ need to convert [age] to string
+/ when you define argument "joe" have to use parathesis otherwise wont work
+```
+
+```q
+/7 I have a box of 7 eggs, find the median and average weight
+
+eggs: 10 20 30 40 50 60 70
+
+med eggs
+40
+
+avg eggs
+40
+```
+
+```q
+/8 I sold 2 boxes of eggs. 1 box had 10 eggs and sold for $50 each. The other had 20 eggs and sold for $100 each. Find the average price paid per egg**
+
+10 20 wavg 50 100
+83.3
+
+/ wavg = weight average function
+/ num1 num2 wavg value1 value2
+
+```
+
+```q
+/9 Generate list k of 10 random integers. Find the moving average with window size of 3
+
+k: 10?10
+
+mavg[3;k]
+8 4.5 6 5 6 5 5.33 4.33 5 4.67
+```
+
+```q
+/10 Find the 3 largest numbers in list k
+
+3#desc k
+9 8 8 
+
+/ take 3 of the largest from k, sort by desc
+```
+
+```q
+/11 Find the difference between the successive elements of k
+
+deltas k
+8 -7 8 -4 -1 2 0 -5 7 -3
+```
+
+### [func] Functions Problem Set 1 AQ
+
+```q
+/1 write function that calculates square of a number
 
 f:{[a] a*a}
+```
 
-/ execute f with a:5 and assign result to new variable b
+```q
+/2 execute f with a:5 and assign result to new variable b
 
 a:5
 b:f[a]
+```
 
-/ write new funciton g, which takes square of first argument divided by square of second argument
+```q
+/3 write new funciton g, which takes square of first argument divided by square of second argument
 
 g:{(x*x) % y*y}
+```
 
-/ execute g with arguments a and b, store this to c
+```q
+/4 execute g with arguments a and b, store this to c
 
 c:g[a;b] 
+```
 
-/ create dyadic function f1 indicating whether product of 2 numbers is greater than sum
+```q
+/5 create dyadic function f1 indicating whether product of 2 numbers is greater than sum
 
 f1: {(x*y) > x+y}
+```
 
-/ write formual g1: x^5-3x^2 + 5
+```q
+/6 write formual g1: x^5-3x^2 + 5
 / when x=4
 
 g1:{((x xexp 5) - 3*(x xexp 2))+5}
 g1[4]
 981f
+```
 
-/ create function that calculates area of triangle. height = 7, base = 10
+```q
+/7 create function that calculates area of triangle. height = 7, base = 10
 
 t:{x*y%2}
 t[7;10]
 35
+```
 
-/ create function that calculates the sum of 2 squares of a number x
+```q
+/8 create function that calculates the sum of 2 squares of a number x
 
 f:{x xexp 2 + x xexp 2}
 f:{2*(x xexp 2)}
+```
 
-/ create a function that calculates a^3+b^2+c
+```q
+/9 create a function that calculates a^3+b^2+c
 / find value of function at 13,3,6
 
 f:{(x xexp 3) + (y xexp 2) + z}
 f[13;3;6]
+2212
+```
 
-/ BMI is weight divide by height squared. create an implicit formula
+```q
+/10 BMI is weight divide by height squared. create an implicit formula
 
 bmi: {x%y*y}
+```
 
-/ create a func called perimeters, which will take perimeter of a square
-/ and return its area
+```q
+/11 create a func called perimeters, which will take perimeter of a square and return its area
 
 perimeter:{(x%4) xexp 2}
 perimeter[8]
 4
+```
 
-/ car depreciates 15% first 3 years, then 8% next 3 years
-/ create func k to find value after 6 years (original value 15000)
+```q
+/12 car depreciates 15% first 3 years, then 8% next 3 years. create func k to find value after 6 years (original value 15000)
 
 k:{x*(0.85 xexp 3)*(0.92 xexp 3)}
 k[15000]
 7173.1765
 ```
 
-### [func] Create a function that will return latest prices (with max timestamp within the date) for the date.
-If there is not any price for that particular date, return the latest previous price
-There is no predefined ordering of the source table.
-Try to preserve the column order.
-
-```q
-t: ([] date:raze (3#2016.01.06;4#2016.01.07;6#2016.01.08); sym:`a`b`c`a`b`a`b`a`b`c`a`b`c; price:1 2 3 1.1 2.1 1.2 2.2 1.3 2.3 3.2 1.4 2.4 3.3; timestamp:raze (3#2016.01.06T22:00:00.000; 2#2016.01.07T22:00:00.000; 2#2016.01.08T23:00:00.000; 3#2016.01.08T22:00:00.000; 3#2016.01.06T22:30:00.000))
-
-Example 1:
-f [t; 2016.01.06]
-
-date      |sym|price| timestamp
----------------------------------------------
-2016-01-06| a |  1  | 2016-01-06T22:00:00.000
-2016-01-06| b |  2  | 2016-01-06T22:00:00.000
-2016-01-06| c |  3  | 2016-01-06T22:00:00.000
-
-Example 2:
-f [t; 2016.01.07]
-
-date      |sym|price| timestamp
----------------------------------------------
-2016-01-06| c |  3  | 2016-01-06T22:00:00.000
-2016-01-07| a | 1.2 | 2016-01-08T23:00:00.000
-2016-01-07| b | 2.2 | 2016-01-08T23:00:00.000
-
-Example 3:
-f [t; 2016.01.08]
-
-date      |sym|price| timestamp
----------------------------------------------
-2016-01-08| a | 1.3 | 2016-01-08T22:00:00.000
-2016-01-08| b | 2.3 | 2016-01-08T22:00:00.000
-2016-01-08| c | 3.2 | 2016-01-08T22:00:00.000
-
-f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, timestamp=(max;timestamp) fby date, price=(last;price) fby sym}
-
-/ select last price, max timestamp
-/ set date, sym as keys
-/ date <=d means look for previous day if current date doesnt satisfy query conditions
-/ the FBY is the most important part of this problem. 
-/ the ORDER of the FBY also matters a lot. 
-/ you want to filter the LAST PRICE by sym, then
-/ you want to filter the MAX TIMESTAMP by the date
-```
-### [func] More Complicated problem set - AquaQ
+### [func] Functions Problem Set 2 (med) - AquaQ
 
 ```q
 / 1 create function takes 3 parameters (startdate, enddate, symbols) which extracts the trade data 
@@ -2878,7 +2999,9 @@ tradeticks3:{[starttimestamp;endtimestamp;symbols]
             /call tradetick3
             tradeticks3[starttimestamp;endtimestamp;symbols]]}
 ```
-### Complicated Problem Set - AQ
+
+### [func] Functions Problem Set 3 (hard) - AQ
+
 ```q
 / 1 write a func that calc the avg spread between bid and ask per date 
 / and sym from the quote table for a given date range and sym list
@@ -2921,6 +3044,53 @@ date       | sym  | high  | low  | open | close
 2021-11-11 | AAPL | 109.9 | 50.0 | 62.3	| 76.1
 ```
 
+### [func] Function Problem Set GS
+```q
+/ Create a function that will return latest prices (with max timestamp within the date) for the date.
+/ If there is not any price for that particular date, return the latest previous price
+/ There is no predefined ordering of the source table.
+/ Try to preserve the column order.
+```
+```q
+t: ([] date:raze (3#2016.01.06;4#2016.01.07;6#2016.01.08); sym:`a`b`c`a`b`a`b`a`b`c`a`b`c; price:1 2 3 1.1 2.1 1.2 2.2 1.3 2.3 3.2 1.4 2.4 3.3; timestamp:raze (3#2016.01.06T22:00:00.000; 2#2016.01.07T22:00:00.000; 2#2016.01.08T23:00:00.000; 3#2016.01.08T22:00:00.000; 3#2016.01.06T22:30:00.000))
+
+Example 1:
+f [t; 2016.01.06]
+
+date      |sym|price| timestamp
+---------------------------------------------
+2016-01-06| a |  1  | 2016-01-06T22:00:00.000
+2016-01-06| b |  2  | 2016-01-06T22:00:00.000
+2016-01-06| c |  3  | 2016-01-06T22:00:00.000
+
+Example 2:
+f [t; 2016.01.07]
+
+date      |sym|price| timestamp
+---------------------------------------------
+2016-01-06| c |  3  | 2016-01-06T22:00:00.000
+2016-01-07| a | 1.2 | 2016-01-08T23:00:00.000
+2016-01-07| b | 2.2 | 2016-01-08T23:00:00.000
+
+Example 3:
+f [t; 2016.01.08]
+
+date      |sym|price| timestamp
+---------------------------------------------
+2016-01-08| a | 1.3 | 2016-01-08T22:00:00.000
+2016-01-08| b | 2.3 | 2016-01-08T22:00:00.000
+2016-01-08| c | 3.2 | 2016-01-08T22:00:00.000
+
+f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, timestamp=(max;timestamp) fby date, price=(last;price) fby sym}
+
+/ select last price, max timestamp
+/ set date, sym as keys
+/ date <=d means look for previous day if current date doesnt satisfy query conditions
+/ the FBY is the most important part of this problem. 
+/ the ORDER of the FBY also matters a lot. 
+/ you want to filter the LAST PRICE by sym, then
+/ you want to filter the MAX TIMESTAMP by the date
+```
 
 
 <a name="qsql"></a>
