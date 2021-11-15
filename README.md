@@ -1877,7 +1877,7 @@ MS  |Fin   | 100
 / `column name + xasc + `table name
 ```
 
-### [tables] Tables Problem Set AQ
+### [tables] Tables Problem Set 1 AQ
 
 ```q
 /1 create 3 lists of 4 elements each for a, b, c
@@ -1965,13 +1965,15 @@ trade:([] sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10 20 30; price: 100 200 300
 ```
 
 ```q
-/ fill lasttrade with data from trade
+/7 fill lasttrade with data from trade
 
 lasttrade:trade
 lasttrade,:trade
 ```
+### [tables] Tables Problem Set 2 AQ
+
 ```q
-/ create the following table
+/1 create the following table
 
 stock:([] item:`soda`bacon`mush`eggs;brand:`fry`prok`veg`veg;price:1.5 1.99 0.88 1.55; order:50 82 45 92)
 
@@ -1981,9 +1983,10 @@ soda  | fry  | 1.5   | 50
 bacon | pork | 1.99  | 82
 mush  | veg  | 0.88  | 45
 eggs  | veg  | 1.55  | 92
+```
 
-
-/ add row of tomato, veg, 1.35 70
+```q
+/2 add row of tomato, veg, 1.35 70
 
 stock,:(`tomato;`veg;1.35;70)
 
@@ -1994,16 +1997,19 @@ bacon  | pork | 1.99 | 82
 mush   | veg  | 0.88 | 45
 eggs   | veg  | 1.55 | 92
 tomato | veg  | 1.35 | 70
+```
 
-/ key the table according to item and brand
+```q
+/3 key the table according to item and brand
 
 2!stock
 `item`brand xkey stock
 
-/ does the meta data change when you key/unkey tables?
+/4 does the meta data change when you key/unkey tables?
 
 no, it does not
 ```
+
 ```q
 trader:([]item:`soda`bacon`mush`eggs`tomato;brand:`fry`prok`veg`veg`veg;price:1.5 1.99 0.88 1.55 1.35; order:200 180 110 210 100)
 
@@ -2015,8 +2021,7 @@ mush   | veg  | 0.88 | 110
 eggs   | veg  | 1.55 | 210
 tomato | veg  | 1.35 | 100
 
-
-/ create new table, totalorders, which has sum of both orders from traders
+/4 create new table, totalorders, which has sum of both orders from traders
 / drop the price column before adding together
 
 totalorders:(2!(enlist `price)_stock)+(2!(enlist `price)_trader)
@@ -2033,15 +2038,18 @@ tomato | veg  | 170
 / but also need to drop the column
 / since only dropping 1 column, need to use enlist + col name
 ```
+
 ```q
-/ create new list called newprices, which is 75% of original price
+/5 create new list called newprices, which is 75% of original price
 
 newprices:0.75*stock`price
 1.125 1.4925 0.66 1.1625 1.0125
 
 / syntax for operations on columns is tablename`colname
+```
 
-/ join newprices to the totalorders table
+```q
+/6 join newprices to the totalorders table
 
 totalorders:totalorders,' ([] newp:newprices)
 
@@ -2057,7 +2065,6 @@ tomato | veg  |	170  | 1.0125
 
 update newprices from totalorders
 
-
 item   |brand |order | newprices
 --------------------------------
 soda   | fry  | 250  | 1.125
@@ -2069,8 +2076,9 @@ tomato | veg  |	170  | 1.0125
 / this is the SQL method (probably cleaner
 / update col that doesnt exist will append it to table
 ```
+
 ```q
-/ how much savings per week will the manager and trader have?
+/7 how much savings per week will the manager and trader have?
 
 sum ((0!stock)`price)*((0!stock)`order) *0.25
 128.72
@@ -2107,7 +2115,8 @@ type
 / this doesnt work anymore (since its keyed)
 ```
 
-### [tables] Tables Problem Set AQ
+### [tables] Tables Problem Set 3 AQ
+
 ```q
 
 tab1:([id:"abc"]pupil:`john`paul`rachel;subject:`maths`physics`chem;mark:96 55 82)
@@ -2117,13 +2126,18 @@ id| pupil |subject  | mark
 a | john  | maths   | 96
 b | paul  | physics | 55
 c | rachel| chem    | 82
+```
 
-/ extract dictionary corresponding to id = b
+```q
+/1 extract dictionary corresponding to id = b
 
 tab1["b"]
 / note - id columns are chars not sym! 
+```
 
-/ add the 2 rows of information to tab1
+```q
+/2 add the 2 rows of information to tab1
+
 (id = d;pupil = emma; subject = maths; mark = 76)
 (id = e;pupil = michael;subject = bio; mark = 63)
 
@@ -2139,8 +2153,10 @@ e | michael| bio     | 63
 
 / id are keyed strings so need " "
 / other values are `syms
+```
 
-/ remove entire keyed column from tab1 rename new table tab2
+```q
+/3 remove entire keyed column from tab1 rename new table tab2
 
 tab2: value tab1
 
@@ -2153,8 +2169,10 @@ paul   | physics | 55
 rachel | chem    | 82
 emma   | maths   | 76
 michael| bio     | 63
+```
 
-/ find first index where chem appears in tab2
+```
+/4 find first index where chem appears in tab2
 
 tab2[`subject]?`chem
 2
