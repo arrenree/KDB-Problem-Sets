@@ -1161,12 +1161,12 @@ morse: "nopqrs"! (10; 111; 0110; 1101;010;0)
 
 key value
 ---------
-n	  10
-o	  111
-p	  110
-q	  1101
-r	  10
-s	  0
+n  10
+o  111
+p  110
+q  1101
+r  10
+s  0
 
 / the key is simply a string of chars
 / the values are just random "codes" you make up
@@ -2052,18 +2052,20 @@ newprices:0.75*stock`price
 /6 join newprices to the totalorders table
 
 totalorders:totalorders,' ([] newp:newprices)
-
-item   |brand |order | newprices
---------------------------------
-soda   | fry  | 250  | 1.125
-bacon  | pork |	262  | 1.4925
-mush   | veg  |	155  | 0.66
-eggs   | veg  |	302  | 1.1625
-tomato | veg  |	170  | 1.0125
-
 / this method you are appending the column to existing table
 
+item   |brand |order | newprices
+--------------------------------
+soda   | fry  | 250  | 1.125
+bacon  | pork |	262  | 1.4925
+mush   | veg  |	155  | 0.66
+eggs   | veg  |	302  | 1.1625
+tomato | veg  |	170  | 1.0125
+
+/ alternatively:
+
 update newprices from totalorders
+/ this is the SQL method (probably cleaner)
 
 item   |brand |order | newprices
 --------------------------------
@@ -2073,7 +2075,6 @@ mush   | veg  |	155  | 0.66
 eggs   | veg  |	302  | 1.1625
 tomato | veg  |	170  | 1.0125
 
-/ this is the SQL method (probably cleaner
 / update col that doesnt exist will append it to table
 ```
 
@@ -2132,6 +2133,13 @@ c | rachel| chem    | 82
 /1 extract dictionary corresponding to id = b
 
 tab1["b"]
+
+key     | value
+-----------------
+pupil	| paul
+subject	| physics
+mark	| 55
+
 / note - id columns are chars not sym! 
 ```
 
@@ -2169,10 +2177,22 @@ paul   | physics | 55
 rachel | chem    | 82
 emma   | maths   | 76
 michael| bio     | 63
+
+/ alternatively you could do this:
+
+tab2:delete id from tab1
+
+pupil  |subject  | mark
+--------------------------
+john   | maths   | 96
+paul   | physics | 55
+rachel | chem    | 82
+emma   | maths   | 76
+michael| bio     | 63
 ```
 
 ```
-/4 find first index where chem appears in tab2
+/4 find first index position where chem appears in tab2
 
 tab2[`subject]?`chem
 2
@@ -2185,7 +2205,7 @@ tab2[`subject]?`chem
 
 ```q
 t1: ([] sym:`a`b`c;ex:`x)
-t2:([] ex:`y;sym:`a`b`c)
+t2: ([] ex:`y;sym:`a`b`c)
 
 ps:(( [] sym:`a`b`c`a`b`c; ex:`x`x`x`y`y`y; price: 1.1 2.1 3.1 1.2 2 3.3); ( [] sym:`a`b`c`a`b`c; ex:`x`x`x`y`y`y; size: 200 100 300 200 50 200))
 
