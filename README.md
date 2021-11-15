@@ -1339,7 +1339,14 @@ A table - is a flipped dictionary. Vectors of data are organized by columns.
 A keyed table - is a table of keyed records mapped to a table of value records.
 ```
 
-### [table] show 3 ways to add rows to table cars
+### [table] show 4 ways to add rows to table cars
+```q
+`cars insert (`bmw;model:`300;date:2021.11.01)
+`cars upsert (`bmw;model:`300;date:2021.11.01)
+insert[`cars;(`bmw;model:`300;date:2021.11.01)]
+cars,:(`bmw;model:`300;date:2021.11.01)
+```
+
 ```q
 / empty table cars 
 
@@ -1968,25 +1975,25 @@ lasttrade,:trade
 
 stock:([] item:`soda`bacon`mush`eggs;brand:`fry`prok`veg`veg;price:1.5 1.99 0.88 1.55; order:50 82 45 92)
 
-item   brand price order
-------------------------
-soda	 fry	 1.5	 50
-bacon	 prok	 1.99	 82
-mush	 veg	 0.88	 45
-eggs	 veg	 1.55	 92
+item  | brand| price | order
+----------------------------
+soda  | fry  | 1.5   | 50
+bacon | pork | 1.99  | 82
+mush  | veg  | 0.88  | 45
+eggs  | veg  | 1.55  | 92
 
 
 / add row of tomato, veg, 1.35 70
 
 stock,:(`tomato;`veg;1.35;70)
 
-item   brand price order
-------------------------
-soda	 fry	 1.5	 50
-bacon	 prok	 1.99	 82
-mush	 veg	 0.88	 45
-eggs	 veg	 1.55	 92
-tomato veg	 1.35	 70
+item   | brand| price| order
+----------------------------
+soda   | fry  | 1.5  | 50
+bacon  | pork | 1.99 | 82
+mush   | veg  | 0.88 | 45
+eggs   | veg  | 1.55 | 92
+tomato | veg  | 1.35 | 70
 
 / key the table according to item and brand
 
@@ -2000,26 +2007,27 @@ no, it does not
 ```q
 trader:([]item:`soda`bacon`mush`eggs`tomato;brand:`fry`prok`veg`veg`veg;price:1.5 1.99 0.88 1.55 1.35; order:200 180 110 210 100)
 
-item   brand price order
-------------------------
-soda	 fry	 1.5	 200
-bacon	 prok	 1.99	 180
-mush	 veg	 0.88	 110
-eggs   veg	 1.55	 210
-tomato veg	 1.35	 100
+item   | brand| price| order
+----------------------------
+soda   | fry  | 1.5  | 200
+bacon  | pork | 1.99 | 180
+mush   | veg  | 0.88 | 110
+eggs   | veg  | 1.55 | 210
+tomato | veg  | 1.35 | 100
+
 
 / create new table, totalorders, which has sum of both orders from traders
 / drop the price column before adding together
 
 totalorders:(2!(enlist `price)_stock)+(2!(enlist `price)_trader)
 
-item   brand order
-------------------
-soda	 fry	 250
-bacon	 prok	 262
-mush	 veg	 155
-eggs	 veg	 302
-tomato veg	 170
+item   | brand| order
+----------------------
+soda   | fry  | 250
+bacon  | pork | 262
+mush   | veg  | 155
+eggs   | veg  | 302
+tomato | veg  | 170
 
 / need to key the tables before adding together
 / but also need to drop the column
@@ -2037,25 +2045,26 @@ newprices:0.75*stock`price
 
 totalorders:totalorders,' ([] newp:newprices)
 
-item   brand order newprices
----------------------------
-soda   fry	 250	 1.125
-bacon	 prok	 262	 1.4925
-mush	 veg	 155	 0.66
-eggs	 veg	 302	 1.1625
-tomato veg	 170	 1.0125
+item   |brand |order | newprices
+--------------------------------
+soda   | fry  | 250  | 1.125
+bacon  | pork |	262  | 1.4925
+mush   | veg  |	155  | 0.66
+eggs   | veg  |	302  | 1.1625
+tomato | veg  |	170  | 1.0125
 
 / this method you are appending the column to existing table
 
 update newprices from totalorders
 
-item   brand order newprices
----------------------------
-soda   fry	 250	 1.125
-bacon	 prok	 262	 1.4925
-mush	 veg	 155	 0.66
-eggs	 veg	 302	 1.1625
-tomato veg	 170	 1.0125
+
+item   |brand |order | newprices
+--------------------------------
+soda   | fry  | 250  | 1.125
+bacon  | pork |	262  | 1.4925
+mush   | veg  |	155  | 0.66
+eggs   | veg  |	302  | 1.1625
+tomato | veg  |	170  | 1.0125
 
 / this is the SQL method (probably cleaner
 / update col that doesnt exist will append it to table
@@ -2077,13 +2086,13 @@ sum ((0!trader)`price)*((0!trader)`order) *0.25
 / if you are performing operations within a table, it cannot be keyed
 
 stock
-item   brand price order
-------------------------
-soda	 fry	 1.5	 50
-bacon	 prok	 1.99	 82
-mush	 veg	 0.88	 45
-eggs	 veg	 1.55	 92
-tomato veg	 1.35	 70
+item  | brand | price | order
+-----------------------------
+soda  | fry   | 1.5   | 50
+bacon | pork  | 1.99  | 82
+mush  | veg   | 0.88  | 45
+eggs  | veg   | 1.55  | 92
+tomato| veg   | 1.35  | 70
 
 (stock`price)*(stock`order)
 75 163.18 39.6 142.6 94.5
@@ -2103,11 +2112,11 @@ type
 
 tab1:([id:"abc"]pupil:`john`paul`rachel;subject:`maths`physics`chem;mark:96 55 82)
 
-id pupil   subject mark
------------------------
-a	 john	   maths	 96
-b	 paul	   physics 55
-c	 rachel  chem	   82
+id| pupil |subject  | mark
+--------------------------
+a | john  | maths   | 96
+b | paul  | physics | 55
+c | rachel| chem    | 82
 
 / extract dictionary corresponding to id = b
 
@@ -2120,13 +2129,13 @@ tab1["b"]
 
 tab1,:([id:"de"]pupil:`emma`michael; subject:`maths`bio;mark:76 63)
 
-id pupil   subject mark
------------------------
-a	 john	   maths	 96
-b	 paul	   physics 55
-c	 rachel  chem	   82
-d	 emma	   maths	 76
-e	 michael bio	   63
+id| pupil  |subject  | mark
+--------------------------
+a | john   | maths   | 96
+b | paul   | physics | 55
+c | rachel | chem    | 82
+d | emma   | maths   | 76
+e | michael| bio     | 63
 
 / id are keyed strings so need " "
 / other values are `syms
@@ -2137,14 +2146,13 @@ tab2: value tab1
 
 / value + table will only return its values
 
-pupil   subject mark
------------------------
-john	   maths	 96
-paul	   physics 55
-rachel   chem	   82
-emma	   maths	 76
-michael  bio	   63
-
+pupil  |subject  | mark
+--------------------------
+john   | maths   | 96
+paul   | physics | 55
+rachel | chem    | 82
+emma   | maths   | 76
+michael| bio     | 63
 
 / find first index where chem appears in tab2
 
@@ -2234,7 +2242,7 @@ ps3:ps1 lj ps2
 
 sym|ex |price|size
 ------------------
-`a`|`x`| 1.1 |	200
+`a`|`x`| 1.1 | 200
 `b`|`x`| 2.1 | 100
 `c`|`x`| 3.1 | 300
 `a`|`y`| 1.2 | 200
@@ -2247,12 +2255,12 @@ t4: t3 lj ps3
 
 sym|ex|price|size
 ------------------
- x |a |	1.1 |200
- x |b |	2.1 |100
- x |c |	3.1 |300
- y |a |	1.2 |200
- y |b |	2.0 |50
- y |c |	3.3 |200
+ x |a |	1.1 | 200
+ x |b |	2.1 | 100
+ x |c |	3.1 | 300
+ y |a |	1.2 | 200
+ y |b |	2.0 |  50
+ y |c |	3.3 | 200
 
 / Part 3: Add 3 new columns: avg_price_by_sym, avg_size_by_ex, wavg_price_by_sym (weighted by size)
 
