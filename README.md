@@ -2861,8 +2861,7 @@ k[15000]
 ### [func] Functions Problem Set 2 (med) - AquaQ
 
 ```q
-/ 1 create function takes 3 parameters (startdate, enddate, symbols) which extracts the trade data 
-/ for the date range and symbol list
+/ 1 create function that queries a date range and sym filter, taking in 3 arguments (startdate, enddate, symbols)
 
 tradeticks:{[startdate;enddate;symbols] 
             select date, sym, time, size, price 
@@ -2877,12 +2876,12 @@ date      sym time         size  price
 2021-11-03 MS 09:30:01.768 95500 81.06
 2021-11-03 MS 09:30:01.928 13400 82.90
 
-/ hints:
 / date range = date within startdate/enddate
 / symbol list = sym in list of symbols
 ```
+
 ```q
-/ 2.1 extracting temporal data from timestamp
+/ 2.1 Extracting temporal data from Timestamp
 / assume table called depth
 
 depth
@@ -2892,7 +2891,10 @@ time                       sym  price
 2021-11-07T08:14:59.215000 ORCL 35.16
 2021-11-07T08:21:30.944000 NOK  42.01
 
+/ notice time datatype is timestamp (includes date and time)
+
 meta depth
+
 
 c    |t|f|a
 ------------
@@ -2901,8 +2903,11 @@ sym	|s| |g
 bid1	| |f|		
 
 / time column is datatype p = timestamp
+```
 
-/ extract the timestamp
+
+```q
+/2.2 Extract the TIMESTAMP
 
 select time from depth
 
@@ -2912,7 +2917,11 @@ time
 2021-11-07T08:14:59.215000
 2021-11-07T08:21:30.944000
 
-/ extract the date from timestamp
+/ since time is already of timestamp datatype, just need to extract
+```
+
+```q
+/2.3 Extract the DATE from timestamp
 
 select `date$time from depth
 
@@ -2922,7 +2931,11 @@ time
 2021-11-07
 2021-11-07
 
-/ extract the time from timestamp
+/ extract time, then cast timestamp to date datatype
+```
+
+```q
+/2.4 extract the time from timestamp
 
 select time.time from depth
 select `time$time from depth
@@ -2953,10 +2966,11 @@ date      sym time         size  price
 2021-11-03 MS 09:30:17.573 18400 96.09
 2021-11-03 MS 09:30:21.264 8500 101.73
 
-/ so in this case, time is in the temporal format of 2021.01.01D09:00:00
+/ so in this case, time is in the timestamp temporal format of 2021.01.01D09:00:00
 / need to extract only the time portion
 / so that your argument inputs for starttime;endtime make sense
 ```
+
 ```q
 /3 create function which is same as func1, but uses a start timestamp and end timestamp as the parameters
 / it should query across the date boundaries (should include all ticks within that period)
@@ -2991,6 +3005,7 @@ date       sym  time         size  price
 / `timestamp$00:00+`date$timestamp
 / to get endtime, subtract 1 from the start of next date
 / -1+`timestamp$1+`date$endtimestamp
+
 tradeticks3:{[starttimestamp;endtimestamp;symbols] 
             $[starttimestamp=`timestamp$00:00+`date$starttimestamp)and
             (endtimestamp=-1+`timestamp$1+`date$endtimestamp);
