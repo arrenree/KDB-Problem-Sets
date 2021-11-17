@@ -3112,6 +3112,205 @@ f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, tim
 ### 🔴 qSQL
 [Top](#top)
 
+### [QSQL] Racking xbar Problem Set 1 AQ
+
+```q
+trade:([] sym:`GOOG`IBM`GOOG`IBM`IBM; 
+       time: 09:00 09:01 09:20 09:32 09:34; 
+       size: 200 100 1200 200 400; 
+       price: 30.9 36 30.9 36.1 36.2)
+
+sym  | time  | size | price
+---------------------------
+GOOG | 09:00 |  200 | 30.9
+IBM  | 09:01 |  100 | 36.0
+GOOG | 09:20 | 1200 | 30.9
+IBM  | 09:32 |  200 | 36.1
+IBM  | 09:34 |  400 | 36.2
+
+/1 lets bucket the size by sym in 15 min windows
+
+select sum size by sym, 15 xbar time.minute from trade
+
+sym  | minute | size
+---------------------
+GOOG | 09:00  |  200
+GOOG | 09:15  |	1200
+IBM  | 09:00  |  100
+IBM  | 09:30  |  600
+
+/ but not all syms + time buckets are present
+/ ex, GOOG @ 9:30 isn't present
+```
+
+```q
+/2 start by creating complete list of buckets
+
+start: 09:00
+end: 09:59
+bucket: 15
+
+/ so each bucket will be 15 mins
+
+/3 Calc number of buckets required for time span (end-start)
+
+(end-start) % bucket
+3.933
+
+/ round up to whole number
+
+ceiling (end-start) % bucket
+4
+
+/ ceiling function will round 3.933 up to 4
+```
+
+```q
+/4 create list of buckets by creating list of integers to num of buckets
+/ this is done by multiplying each element x bucket size (15)
+
+bucket * til ceiling (end-start) % bucket
+0 15 30 45
+
+/ bucket x til 4
+/ 15 x 0 1 2 3
+
+/5 add start time by making list of time buckets and rename as times
+
+times: start+bucket * til ceiling (end-start) % bucket
+09:00u; 09:15u; 09:30u; 09:45u
+```
+
+```q
+/6 cross distinct syms with times list you just created and sort by sym
+
+rack:(`sym xasc select distinct sym from trade) cross ([] minute:times)
+
+sym  | minute
+-------------
+GOOG | 09:00
+GOOG | 09:15
+GOOG | 09:30
+GOOG | 09:45
+IBM  | 09:00
+IBM  | 09:15
+IBM  | 09:30
+IBM  | 09:45
+```
+
+```q
+
+/7 Join rack with original xbar table using # take operator
+
+rack # select sum size, last price by sym, bucket xbar time.minute from trade
+
+sym  | time  | size | price
+---------------------------
+GOOG | 09:00 |  200 | 30.9
+GOOG | 09:15 | 1200 | 30.9
+GOOG | 09:30 |	    |	
+GOOG | 09:45 |	    |	
+IBM  | 09:00 | 100  | 36.0
+IBM  | 09:15 |	    |	
+IBM  | 09:30 | 600  | 36.2
+IBM  | 09:45 |      |		
+```
+
+```q
+/8 update null size with 0
+
+update 0^size from rack # select sum size, last price by sym, bucket xbar time.minute from trade
+
+sym  | time  | size | price
+---------------------------
+GOOG | 09:00 |  200 | 30.9
+GOOG | 09:15 | 1200 | 30.9
+GOOG | 09:30 |	  0 |	
+GOOG | 09:45 |	  0 |	
+IBM  | 09:00 |  100 | 36.0
+IBM  | 09:15 |	  0 |	
+IBM  | 09:30 |  600 | 36.2
+IBM  | 09:45 |    0 |	
+```
+
+```q
+/9 update null price with last price
+
+update fills price by sym from update 0^size 
+from rack # select sum size, last price by sym, 
+bucket xbar time.minute from trade
+
+sym  | time  | size | price
+---------------------------
+GOOG | 09:00 |  200 | 30.9
+GOOG | 09:15 | 1200 | 30.9
+GOOG | 09:30 |	  0 | 30.9	
+GOOG | 09:45 |	  0 | 30.9	
+IBM  | 09:00 |  100 | 36.0
+IBM  | 09:15 |	  0 | 36.0	
+IBM  | 09:30 |  600 | 36.2
+IBM  | 09:45 |    0 | 36.2	
+```
+
+### [QSQL] Racking xbar Problem Set 2 AQ
+
+```q
+/1 create a function for creating a rack of time buckets
+
+createrack:{[start;end;bucket;symbols]
+            times:start + bucket * til ceiling (end-start:bucket xbar start)% bucket}
+
+/ takes in 4 arguments
+/ i don't undersatnd the end-start: bucket syntax :(
+
+/ lets test it out by calling the function
+
+createrack[2014.04.21D09:23; 2014.04.23D12:44; 0D00:15; `GOOG]
+
+2014-04-21T09:15:00.000000p
+2014-04-21T09:30:00.000000p
+2014-04-21T09:45:00.000000p
+...
+/ returns a list of dates/times
+```
+
+```q
+/2 add cross against list of syms
+
+createrack:{[start;end;bucket;symbols]
+            times:start+bucket*til ceiling (end-start:bucket xbar start)% bucket;
+            ([] sym:symbols,()) cross ([] time:times)}
+
+sym  | time                       
+---------------------------------
+GOOG | 2014-04-21T09:15:00.000000
+GOOG | 2014-04-21T09:30:00.000000 
+GOOG | 2014-04-21T09:45:00.000000 
+GOOG | 2014-04-21T10:00:00.000000 
+```
+
+```q
+/3 write another function which takes 4 parameters, calling our createrack func 
+/ and joins to the rack the bucket of data from trade table
+
+jointables:{[start;end;bucket;symbols] 
+            createrack[start;end;bucket;symbols]
+            #select sum size by sym, bucket xbar time from trades 
+            where date within `date$(start;end), sym in symbols, 
+            time within (start;end)}
+
+/ call same argument as before            
+
+jointables[2014.04.21D09:23; 2014.04.23D12:44; 0D00:15; `GOOG]
+
+sym  | time                       | size
+------------------------------------------
+GOOG | 2014-04-21T09:15:00.000000 | 53559
+GOOG | 2014-04-21T09:30:00.000000 | 108224
+GOOG | 2014-04-21T09:45:00.000000 | 87757
+GOOG | 2014-04-21T10:00:00.000000 | 86012
+```
+
 ### [QSQL] Problem Set Aqua Q
 
 ```q
