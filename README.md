@@ -3113,6 +3113,275 @@ f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, tim
 ### 🔴 qSQL
 [Top](#top)
 
+### [QSQL] Retrieve from 2 tables using table search filter - Problem 1
+
+```q
+/1 retrieve `GOOG`FB from t2 where date = 2021.10.21
+
+t1: ([] date: 2021.10.21 2021.10.21 2021.10.21 2021.10.21; sym: `GOOG`MSFT`FB`AMZN; exch: `nyse`nyse`nasdaq`nasdaq)
+t2: ([] sym: `GOOG`FB; exch: `nyse`nasdaq)
+
+t1
+date       | sym  | exch
+----------------------------
+2021-10-21 | GOOG | nyse
+2021-10-21 | MSFT | nyse
+2021-10-21 | FB	  | nasdaq
+2021-10-21 | AMZN | nasdaq
+
+t2
+sym  | ex
+------------
+GOOG | nyse
+FB   | nasdaq
+
+select from t1 where date=2021.10.21,([]sym;exch) in t2
+
+date       | sym  | exch
+----------------------------
+2021-10-21 | GOOG | nyse
+2021-10-21 | FB	  | nasdaq
+
+/ use a table of syms + exch in t2 as a filter
+/ this where filter will first filter by date in t1, then by the sym, exch found in t2
+```
+### [QSQL] Retrieve from 2 tables using table search filter - Problem 2
+
+```q
+/1 Retrieve IBM from cond A, CSCO from cond A or B, and MSFT from cond C with date = 2021.11.17
+
+trade
+date       time         sym  price    size  cond
+------------------------------------------------
+2021.11.17 09:30:01.663 MS   92.84566 31500 A   
+2021.11.17 09:30:01.788 D    73.02565 17500 A   
+2021.11.17 09:30:01.819 RBS  90.76262 29100 B   
+2021.11.17 09:30:01.961 RBS  97.44952 70200 B   
+2021.11.17 09:30:02.007 RBS  60.16924 88100 B   
+
+/2 create table, toget, as table for filter
+
+toget: ([] sym:`IBM`CSCO`CSCO`MSFT, cond:"AABC")
+
+sym   cond
+----------
+IBM    A
+CSCO   A
+CSCO   B
+MSFT   C
+
+/3 run query using selct + where clause to filter
+
+select from trade where date = 2021.11.17, ([]sym;cond) in toget
+
+date       sym  price size cond
+-------------------------------
+2021-10-30 MSFT	60.66 48700 C
+2021-10-30 IBM	59.00 28300 A
+2021-10-30 MSFT	54.57 23700 C
+2021-10-30 IBM	89.19 86600 A
+2021-10-30 IBM	84.13 46600 A
+```
+### [QSQL] Retrieve from 2 tables using table search filter - Problem 3
+
+```q
+/1 extract all the following results:
+
+/ gender - male and grade - A
+/ gender - female and grade - B
+/ gender - female and grade - A
+
+results:([]name:`John`Paul`Rachel`Jane`Emma;gender:"MMFFF";grade:"ABBAC")
+
+name  |gender|grade
+--------------------
+John  |   M  | 	A
+Paul  |   M  |	B
+Rachel|   F  |	B
+Jane  |   F  |	A
+Emma  |   F  | 	C
+
+/ individually this would be the syntax for each query
+
+select from results where gender="M", grade="A"
+select from results where gender="F", grade="B"
+select from results where gender="F", grade="A"
+```
+
+```q
+/2 however, can use a TABLE SEARCH function
+
+/ METHOD 1: 
+
+select from results where ([]gender;grade) in ([] gender:"MFF";grade:"ABA")
+
+name  |gender|grade
+--------------------
+John  |   M  | 	A
+Rachel|   F  |	B
+Jane  |   F  |	A
+
+/ so the search table query takes in whatever parameters you are querying for
+/ for example, you wanted filters on GENDER + GRADE
+/ so the table search  = ([] gender;grade)
+/ the last part is simply a table which contains the universe of the possible correct pairs
+```
+
+```q
+/ METHOD 2:
+
+/3 build table with target parameters
+
+t2: ([] gender:"MFF"; grade: "ABA")
+
+gender | grade
+---------------
+M      | A
+F      | B
+F      | A
+
+/4 loop table back into original query
+
+select from results where ([]gender;grade) in t2
+
+name  |gender|grade
+--------------------
+John  |   M  | 	A
+Rachel|   F  |	B
+Jane  |   F  |	A
+```
+
+### [QSQL] Bucket trade sizes into small, med, large using bin
+
+```q
+/1 write it all out using multiple select queries
+
+(select count i by sym, sizegroup:`small from trade where size within 0 999),
+(select count i by sym, sizegroup:`medium from trade where size within 1000 8999),
+(select count i by sym, sizegroup:`big from trade where size > 8999)
+
+sym | sizegroup  | x
+-------------------------
+A   | large      | 45645
+A   | med        | 4009
+A   | small      | 480
+AA  | large      | 45425
+
+/ sizegroup = new col name, and you assign a sym (`small`med`large) based on a where filter for size
+```
+
+```q
+/ 2 alternatively, you can create a function that sorts sizes into bins
+
+tradesize:{`small`med`large 0 1000 9000 bin x}
+
+select count i by sym, sizebucket:(tradesize;size) fby sym from trade
+
+/ fby sytax = (agg;col_name)
+/ func tradesize = aggregate function
+/ size = col name from original trade table
+```
+
+### [QSQL] Check whether the latest value was an uptick, downtick, or unch
+
+```q
+/ can make use of the deltas + signum function
+
+/ deltas will calculate the change between subsequence elements
+/ signum will tell you if the element is positive, negative, or 0
+
+deltas 3 2 2 1 5
+3 -1 0 -1 4
+
+signum deltas prices
+1 -1 0 -1 1
+```
+
+```q
+/1 add in new col called direction which calcs the signum deltas of price
+
+select from trade
+
+sym | price | size  | cond
+---------------------------
+C   |  59   | 18400 | C 
+F   |  104  | 62600 |    
+IBM |  73   | 77500 | B 
+A   |  63   | 73000 | B
+
+update dir: signum deltas price from trade
+
+sym | price | size  | cond | dir
+--------------------------------
+C   |  59   | 18400 | C    | 1  
+F   |  104  | 62600 |      | 1  
+IBM |  73   | 77500 | B    |-1 
+A   |  63   | 73000 | B    |-1 
+
+/ this will add a new column, dir, which will be +1, 0, or -1
+```
+
+```q
+/2 you can also create a function for signum deltas
+
+tickdir:{signum deltas [first x;x] }
+
+/ x = argument for price
+/ deltas [first x; x] = just means the difference between consecutive elements
+
+update dir: tickdir price from trade
+
+sym | price | size  | cond | dir
+--------------------------------
+C   |  59   | 18400 | C    | 1  
+F   |  104  | 62600 |      | 1  
+IBM |  73   | 77500 | B    |-1 
+A   |  63   | 73000 | B    |-1 
+
+/ tickdir takes price as its argument for x
+```
+
+```q
+/3 Group this data by sym, and see total sie traded by direction (uptick, downtick, etc)
+
+select sum size by sym, dir from update dir:tickdir price by sym from trade
+
+sym  | dir | size
+------------------------
+A    |	-1 | 1250381100
+A    | 	 0 | 8000
+A    |	 1 | 1243181200
+AAPL |	-1 | 1240192300
+AAPL |	 0 | 58400
+AAPL |	 1 | 1248680500
+
+/ groups size by sym and dir (previously calculated signums)
+/ TWO from statements as you are querying a table from which you previously created
+
+/ you cannot simply do this:
+
+select sum size by sym, dir:signum deltas price by sym from trades
+
+/ error, as tickdir was calculated on entire price column as a whole
+/ you cannot group by a column calculation on an entire column
+/ have to use an fby instead
+
+select sum size by sym, dir:(tickdir; price) fby sym from trades
+
+sym|dir|size
+-------------------
+ A |-1 |1258345400
+ A | 0 |7100
+ A | 1 |1252317500
+ 
+/ this will now work and returns same table as above
+/ fby symtax = (Aggr;col_name) fby
+/ aggr = tickdir as aggregator for signums from...
+/ col = price column
+
+/ the fby aggregates the tickdir from price column by sym
+```
+
 
 ### [QSQL] Problem Set Aqua Q
 
@@ -3178,43 +3447,6 @@ John   book	34
 Bob    book	79
 Paul   pencil	105
 
-```
-
-### [QSQL] Problem Set Aqua Q
-
-```q
-/ extract all the following results:
-/ gender - male and grade - A
-/ gender - female and grade - B
-/ gender - female and grade - A
-
-results:([]name:`John`Paul`Rachel`Jane`Emma;gender:"MMFFF";grade:"ABBAC")
-
-name  |gender|grade
---------------------
-John  |   M  | 	A
-Paul  |   M  |	B
-Rachel|   F  |	B
-Jane  |   F  |	A
-Emma  |   F  | 	C
-
-/ individually this would be the syntax for each query
-
-select from results where gender="M", grade="A"
-select from results where gender="F", grade="B"
-select from results where gender="F", grade="A"
-
-/ however, can use a table search function
-/ usually it goes: where col_name in value (where gender = "A")
-/ so you can go where (table of col names) in (table of values)
-
-select from results where ([]gender;grade) in ([] gender:"MFF";grade:"ABA")
-
-name  |gender|grade
---------------------
-John  |   M  | 	A
-Rachel|   F  |	B
-Jane  |   F  |	A
 ```
 
 ### [QSQL] Problem Set Aqua Q
