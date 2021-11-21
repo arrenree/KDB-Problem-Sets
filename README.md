@@ -3176,7 +3176,45 @@ d    | price
 `1b` | 0.12 0.43 0.32
 ```
 
+### [QSQL] Retrieve data for AAPL and RBS
 
+```q
+select from trade where sym in `AAPL`RBS
+
+date      | time         | sym |price   |size   | cond
+------------------------------------------------------
+2021-05-30| 09:30:02.743 | RBS | 97.113	| 80700 | C
+2021-05-30| 09:30:03.025 | AAPL| 78.66  | 19000	| A
+
+/ in function checks if every LHS argument occurs anywhere in RHS argument (AAPL or RBS)
+/ a faster way of checking "or" arguments
+```
+
+### [QSQL] Retrieve trades for RBS where price is between 95 and 100
+
+```q
+
+select from trade where sym=`RBS, price within 95 100
+
+date      |time          |sym   |price  | size | cond
+------------------------------------------------------
+2021-05-30| 09:30:02.743 | RBS  | 97.113| 80700 | C
+2021-05-30| 09:30:03.025 | AAPL | 98.66 | 19000	| A
+
+/ checks if LHS argument is within the range on RHS argument
+/ has to have lower + upper bind
+```
+
+### Retrieve trades for RBS within 95 and 100 and between 11:30 - 12:00
+
+```q
+select from trade where sym=`RBS, price within 95 100, time within 11:30 12:00
+
+date      | time          |sym   | price  | size | cond
+-------------------------------------------------------
+2021-05-30| 11:40:02.743 | RBS   | 97.113 | 80700 | C
+2021-05-30| 11:44:03.025 | AAPL  | 98.66  | 19000 | A
+```
 
 ### [QSQL] Retrieve from 2 tables using table search filter - Problem 1
 
@@ -3447,8 +3485,103 @@ sym|dir|size
 / the fby aggregates the tickdir from price column by sym
 ```
 
+### [QSQL] Calculate the number and total size traded by sym for each $1 price 
 
-### [QSQL] Problem Set Aqua Q
+```q
+select sum size, cnt: count i by sym, 1 xbar price from trades
+
+sym|price|  size  |cnt
+----------------------
+ A |50.0 |44191500|838
+ A |51.0 |42318700|842
+ A |52.0 |41432200|832
+
+/ groups the data by sym and 1 dollar price buckets
+/ cnt = tallies virtual column i; how many trades were executed by sym for that price bucket
+```
+
+### Find the max price and total size of trades during 5 min buckets
+
+```q
+
+select max price, sum size by sym, 5 xbar time.minute from trades
+
+sym  |minute | price|size
+-------------------------
+AAPL | 08:00 | 27.4 | 100
+AAPL | 08:05 | 27.9 | 200
+AAPL | 08:10 | 28.2 | 300
+
+/ set xbar as 5 minute time buckets
+/ grouped sym, then 5 min time buckets
+/ sym + minute are keyed (since by)
+```
+
+### [QSQL] Find the max price by sym in 45 min time buckets, specifically including 9:30 time bucket
+
+```q
+/ original query (incorrect as it doesn't include 9:30)
+
+select max price by sym, 45 xbar time.minute from trade
+
+sym |minute | price
+----------------------
+ A  |09:00  | 109.94
+ A  |09:45  | 109.99
+ A  |10:30  | 109.96
+
+/ correct query
+
+select max price by sym, 09:30 + 45 xbar time.minute - 09:30 from trade
+
+sym|minute |price
+------------------
+ A | 09:30 |109.94
+ A | 10:15 |109.99
+ A | 10:45 |109.96
+
+/ by adding 9:30 and subtracting 9:30 from xbar, you can shift the time bucket
+/ to include your desired time
+
+/ logic here:
+/ the 45 xbar time.minute = groups into 45 min buckets
+/ subtracting your time 9:30 = you shift the list to include your desired time
+/ adding 9:30 = reset to center around your desired time
+```
+
+### [QSQL] Retrieve the distinct cities and countries from the table
+
+```q
+cnc: ([] city:`toronto`london`ny`vancouver; country:`canada`england`usa`canada)
+
+city     | country
+-------------------
+toronto  | canada
+london   | england
+ny       | usa
+vancouver| canada
+```
+
+```q
+exec city, distinct country from cnc
+
+key    | value
+-----------------------------------
+city   | toronto london ny vancouver
+country| canada england usa
+```
+
+```q
+select city, distinct country from cnc
+
+/ error because select expects the columns to have the same length
+```
+
+
+
+
+
+### [QSQL] Problem Set 1 Aqua Q
 
 ```q
 \l salestable.q
@@ -3457,20 +3590,22 @@ tables[]
 
 / tables [] shows you what tables are within the script
 ```
+
 ```q
-/ add new column to sales containing profit
+/1 add new column to sales containing profit
 / profit = price * qty
 
 update profit:price*quantity from `sales
 
-trader product price quantity profit
-------------------------------------
-Bob	  pencil	3	 84	     252
-Bob	  pen	3	 82	     246
-Paul	  book	3	 64	     192
+trader |product |price| quantity| profit
+-----------------------------------------
+Bob    | pencil | 3   | 84      | 252
+Bob    | pen	| 3   |	82	| 246
+Paul   | book	| 3   |	64	| 192
 ```
+
 ```q
-/ work out total profit for each trader and product
+/2 work out total profit for each trader and product
 / (group by trader and product)
 
 select sum profit by trader, product from sales
@@ -3480,10 +3615,10 @@ trader product profit
 Bob    book    79
 Bob    paper   1353
 Bob    pen     728
-
 ```
+
 ```q
-/ sort by profit
+/3 sort by profit
 
 select [<profit] profit:sum profit by trader, product from sales
 
@@ -3514,7 +3649,7 @@ Paul   pencil	105
 
 ```
 
-### [QSQL] Problem Set Aqua Q
+### [QSQL] Problem Set 2 Aqua Q
 
 ```q
 f:{([]subject:(4*x)#`maths`english`french`ict;class:raze 4#/:x?"ABCDE";gender:raze 4#/:x?"MF";mark:35+(4*x)?60;id:raze 4#/:til x)}
