@@ -3113,6 +3113,71 @@ f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, tim
 ### 🔴 qSQL
 [Top](#top)
 
+### [QSQL] Find the first price and time for AAPL by date
+
+```q
+select first price, first time by date from trade where sym=`AAPL
+
+date        |price|time
+-------------------------------
+`2021-05-29`|78.6 |09:30:03.025
+`2021-05-30`|60.8 |09:30:02.686
+`2021-05-31`|55.1 |09:30:18.274
+
+/ by date = groups date as the key column
+```
+
+### [QSQL] Find the total number of trades for RBS by date and time in hours
+
+```q
+select count i, max price by date, time.hh from trade where sym=`RBS
+
+date        |hh   | x   | price
+------------------------------
+`2021-05-29`|`9`  | 645 | 50.5 
+`2021-05-30`|`10` | 154 | 50.0
+
+/ i is a virtual column that returns the number of rows (as column x)
+/ cast time to hours using time.hh
+```
+
+### [QSQL] Find all AAPL prices that are less than the avg price grouped by date
+
+```q
+select price by date from trade where sym=`AAPL, price < avg price
+
+date        | price
+--------------------------
+`2021-05-29`| 100 99 22 33...
+`2021-05-30`| 23 199 44 12...
+```
+
+### [QSQL] Retrieve prices, keyed by TODAY, where AAPL's price is less than the avg price
+
+```q
+select price by date=.z.d from trade where sym=`AAPL, price < avg price
+
+d   | price
+--------------
+`0` | 23 52 63...
+`1` | 23 66 12...
+
+/ grouped by today; 0 = false, 1 = true
+```
+
+### [QSQL] Retrieve price / max price, keyed by today, where the price is less than the avg price
+
+```q
+select {x % max x} price by date = .z.d from trade where sym=`AApl, price < avg price
+
+d    | price
+-------------------
+`0b` | 0.98 0.7 0.8
+`1b` | 0.12 0.43 0.32
+```
+
+
+
 ### [QSQL] Retrieve from 2 tables using table search filter - Problem 1
 
 ```q
