@@ -3577,9 +3577,215 @@ select city, distinct country from cnc
 / error because select expects the columns to have the same length
 ```
 
+### [QSQL] Delete the entire cond column from trade
+```q
+
+trade
+
+date       time         sym  price    size  cond
+------------------------------------------------
+2021.11.18 09:30:02.553 C    107.2018 63500 B   
+2021.11.18 09:30:02.701 MSFT 96.87488 1700  B   
+2021.11.18 09:30:02.743 RBS  97.11338 80700 C   
+
+delete cond from trade
+
+date       time         sym  price    size 
+-------------------------------------------
+2021.11.18 09:30:02.553 C    107.2018 63500
+2021.11.18 09:30:02.701 MSFT 96.87488 1700 
+2021.11.18 09:30:02.743 RBS  97.11338 80700
+
+/ cond columns is removed
+/ cannot have by or where clause
+```
+
+### [QSQL] Delete the entire row that has A for cond
+
+```q
+trade
+
+date       |  time   | sym |price|size| cond| maxprice
+------------------------------------------------------
+2021.01.01 | 15:10:01| BAC |  70 |42.2|  A  | 104
+2021.03.01 | 15:09:01| JPM |  74 |41.2|  B  | 102
+2021.03.01 | 15:09:01| UBS |  41 |31.2|  C  | 91
+
+delete from tt where cond="A"
+
+date       |  time   | sym |price|size| cond| maxprice
+------------------------------------------------------
+2021.03.01 | 15:09:01| JPM |  74 |41.2|  B  | 102
+2021.03.01 | 15:09:01| UBS |  41 |31.2|  C  | 91
+
+/ since you added a WHERE clause, delete will remove entire row
+```
+
+### [QSQL] Update Problem Set TS
 
 
+```q
+\l trades.q
 
+date       time         sym  price    size  cond
+------------------------------------------------
+2021.11.18 09:30:02.553 C    107.2018 63500 B   
+2021.11.18 09:30:02.701 MSFT 96.87488 1700  B   
+2021.11.18 09:30:02.743 RBS  97.11338 80700 C   
+2021.11.18 09:30:02.758 A    100.35   50300 B   
+```
+
+```q
+/1 update all prices to 10
+
+update price: 10.0 from trade
+
+date       time         sym  price size  cond
+---------------------------------------------
+2021.11.18 09:30:02.553 C    10    63500 B   
+2021.11.18 09:30:02.701 MSFT 10    1700  B   
+2021.11.18 09:30:02.743 RBS  10    80700 C   
+2021.11.18 09:30:02.758 A    10    50300 B  
+```
+
+```q
+/2 update the price of C to 10.0
+
+update price:10.0 from trade where sym=`C
+
+date       | time         | sym | price| size  | cond
+-----------------------------------------------------
+2021.10.30 | 09:30:02.553 | C   | 10   | 63500 | B   
+
+/ note the price has to be a float, otherwise query won't work
+/ when in doubt, use META to check the datatypes
+```
+
+```q
+/3 update the price to 10.0 for AAPL and GOOG
+
+update price:10.0 from trade where sym in `AAPL`GOOG
+
+date       | time         | sym  | price| size  | cond
+-----------------------------------------------------
+2021.10.30 | 09:30:02.553 | AAPL | 10   | 63500 | B   
+2021.10.30 | 09:30:02.701 | AAPL | 10   | 1700  | B   
+2021.10.30 | 09:30:02.743 | GOOG | 10   | 80700 | C  
+
+/ for multi where condition use "in" 
+/ the where clause updates only the filtered records
+```
+
+```q
+/4 add new column vol, which is price x size for AAPL and GOOG
+
+update vol:price*size from trade where sym in `AAPL`GOOG
+
+date       | time         | sym  | price| size  | cond | vol
+---------------------------------------------------------------
+2021.10.30 | 09:30:02.553 | AAPL | 10   | 63500 | B    | 635000
+2021.10.30 | 09:30:02.701 | AAPL | 10   | 1700  | B    |  17000
+2021.10.30 | 09:30:02.743 | GOOG | 10   | 80700 | C    | 807000 
+2021.11.18 | 09:30:02.743 | RBS  | 10   | 80700 | C    | 
+2021.11.18 | 09:30:02.758 | A    | 10   | 50300 | B    |
+
+/ update new column = adds new column to end
+/ only populates values for AAPL and GOOG
+```
+
+```q
+/5 update the prices of AAPL and GOOG to average price, grouped by sym 
+
+update price:avg price by sym from trade where sym in `AAPL`GOOG
+
+date       | time         | sym  | price| size  | cond 
+-------------------------------------------------------
+2021.10.30 | 09:30:02.553 | AAPL | 79.98| 63500 | B    
+2021.10.30 | 09:30:02.701 | AAPL | 79.98| 1700  | B    
+2021.10.30 | 09:30:02.743 | GOOG | 34.32| 80700 | C 
+
+```
+
+```q
+/6 randomly select 100 rows
+
+tt:100?trade
+
+date       |  time   | sym |price|size| cond
+---------------------------------------------
+2021.01.01 | 15:10:01| BAC | 70  |422| B
+2021.03.01 | 15:09:01| JPM | 74  |412| C
+```
+
+```q
+/7 update all cond to "D"
+
+update cond: "D" from tt
+
+date       |  time   | sym |price|size| cond
+---------------------------------------------
+2021.01.01 | 15:10:01| BAC | 70  |422 | D
+2021.03.01 | 15:09:01| JPM | 74  |412 | D
+```
+
+```q
+/8 divide all size values by 100
+
+update size%100 from tt
+
+date       |  time   | sym |price|size| cond
+---------------------------------------------
+2021.01.01 | 15:10:01| BAC | 70  |42.2| D
+2021.03.01 | 15:09:01| JPM | 74  |41.2| D
+2021.03.01 | 15:09:01| UBS | 41  |31.2| D
+
+/ can perform function on entire column. size divided by 100
+```
+
+```q
+/9 add a new column called advice and populate with sell
+
+update advice:`sell from tt
+
+date       |  time   | sym |price|size|cond|advice
+---------------------------------------------------
+2021.01.01 | 15:10:01| BAC |  70 |42.2|D   | sell
+2021.03.01 | 15:09:01| JPM |  74 |41.2|D   | sell
+2021.03.01 | 15:09:01| UBS |  41 |31.2|D   | sell
+
+/ if you update a column that doesnt exist, it will add the column
+/ new column added called advice and populates with sell
+/ notice it has to be backtick sell
+```
+
+```q
+/10 update advice to buy if price less than 70
+
+update advice: `buy from tt where price < 70
+
+date       |  time   | sym |price|size|cond|advice
+---------------------------------------------------
+2021.01.01 | 15:10:01| BAC |  70 |42.2|  D | 
+2021.03.01 | 15:09:01| JPM |  74 |41.2|  D | 
+2021.03.01 | 15:09:01| UBS |  41 |31.2|  D | buy
+
+/ if price less than 70, advice becomes buy
+/ if not, then null value returned
+```
+
+```q
+/11 add new column maxprice populated with max prices by sym
+
+update maxprice: max price by sym from tt
+
+date       |   time  | sym |price|size|cond|maxprice
+----------------------------------------------------
+2021.01.01 | 15:10:01| BAC |  70 |42.2|  D | 104
+2021.03.01 | 15:09:01| JPM |  74 |41.2|  D | 102
+2021.03.01 | 15:09:01| UBS |  41 |31.2|  D | 91
+
+/ since maxprice doesnt exist, adds new column to end
+```
 
 ### [QSQL] Problem Set 1 Aqua Q
 
