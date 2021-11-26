@@ -3787,6 +3787,145 @@ date       |   time  | sym |price|size|cond|maxprice
 / since maxprice doesnt exist, adds new column to end
 ```
 
+### [QSQL] fby Problem Set
+
+```q
+/1 Calc the min temp by city
+
+city:`NY`NY`LA`SF`LA`SF`NY
+temp:32 31 75 69 70 68 12
+
+(min;temp) fby city
+12 12 70 68 12
+
+/ this performs an fby on 2 lists
+/ calculates the min temp for every city (12 for NYC)
+
+```
+
+```q
+/2 find the max price per symbol
+
+time       |sym  |src|price | size
+-----------------------------------
+2019-03-11 |GOOG | L |36.01 | 1427
+2019-03-11 |GOOG | O |36.01 | 708
+2019-03-11 |MSFT | N |35.5  | 7810
+2019-03-11 |MSFT | O |31.1  | 1100
+
+select from t where price=(max;price) fby sym
+
+time       |sym  |src| price | size
+-----------------------------------
+2019-03-11 |GOOG | L | 36.01 | 1427
+2019-03-11 |GOOG | O | 36.01 | 708
+2019-03-11 |MSFT | N | 35.5  | 7810
+
+/ this is not correct, since there are still 2 GOOG (since both same "max" price)
+/ you can add another fby filter for time
+
+select from t where price=(max;price) fby sym, time=(max;time) fby sym
+
+time      |sym  |src| price | size
+-----------------------------------
+2019-03-11|GOOG	| O | 36.01 | 708
+2019-03-11|MSFT | N | 35.01 | 7810
+
+/ in this case, you filtered max price by sym, and max time by sym
+```
+
+```q
+/3 find the max price on today's date
+
+select from trade where date=2021.10.31, price=max price
+
+date       | time         | sym | price | size | cond
+------------------------------------------------------
+2021-11-26 | 12:51:34.253 | F   | 109.9 | 58500|
+
+/ filter by date, then the max price from this date
+```
+
+```q
+/4 find max price by sym on this date
+
+select from trade where date=2021.10.31, price=(max;price) fby sym
+
+date       | time         | sym | price | size | cond
+------------------------------------------------------
+2021-11-26 | 10:17:09.373 | A	| 109.9	| 94300| C
+2021-11-26 | 10:25:22.268 | MSFT| 109.9	| 49100| C
+2021-11-26 | 11:49:11.143 | D	| 109.9 |  5600| A
+
+/ filter by date, then find max price by sym
+/ groups the aggregation by sym
+/ notice this returns the whole table (max price by sym)
+
+/ if you did this instead:
+
+select max price by sym from trade where date = 2021.11.26
+
+sym  | price
+-------------
+A    | 109.9
+AA   | 113.2
+AAPL | 339.1
+
+/ this will ONLY return the max price column
+```
+
+```q
+/5 find max price by sym AND cond on this date
+
+select from trade where date=2021.10.31, price=(max;price) fby ([]sym;cond)
+
+/ aggregate by more than one field using a table
+/ filter by date, then max price by sym and cond
+```
+
+### [QSQL] Return all trades where the trade price has changed
+
+```q
+select from trade where differ price
+
+date       time         sym  price    size  cond
+------------------------------------------------
+2021.10.19 09:30:02.553 C    107.2018 63500 B   
+2021.10.19 09:30:02.701 MSFT 96.87488 1700  B   
+2021.10.19 09:30:02.743 RBS  97.11338 80700 C  
+
+/ so differ will return all prices that are DIFFERENT then last
+```
+
+### [QSQL] Add new column called change that calculates price changes between trades
+
+```q
+
+update change:deltas price from trade
+
+date       time         sym  price    size  cond change    
+--------------------------------------------------------
+2021.10.19 09:30:02.553 C    107.2018 63500 B    107.201  
+2021.10.19 09:30:02.701 MSFT 96.87488 1700  B    -10.326 
+2021.10.19 09:30:02.743 RBS  97.11338 80700 C      0.238
+
+/ so change = deltas from previous price
+```
+
+### [QSQL] Select trades where trade prices have increased
+
+```q
+select from trade where (deltas price)> 0
+
+date       time         sym    price    size  cond 
+--------------------------------------------------
+2021-10-19 09:30:02.553	C      107.2    63500  B
+2021-10-19 09:30:02.743	RBS     97.1    80700  C
+2021-10-19 09:30:02.758	A      100.3    50300  B
+```
+
+
+
 ### [QSQL] Problem Set 1 Aqua Q
 
 ```q
