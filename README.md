@@ -4001,8 +4001,147 @@ t         bidPrices            bidSizes     bidIndex   bestBid  bestBidSize
 / the bestBid and bestBidSize columns actually retrieve from a new column called bidIndex
 ```
 
+### [QSQL] Problem Set 1 TS
 
+```q
+\l trades.q
+```
 
+```q
+/1. Extract trades for MS greater than 1,000 in size
+
+select from trade where sym=`MS, size >1000
+
+dt         |sym |price|size
+----------------------------
+2021.01.01 | MS | 225 | 200
+2021.01.01 | MS | 234 | 400
+```
+
+```q
+/2. Find the total size of all trades and the average price paid per sym
+
+select totalsize:sum size, avgprice:avg price by sym from trade
+
+sym | totalsize   | avgprice
+-----------------------------
+A   | -1796963996 | 79.96
+AA  | -1792025796 | 80.02
+AAPL|  1789783596 | 79.98
+B   | -1802424996 | 79.84
+BAC | -1790778496 | 79.78
+```
+
+```q
+/3. Find the trade that was largest size for each sym
+
+select from trade where size=(max;size) fby sym
+
+date       | time         | sym  | price | size  | cond
+--------------------------------------------------------
+2021-11-27 | 09:30:21.256 | B	 | 100.0 | 99900 |	 
+2021-11-27 | 09:31:20.975 | AA	 | 67.3  | 99900 | C
+2021-11-27 | 09:43:47.816 | GOOG | 72.4  | 99900 | A
+2021-11-27 | 09:46:44.690 | F    | 73.2  | 99900 | B
+
+/ alternatively, if you did this:
+
+select max size by sym from trade
+
+sym | size
+-------------
+A   | 99900
+AA  | 99900
+AAPL| 99900
+B   | 99900
+```
+
+```q
+/4. Select the latest trade for each sym, and include all details
+
+select last date, last price, last time by sym from trade
+
+sym | date       | price | time
+----------------------------------------
+A   | 2021-12-01 | 87.5  | 17:29:57.306
+AA  | 2021-12-01 | 68.0	 | 17:29:58.789
+AAPL| 2021-12-01 | 76.1	 | 17:29:58.262
+B   | 2021-12-01 | 95.5	 | 17:29:56.912
+```
+
+```q
+/5. Find all trades that have sym GOOG
+
+select from trade where sym=`GOOG
+
+date       | time         | sym  | price | size  | cond
+--------------------------------------------------------
+2021-11-27 | 09:30:17.541 | GOOG | 86.1  | 83500 | C
+2021-11-27 | 09:30:17.895 | GOOG | 80.5  | 91700 | B
+2021-11-27 | 09:30:18.011 | GOOG | 81.0  | 49300 | B
+```
+
+```q
+/6. Find all trades that have sym GOOG or RBS or A
+
+select from trade where sym in `GOOG`RBS`A
+
+date       | time         | sym  | price | size  | cond
+-------------------------------------------------------
+2021-11-27 | 09:30:17.541 | GOOG | 86.1  | 83500 | C
+2021-11-27 | 09:30:17.895 |  RBS | 80.5  | 91700 | B
+2021-11-27 | 09:30:18.011 |    A | 81.0  | 49300 | B
+```
+
+```q
+/7. Find all trades for google that had a price between 70 and 80
+
+select from trade where sym=`GOOG, price within 70 80
+
+date       | time         | sym  | price | size  | cond
+-------------------------------------------------------
+2021-11-27 | 09:30:17.541 | GOOG | 73.1  | 83500 | C
+2021-11-27 | 09:30:17.895 | GOOG | 75.5  | 91700 | B
+2021-11-27 | 09:30:18.011 | GOOG | 77.0  | 49300 | B
+```
+
+```q
+/8. Count the number of trades and total size of trades per hour for sym RBS
+
+select numtrades:count i, totalsize: sum size by time.hh from trade where sym=`RBS
+
+hh | numtrades | totalsize
+--------------------------
+9  |	3186   | 159063500
+10 |	6544   | 321195100
+11 |	6280   | 315284200
+12 |	6141   | 306898200
+13 |	6086   | 305154900
+```
+
+```q
+/9. Select the number of trades and total size of trades every 30 mins for sym RBS
+
+select numbertrades: count i, totalsize: sum size by 30 xbar time.minute from trade where sym=`RBS
+
+minute|numbertrades|totalsize
+-------------------------------
+09:30 |    3186    | 159063500
+10:00 |	   3271    |  62197000
+10:30 |	   3273    | 158998100
+```
+
+```q
+/10. Find all trades for A where the price was cheaper than the average for that day
+
+select from trade where sym=`A, price < avg price
+
+date       | time         | sym | price | size  | cond
+-------------------------------------------------------
+2021-11-27 | 09:30:17.997 |  A	|  57.8 | 65600 | C
+2021-11-27 | 09:30:23.144 |  A	|  54.5 | 31200	|
+2021-11-27 | 09:30:23.570 |  A  |  60.8 | 8200	|
+```
 
 ### [QSQL] Problem Set 1 Aqua Q
 
