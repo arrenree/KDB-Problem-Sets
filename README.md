@@ -1174,6 +1174,13 @@ C  |  3
 
 dict2: .Q.A ! .Q.a
 
+Key | Value
+------------
+A   | a
+B   | b
+C   | c
+D   | d
+
 / this dict maps all uppercase to lowercase
 
 dict2 "HELLO WORLD"
