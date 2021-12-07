@@ -477,12 +477,13 @@ string `a`b`c
 "a","b","c"
 ```
 
-### How do you convert a list of strings to a list of chars?
+### How do you convert a list of syms to a list of chars?
 
 ```q
 raze string `a`b`c
 "abc"
 
+/ sym to string, then string to char
 / use raze function to collapse 1 layer
 ```
 
