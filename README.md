@@ -95,8 +95,12 @@ Tables are encased by parathesis ( ) and contain brackets [ ] which assigns the 
 4 = 4.0
 1b / true
 
+/ = will match on values, but not datatype
+/ 4 int = 4 float
+
 4 ~ 4.0
 0b / false. match is a lot more strict.
+/ ~ will match on both value + datatype
 ```
 ### [system] How do you load a file with column headers?
 
