@@ -940,7 +940,53 @@ avg dheight where dweight > 90
 1.6
 ```
 
-### How do you upsert different keys/values from the original dict's datatype?
+### [dict] Nested Dictionaries Problem Set
+
+```q
+d: `alpha`bravo`charlie ! ((1 2 3);(4 5 6);(7 8 9))
+
+key     | value
+----------------
+alpha	| 1 2 3
+bravo	| 4 5 6
+charlie	| 7 8 9
+```
+
+```q
+/1. add 2 new rows: delta, echo with 10 11 12 and 13 14 15, respectively
+
+d,:(`delta`echo)!((10 11 12);(13 14 15))
+
+key     | value
+----------------
+alpha	| 1 2 3
+bravo	| 4 5 6
+charlie	| 7 8 9
+delta   | 10 11 12
+echo    | 13 14 15
+
+/ need to use , : join assign to update the underlying table
+```
+
+```q
+/2. add 1 new row: golf with value 100
+
+d,: (enlist `golf)!(enlist 100)
+
+key     | value
+----------------
+alpha	| 1 2 3
+bravo	| 4 5 6
+charlie	| 7 8 9
+delta   | 10 11 12
+echo    | 13 14 15
+golf    | 100
+
+/ need to use enlist if adding single row to dictionary
+```
+
+
+### [dict] How do you upsert different keys/values from the original dict's datatype?
 
 ```q
 / The upserted keys and values must match in type
