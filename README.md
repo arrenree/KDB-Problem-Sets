@@ -1012,6 +1012,17 @@ chicago	|-6
 
 d1[`tokyo`athens]
 8 2
+
+/ or
+
+`tokyo`athens # d1
+
+key    | value
+---------------
+tokyo  | 8
+athens | 2
+
+/ when you perform take # on dictionary, returns a dictionary
 ```
 
 ```q
