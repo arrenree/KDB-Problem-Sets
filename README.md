@@ -2071,7 +2071,7 @@ sym|sector|employees
 --------------------
 FB |Tech  | 100
 
-`stock insert [`FB; `Tech; 100]
+`stock insert (`FB; `Tech; 100)
 
 sym  |sector|employees
 ---------------------
