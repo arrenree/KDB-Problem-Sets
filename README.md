@@ -985,6 +985,29 @@ golf    | 100
 / need to use enlist if adding single row to dictionary
 ```
 
+```q
+/3. Calculate the average value per column
+
+key     | value
+----------------
+alpha	| 1 2 3
+bravo	| 4 5 6
+charlie	| 7 8 9
+
+avg d
+4 5 6
+
+/ avg + dictionary name = average value per column
+```
+
+```q
+/4. Calculate the average value per row
+
+avg each d
+2 5 8
+
+/ avg + each + dictionary name = average value per row
+```
 
 ### [dict] How do you upsert different keys/values from the original dict's datatype?
 
