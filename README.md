@@ -1122,6 +1122,7 @@ b  |  2
 c  |  3
 
 / .Q.a = returns list of lowercase alphabets
+/ key values are chars
 ```
 
 ```q
@@ -1129,6 +1130,13 @@ c  |  3
 
 dict "abc"
 1 2 3
+
+/ or
+
+dict ["abc"]
+1 2 3
+
+/ the key values are chars, so need to use parathesis to retrieve
 ```
 
 ```q
