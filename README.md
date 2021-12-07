@@ -985,6 +985,10 @@ d: `a`b`c!1 2 3
 
 (enlist `c) # d 
 
+key | value
+---------
+c   | 3
+
 / have to use enlist when retrieving single domain
 ```
 
