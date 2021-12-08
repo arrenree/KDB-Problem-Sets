@@ -1454,6 +1454,7 @@ t: ([] sym:`$(); side: `char$(); size:`int$();price:`float$())
 sym | side | size | price
 --------------------------
 ```
+### [table] Insert Single Row
 
 ```q
 / method 1: INSERT SINGLE ROW
@@ -1467,6 +1468,8 @@ IBM | B    | 10   | 100
 / must use correct datatypes
 / can ignore column header
 ```
+
+### [table] Insert Multiple Rows
 
 ```q
 / method 2: INSERT MULTIPLE ROWS
@@ -1483,6 +1486,7 @@ AAPL | B    | 30   | 300.0
 / must use correct datatype!
 / ints and floats separated by commas!
 ```
+### [table] Upsert Multiple Rows
 
 ```q
 / method 3: UPSERT MULTIPLE ROWS
