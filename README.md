@@ -1454,10 +1454,10 @@ t: ([] sym:`$(); side: `char$(); size:`int$();price:`float$())
 sym | side | size | price
 --------------------------
 ```
-### [table] Insert Single Row (using Join Assign)
+### [table] 1. Insert Single Row (using JOIN ASSIGN)
 
 ```q
-/ method 1: JOIN ASSIGN Single Row
+/ add `IBM, "B", 10I, 100f to empty table
 
 t,:(`IBM;"B";10i; 100f)
 
@@ -1469,10 +1469,34 @@ IBM | B    | 10   | 100
 / can ignore column header
 ```
 
-### [table] Insert Multiple Rows
+### [table] 2. Insert Single Row (using INSERT)
 
 ```q
-/ method 2: INSERT MULTIPLE ROWS
+`t insert(`IBM;"B";10i;100f)
+
+/ don't need headers
+/ don't need enlist
+```
+### [table] 5. Upsert Single Row (UPSERT)
+
+```q
+
+`t upsert ([] sym:enlist`GOOG; side: enlist "B"; size: enlist 30; price: enlist 300f)
+
+/ upsert syntax is the same
+/ but you need to use enlist if only upserting single row
+/ need column header
+/ need correct datatype
+```
+
+### [table] 3. Insert Multiple Rows (INSERT)
+
+```q
+/ insert the following rows:
+/ `IBM`MSFT`AAPL
+/ "B" "S" "B"
+/ 10i 20i 30i
+/ 100f 200f 300f
 
 `t insert(`IBM`MSFT`AAPL;"B","S","B";10i, 20i, 30i;100f, 200f, 300f)
 
@@ -1486,10 +1510,14 @@ AAPL | B    | 30   | 300.0
 / must use correct datatype!
 / ints and floats separated by commas!
 ```
-### [table] Upsert Multiple Rows
+### [table] 4. Upsert Multiple Rows (UPSERT)
 
 ```q
-/ method 3: UPSERT MULTIPLE ROWS
+/ upsert the following rows:
+/ `IBM`MSFT`AAPL
+/ "B" "S" "B"
+/ 10i 20i 30i
+/ 100f 200f 300f
 
 `t upsert([]sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10i, 20i, 30i; price: 100f, 200f, 300f)
 
@@ -1504,21 +1532,16 @@ AAPL | B    | 30   | 300.0
 / must have commas between ints and floats!
 ```
 
-### [table] show 4 ways to add rows to table cars
+### [table] 3 Ways to Add Single Rows
 
 ```q
-`cars insert (`bmw;model:`300;date:2021.11.01)
-`cars upsert (`bmw;model:`300;date:2021.11.01)
-insert[`cars;(`bmw;model:`300;date:2021.11.01)]
-cars,:(`bmw;model:`300;date:2021.11.01)
+/ Create empty table cars with brand = sym, model = sym, and date = date
+
+cars:([] brand:`$();model:`$();date:`date$())
 ```
 
 ```q
-/ empty table cars 
-
-cars:([] brand:`$();model:`$();date:`date$())
-
-/ method 1:
+/2. Insert single row of bmw, 505, 2021.11.13
 
 `cars insert(`bmw;`505;2021.11.13)
 
@@ -1526,7 +1549,13 @@ brand| model| date
 ------------------------
 bmw  | 505  | 2021-11-13
 
-/ method 2:
+/ don't need column headers
+/ don't need enlist when using insert single row
+/ need corret datatype
+```
+
+```q
+/3. Insert Single Row using Alternative Syntax
 
 insert[`cars;(`audi;`s5;2021.11.13)]
 
@@ -1535,7 +1564,13 @@ brand| model| date
 bmw  | 505  | 2021-11-13
 audi | s4   | 2021-11-13
 
-/ method 3:
+/ don't need column header
+/ don't need enlist
+/ need correct datatype
+```
+
+```q
+/4. Upsert Single Row of bmw, 505, 2021.11.13
 
 `cars upsert(`bmw;`505;2021.11.13)
 
@@ -1546,7 +1581,7 @@ bmw  | 505  | 2021-11-13
 / note - you cannot upsert multiple rows; have to upsert a dictionary
 ```
 
-### [table] how do you add multiple rows into a table at once?
+### [table] how do you INSERT multiple rows into a table at once?
 ```
 / method 1
 
@@ -1571,7 +1606,7 @@ ferrari| F50  | 2021-11-13
 benz   | S500 | 2021-11-13
 ```
 
-### [table] how do you upsert multiple rows into a table?
+### [table] how do you UPSERT multiple rows into a table?
 
 ```q
 / you cannot upsert multiple rows into a table
@@ -1597,7 +1632,7 @@ banana|	30    |
 
 ```
 
-### [table] what is the difference between xcol and xcols?
+### [table] What is the difference between xcol and xcols?
 
 ```q
 / xcol is used to rename table columns
