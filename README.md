@@ -3383,14 +3383,13 @@ date      |sym|price| timestamp
 f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, timestamp=(max;timestamp) fby date, price=(last;price) fby sym}
 
 / select last price, max timestamp
-/ set date, sym as keys
+/ set date, sym as keys (allows date + sym to be first 2 columns)
+/ the 3 WHERE clauses are most important!
 / date <=d means look for previous day if current date doesnt satisfy query conditions
-/ the FBY is the most important part of this problem. 
-/ the ORDER of the FBY also matters a lot. 
 / you want to filter the LAST PRICE by sym, then
 / you want to filter the MAX TIMESTAMP by the date
+/ the ORDER of the fby also matters a lot. 
 ```
-
 
 <a name="qsql"></a>
 ### 🔴 qSQL
