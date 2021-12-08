@@ -1436,7 +1436,7 @@ r13   | 557 704 944 867 1681 674 1152
 ### 🔴 5. Tables
 [Top](#top)
 
-### [table] what is the difference between a table and a keyed table?
+### [table] What is the difference between a table and a keyed table?
 
 ```q
 A table - is a flipped dictionary. Vectors of data are organized by columns.
@@ -1444,7 +1444,7 @@ A table - is a flipped dictionary. Vectors of data are organized by columns.
 A keyed table - is a table of keyed records mapped to a table of value records.
 ```
 
-### [table] Insert Single/Multiple Rows
+### [table] Creating Blank Table with Datatypes
 
 ```q
 / Given Blank Table with following Datatypes:
@@ -1454,7 +1454,7 @@ t: ([] sym:`$(); side: `char$(); size:`int$();price:`float$())
 sym | side | size | price
 --------------------------
 ```
-### [table] Insert Single Row (join assign)
+### [table] Insert Single Row (using Join Assign)
 
 ```q
 / method 1: JOIN ASSIGN Single Row
