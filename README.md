@@ -2570,6 +2570,21 @@ paul   | physics | 55
 rachel | chem    | 82
 emma   | maths   | 76
 michael| bio     | 63
+
+/ note - since tab2 is a keyed table (`id is keyed), you cannot "drop" the column
+/ if you want to drop the column, must first unkey
+
+() xkey `tab1
+(enlist `id)_tab1
+
+pupil  |subject  | mark
+--------------------------
+john   | maths   | 96
+paul   | physics | 55
+rachel | chem    | 82
+emma   | maths   | 76
+michael| bio     | 63
+
 ```
 
 ```
