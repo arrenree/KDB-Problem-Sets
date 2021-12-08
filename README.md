@@ -1799,7 +1799,7 @@ benz	| 300
 
 ```
 
-### [table] How do you join 2 tables, keeping columns the same and adding new rows?
+### [table] How do you join 2 tables with same columns? (add rows)
 
 ```q
 / both tables must have same schema (column names + datatype)
@@ -1829,9 +1829,12 @@ MSFT sell  40	 400
 / this will keep column headers the same
 / and append the new rows
 ```
-### [table] How do you join 2 tables, adding columns but keeping rows the same?
+### [table] How do you join 2 tables with different columns? (add columns)
 
 ```q
+t1:([] sym: `IBM`AAPL`GOOG; ex: `nyse`nyse`nasdaq)
+t2:([] price:10 20 30; size: 100 200 300)
+
 t1
 sym  ex
 ----------
@@ -1854,6 +1857,7 @@ IBM  nyse    10   100
 AAPL nyse    20   200
 GOOG nasdaq  30   300
 
+/ use ,' each both adverb to combine tables together
 ```
 
 ### [tables] How do you add/change keys in a table?
@@ -1905,7 +1909,6 @@ upsert[t1;t2]
 `d`   | five  | 500
 `e`   | six   | 600
 
-
 / both tables have to be keyed!
 / the schemas have to match (col names)
 / if key exists and matches, updates value (c match, replaces old values)
@@ -1929,6 +1932,8 @@ g   | eight | 800
 ### [table] Show 2 ways to retrieve values as a table from a keyed table
 
 ```q
+t1:([sym:`a`b`c];ex:`one`two`three;size:100 200 300)
+
 t1
 `sym` | ex    | size
 ------------------
@@ -1938,37 +1943,42 @@ t1
 `d`   | five  | 500
 `e`   | six   | 600
 
-/ method 1
+/ method 1 - Retrieve Values Where sym is a and b
 
-t1 ( [] sym`a`b)
+t1 ([] sym:`a`b)
 
 ex  | size
 -----------
 one | 100
 two | 200
 
-/ method 2
+/ sym is keyed in t1
+/ by querying a table of 2 syms, you get the values as a table
+```
 
-( []sym:`a`b)# t1
+```q
+/ method 2 - Retrieve Values Where sym is a and b
+
+([] sym:`a`b) # t1
 
 `sym` | ex  | size
 ----------------
 `a`   | one | 100
 `b`   | two | 200
 
-/ by "taking" the 2 keys from t1, you return a table including the sym column
+/ by using take #, you return a table including the sym column
 ```
 
-### [table] Retrieve values tables from keyed table
+### [table] Retrieve values from keyed table
 
 ```q
 kt:([employer:`kx`ms`ms;loc:`NY`NY`HK] size: 10 20 30; area: 1 2 3)
 
-employer| loc|size|area
------------------------
-kx	| NY | 10 | 1
-ms	| NY | 20 | 2
-ms	| HK | 30 | 3
+`employer`| `loc`|size|area
+----------------------------
+`kx`	  | `NY` | 10 | 1
+`ms`	  | `NY` | 20 | 2
+`ms`	  | `HK` | 30 | 3
 
 /1 retrieve values as a dictionary for keys `ms and `HK
 
@@ -2051,6 +2061,19 @@ employees | 100
 ```q
 /5 Insert GOOG in the tech sector with 100 employees
 
+`stock insert (`GOOG;`tech;100)
+
+sym |sector    |employees
+-------------------------
+MS  |Financial |100
+C   |Financial |100
+AAPL|Tech      |100
+GOOG|Tech      |100
+
+/ if you insert single row don't need to use enlist
+
+/ alternatively, this also works (but more confusing):
+
 insert [`stock; ([] sym: enlist `GOOG; sector: enlist `tech; employees: enlist 100)]
 
 sym |sector    |employees
@@ -2093,7 +2116,7 @@ avg employees `height
 avg (employees, boss) `height
 176.33
 
-/ joins the 2 tables together
+/ joins 2 tables together using simple comma join
 / calculate the average height from joined table
 ```
 
@@ -2141,11 +2164,7 @@ dt        |sym  |price| size
 2021-11-01|JPM	|1    | 100
 2021-11-02|UBS	|2    | 200
 
-`trade insert( [] dt:2021.11.01+1 ; sym:`JPM`UBS; price:1 2; size: 100 200) 
-
-/ or
-
-insert [`trade; ([] dt:2021.11.01+1 ; sym:`JPM`UBS; price:1 2; size: 100 200)]
+`trade insert (2011.11.01 2011.11.01; `JPM`UBS;1,2;100,200)
 
 dt        |sym  |price| size
 ----------------------------
@@ -2157,6 +2176,23 @@ dt        |sym  |price| size
 2021-11-01|JPM	|1    | 100
 2021-11-02|UBS	|2    | 200
 
+/ dont need column headers
+/ need commas between the ints
+
+/ or
+
+`trade insert( [] dt:2021.11.01+1 ; sym:`JPM`UBS; price:1 2; size: 100 200) 
+
+/ need column headers
+/ don't need commas between ints
+
+
+/ or
+
+insert [`trade; ([] dt:2021.11.01+1 ; sym:`JPM`UBS; price:1 2; size: 100 200)]
+
+/ need column headers
+/ inserting a table method
 / have to use backtick table in order to amend the underly table
 ```
 
@@ -2183,12 +2219,13 @@ FB   |Tech  | 100
 /3 In the stock table, change the number of employees for C to 300
 
 stock upsert (`C;`Fin;300)
+
 / must use parathesis
 / using this method can bypass the enlist requirement
 
 / or
 
-stock upsert ([sym: enlist`C] employees: enlist 300)
+`stock upsert ([] sym: enlist `C; sector: enlist `Tech; employees: enlist 300)
 
 sym|sector|employees
 --------------------
@@ -2237,6 +2274,8 @@ book | ticker|size
 
 ```q
 /2 Retrieve entries where book is C and ticker is c, using take**
+
+/ this doesnt work for some reason - come back to this
 
 ( [book:enlist`C; ticker:enlist`C]) # p
 
@@ -2294,6 +2333,7 @@ a  | 1 2 3 4
 b  | `a`b`c`d
 c  | 100 200 300 400
 ```
+
 ```q
 /1 create empty table sym (sym), side (char), size (int), price (float)
 
@@ -2347,8 +2387,8 @@ trade,:(`APPL,"B";30i;300f)
 /6 use a single join command to add 3 more rows into join
 
 / method 1: simply build a table
-trade:([] sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10 20 30; price: 100 200 300)
 
+trade:([] sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10 20 30; price: 100 200 300)
 
 / method 2: INSERT multiple
 
@@ -2363,7 +2403,6 @@ AAPL | B    | 30   | 300.0
 / when inserting multiple rows, no header!
 / must use correct datatype!
 / ints and floats separated by commas!
-
 
 / method 3: UPSERT multiple
 
@@ -2391,7 +2430,7 @@ lasttrade,:trade
 ```q
 /1 create the following table
 
-stock:([] item:`soda`bacon`mush`eggs;brand:`fry`prok`veg`veg;price:1.5 1.99 0.88 1.55; order:50 82 45 92)
+stock:([] item:`soda`bacon`mush`eggs;brand:`fry`pork`veg`veg;price:1.5 1.99 0.88 1.55; order:50 82 45 92)
 
 item  | brand| price | order
 ----------------------------
@@ -2427,7 +2466,7 @@ no, it does not
 ```
 
 ```q
-trader:([]item:`soda`bacon`mush`eggs`tomato;brand:`fry`prok`veg`veg`veg;price:1.5 1.99 0.88 1.55 1.35; order:200 180 110 210 100)
+trader:([]item:`soda`bacon`mush`eggs`tomato;brand:`fry`pork`veg`veg`veg;price:1.5 1.99 0.88 1.55 1.35; order:200 180 110 210 100)
 
 item   | brand| price| order
 ----------------------------
@@ -2480,7 +2519,8 @@ tomato | veg  |	170  | 1.0125
 
 / alternatively:
 
-update newprices from totalorders
+update newp:newprices from totalorders
+
 / this is the SQL method (probably cleaner)
 
 item   |brand |order | newprices
@@ -2640,7 +2680,7 @@ t2: ([] ex:`y;sym:`a`b`c)
 
 ps:(( [] sym:`a`b`c`a`b`c; ex:`x`x`x`y`y`y; price: 1.1 2.1 3.1 1.2 2 3.3); ( [] sym:`a`b`c`a`b`c; ex:`x`x`x`y`y`y; size: 200 100 300 200 50 200))
 
-/ Part 1: Join the first two tables using t1 schema ##
+/ Part 1: Join the first two tables using t1 schema
 
 Desired Result:
 
