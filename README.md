@@ -1454,10 +1454,10 @@ t: ([] sym:`$(); side: `char$(); size:`int$();price:`float$())
 sym | side | size | price
 --------------------------
 ```
-### [table] Insert Single Row
+### [table] Insert Single Row (join assign)
 
 ```q
-/ method 1: INSERT SINGLE ROW
+/ method 1: JOIN ASSIGN Single Row
 
 t,:(`IBM;"B";10i; 100f)
 
