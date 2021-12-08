@@ -1444,7 +1444,64 @@ A table - is a flipped dictionary. Vectors of data are organized by columns.
 A keyed table - is a table of keyed records mapped to a table of value records.
 ```
 
+### [table] Insert Single/Multiple Rows
+
+```q
+/ Given Blank Table with following Datatypes:
+
+t: ([] sym:`$(); side: `char$(); size:`int$();price:`float$())
+
+sym | side | size | price
+--------------------------
+```
+
+```q
+/ method 1: INSERT SINGLE ROW
+
+t,:(`IBM;"B";10i; 100f)
+
+sym | side | size | price
+--------------------------
+IBM | B    | 10   | 100
+
+/ must use correct datatypes
+/ can ignore column header
+```
+
+```q
+/ method 2: INSERT MULTIPLE ROWS
+
+`t insert(`IBM`MSFT`AAPL;"B","S","B";10i, 20i, 30i;100f, 200f, 300f)
+
+sym  | side | size | price
+-------------------------------
+IBM  | B    | 10   | 100.0
+MSFT | S    | 20   | 200.0
+AAPL | B    | 30   | 300.0
+
+/ no column header!
+/ must use correct datatype!
+/ ints and floats separated by commas!
+```
+
+```q
+/ method 3: UPSERT MULTIPLE ROWS
+
+`t upsert([]sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10i, 20i, 30i; price: 100f, 200f, 300f)
+
+sym  | side | size | price
+-------------------------------
+IBM  | B    | 10   | 100.0
+MSFT | S    | 20   | 200.0
+AAPL | B    | 30   | 300.0
+
+/ to UPSERT multiple, have to upsert a table 
+/ MUST include column names
+/ must have commas between ints and floats!
+```
+
 ### [table] show 4 ways to add rows to table cars
+
 ```q
 `cars insert (`bmw;model:`300;date:2021.11.01)
 `cars upsert (`bmw;model:`300;date:2021.11.01)
@@ -2250,10 +2307,38 @@ trade,:(`APPL,"B";30i;300f)
 ```q
 /6 use a single join command to add 3 more rows into join
 
+/ method 1: simply build a table
 trade:([] sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10 20 30; price: 100 200 300)
 
-/ note - when upserting into table, you don't need to specify datatype
-/ need to separate chars with comma
+
+/ method 2: INSERT multiple
+
+`t insert(`IBM`MSFT`AAPL;"B","S","B";10i, 20i, 30i;100f, 200f, 300f)
+
+sym  | side | size | price
+-------------------------------
+IBM  | B    | 10   | 100.0
+MSFT | S    | 20   | 200.0
+AAPL | B    | 30   | 300.0
+
+/ when inserting multiple rows, no header!
+/ must use correct datatype!
+/ ints and floats separated by commas!
+
+
+/ method 3: UPSERT multiple
+
+`t upsert([]sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10i, 20i, 30i; price: 100f, 200f, 300f)
+
+sym  | side | size | price
+-------------------------------
+IBM  | B    | 10   | 100.0
+MSFT | S    | 20   | 200.0
+AAPL | B    | 30   | 300.0
+
+/ to UPSERT multiple, have to upsert a table 
+/ MUST include column names
+/ must have commas between ints and floats!
 ```
 
 ```q
