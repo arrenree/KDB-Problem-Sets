@@ -4859,6 +4859,8 @@ minute| avgmid | avgprice
 ```
 
 
+### [joins-TS] QSQL Joins Problem Set
+
 ```q
 \l ex-joins.q
 
@@ -4871,7 +4873,7 @@ minute| avgmid | avgprice
 / **trade** (headers = dt, sym, price, size)
 ```
 
-### [join-TS] Find the total value of trades by sector, include sectors that are unknown (totalvalue = price x size)
+### Find total value of trades by sector (total value = price x size)
 
 ```q
 / the columns you need are price x size (trade table) and sector (stock table) 
