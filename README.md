@@ -229,6 +229,22 @@ AAPL | 120
 ### 🔴 2. Casting / Datatypes / Temporal
 [Top](#top)
 
+### [datatype] What is a negative datatype?
+
+```q
+/ a negative type is an atom
+/ a positive type is for everything else (ie, a list)
+
+type 5
+-7h
+
+/ integer atom
+
+type 2 3 4
+7h
+
+/ integer vector
+```
 
 ### [cast] What is casting?
 ```q
@@ -470,14 +486,14 @@ S1,'S2 / using EACH BOTH joins each element of s1 to each element of s2
  `AAPL.O`IBM.N`VOD.L
 ```
 
-### How do you convert a list of syms to strings?
+### [datatype] How do you convert a list of syms to strings?
 
 ```q
 string `a`b`c
 "a","b","c"
 ```
 
-### How do you convert a list of syms to a list of chars?
+### [cast] How do you convert a list of syms to a list of chars?
 
 ```q
 raze string `a`b`c
