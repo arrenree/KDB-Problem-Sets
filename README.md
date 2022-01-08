@@ -2940,6 +2940,32 @@ update d: ({exec max num from active where ex=x`ex, time within x`start`end} eac
 [Top](#top)
 
 
+### [func] What is a lambda expression?
+
+```q
+/ a lambda expression is an anonymous function
+/ functions in q are anonymous; it acquires a name only once it is assigned to a variable.
+```
+
+### [func] What are local variables?
+
+```q
+/ a variable that is created and exist only for the duration of an application
+```
+
+### [func] What is function prefix syntax?
+
+```q
+/ a unary function is a function with only one parameter
+/ when you separate the function from its argument , this is called a prefix syntax
+
+{x*x} 5
+25
+
+/ in this case, 5 is an implicit variable
+```
+
+
 ### [func] Function Problem Set 1 TS
 
 ```q
