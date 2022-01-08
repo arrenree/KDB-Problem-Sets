@@ -4618,6 +4618,25 @@ x \ y / scan
 x / y / over
 ```
 
+### [adverb] What is the difference between over and scan?
+```q
+/ takes a function (like addition) and iterates through list
+/ begin with initial value, sequentially add each item into prev item
+/ upon completion, the accumulator holds the desired result
+
+0 +/ 1 2 3 4 5
+15
+
+/ scan returns all intermediate values
+
+(+\) 1 + til 10
+1 3 6 10 15 21 28 36 45 55
+
+/ scan converts a binary function to a unary uniform function (one that returns list of same length as input)
+
+```
+
+
 ### [adverb] Each Both
 
 ```q
