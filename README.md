@@ -481,6 +481,12 @@ last ss[s;"l"]
 ssr["hello world"; "hello ";""], " of warcraft"
 world of warcraft
 
+/ ssr = string search replace
+/ hello world = string
+/ hello = what you want to replace
+/ "" = replacing with blank (delete)
+/ then you are joining a string , of warcraft
+
 ssr[s;"hello ";""], " of warcraft"
 world of warcraft
 ```
