@@ -584,8 +584,12 @@ raze string `a`b`c
 ```q
 /2. Create a list of 10 even numbers
 
-2 * til 10
+2 * 1 + til 10
 2 4 6 8 10 12 14 16 18
+
+/ til 10 = 0 1 2 3
+/ +1 = 1 2 3 4 5
+/ *2 = 2 4 6 8 etc.
 ```
 
 ```q
@@ -593,6 +597,9 @@ raze string `a`b`c
 
 1 + 2 * til 10
 1 3 5 7 9 11 13 15 17 19
+
+/ 2 * til 10 = 0 2 4 6..
+/ +1 = 1 3 5 7...
 ```
 
 ```q
