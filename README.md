@@ -23,17 +23,33 @@
 ### [gen] What is an Atom vs a List?
 
 ```q
-An atom - is an irreducible value of a specific data type
-A list -  is an ordered sequence of items
+atom 
+/ is an irreducible value of a specific data type
+
+"a" / char atom
+`sym / sym atom
+
+list
+/ is an ordered sequence of items
 ```
 
 ### [gen] What is the difference between a sym and a string?
 
 ```q
-A sym -  is an atomic entity holding text. Represented with a back tick. 
-Smaller in size than a char.
+sym
+/ is an atomic entity holding text 
+/ represented with a back tick ` 
+/ smaller in size than a char
 
-A string - is a list of chars. Represented by " " double parathesis
+`sym / sym atom
+`one`two`three / sym vector
+
+String 
+/ list of chars
+/ represented by " " double parathesis
+
+"the quick brown fox" / string aka char vector
+
 ```
 
 ### [gen] Order of Operations
