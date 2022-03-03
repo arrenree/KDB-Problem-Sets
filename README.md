@@ -681,6 +681,7 @@ l+: til count l
 l mod 2
 1 1 0 1 0 1 1 0 0 1 0 1 0 1 0 1 0 1 1 0
 
+/ returns a list of booleans
 / mod 2 tells us when the remainder is
 / so 0 = no remainder = even number
 / now need to count the 0s
