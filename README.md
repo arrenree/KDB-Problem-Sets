@@ -83,17 +83,22 @@ $   / cast, enumerate
 ^   / fill
 ```
 
-### [gen] What is a dictionary and a table? How are they related?
+### [gen] What is a dictionary vs a table? 
 
 ```q
-Dictionaries are data structures that map from a domain of keys to a range of values. 
-Contains a ! to separate keys and values.
+Dictionaries
+/ are data structures that map from a domain of keys to a range of values 
+/ contains a ! to separate keys and values
+/ flip a dictionary and you get a table
 
-A table is a flipped dictionary. Vectors of data are organized by columns. 
-Tables are encased by parathesis ( ) and contain brackets [ ] which assigns the key.
+Tables
+/ is a list of dictionaries (flipped)
+/ any single row is a dictionary
+/ tables are ordered, which means you can index them
+/ tables are encased by parathesis ( ) and contain brackets [ ] which assigns the key.
 ```
 
-### [system] show all variables definied in current session of q
+### [system] Show all variables defined in current session of q
 
 ```q
 \v
@@ -105,9 +110,12 @@ Tables are encased by parathesis ( ) and contain brackets [ ] which assigns the 
 \\
 ```
 
-### [gen] what is the difference between equals = and match ~
+### [gen] What is the difference between equals = and match ~
 
 ```q
+/ equals will match on value, but not datatype
+/ match will match on both value and datatype
+
 4 = 4.0
 1b / true
 
@@ -118,6 +126,37 @@ Tables are encased by parathesis ( ) and contain brackets [ ] which assigns the 
 0b / false. match is a lot more strict.
 / ~ will match on both value + datatype
 ```
+
+### [system] How do you read a txt file?
+
+```q
+/ assume txt file named test.txt
+
+hopen `:test.txt
+read0 `:test.txt
+
+/ hopen = opens the txt file
+/ read0 = reads the txt file
+```
+
+### [system] How do you Open and Edit a txt file?
+
+```q
+fh: hopen `:hi.txt
+fh "10"
+fh "20"
+neg[fh] "30"
+read0 `:hi.txt
+
+"1020"
+"30"
+
+/ fh = temp ref number that OS assigns to file requested to be opened
+/ neg[fh] = enter new line
+/ read0 = reads the txt file
+/ hclose fh = closes file hand so you can no longer edit it
+```
+
 ### [system] How do you load a file with column headers?
 
 ```q
@@ -127,9 +166,11 @@ Tables are encased by parathesis ( ) and contain brackets [ ] which assigns the 
 
 ("SSJ"; enlist",")0: `sample.csv
 
-/ S=sym
-/ J=int
+/ 0: function prepares, saves, and loads text files
+/ "SSJ" = sym, sym, long
+/ enlist "," = delimiter = what separates each column
 ```
+
 ```q
 / Without Column Headers
 
@@ -185,18 +226,18 @@ A: update crossableqty:?[side=brokerside;0N; qty - brokerquantity] from t lj 1!c
 ric    |side|qty|brokerside|brokerquantity|crossableqty
 -------------------------------------------------------
 1810.HK|Buy |500|   Sell   |      100     |	400
-0700.HK|Buy |500|   Sell   |	    100     |	400
-9988.HK|Buy |500|   Sell   |	    100     |	400
-0001.HK|Buy |500|   Sell   |	    100     |	400
+0700.HK|Buy |500|   Sell   |	  100     |	400
+9988.HK|Buy |500|   Sell   |	  100     |	400
+0001.HK|Buy |500|   Sell   |	  100     |	400
 
 A2: select from A where crossableqty > 0
 
 ric    |side|qty|brokerside|brokerquantity|crossableqty
 -------------------------------------------------------
-1810.HK|Buy |500|   Sell   |      100     |	400
-0700.HK|Buy |500|   Sell   |	    100     |	400
-9988.HK|Buy |500|   Sell   |	    100     |	400
-0001.HK|Buy |500|   Sell   |	    100     |	400
+1810.HK|Buy |500|   Sell   |    100     |	400
+0700.HK|Buy |500|   Sell   |    100     |	400
+9988.HK|Buy |500|   Sell   |    100     |	400
+0001.HK|Buy |500|   Sell   |    100     |	400
 
 select ric, side, crossableqty from A2
 
