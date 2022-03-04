@@ -442,41 +442,54 @@ d - 2020.12.25
 / todays date = monday, Nov 11
 / 2 days from sunday = Monday
 ```
+
+### [temporal] How many days were there in 2004?
+
+```
+2005.01.01 - 2004.01.01
+366
+```
+
 ### [string] Define strings s1: "Hello" and s2: "World"
 
 ```q
 s1: "hello"
 s2: "world"
 ```
+
 ```q
-/2 join the 2 strings together and save to s
+/2. join the 2 strings together and save to s
 
 s:s1, " ",s2
 "hello world"
 ```
+
 ```q
-/3 find index position of "w"
+/3. find index position of "w"
 
 s?"w"
 6
+
 / utilize the ? find operator to search index position within string
 ```
 
 ```q
-/4 find index positions of all "l" in s
+/4. find index positions of all "l" in s
 
 ss[s;"l"]
 2 3 9
 
 / ss = search string function. returns index position
 ```
+
 ```q
-/5 find index position of last l
+/5. find index position of last l
 
 last ss[s;"l"]
 ```
+
 ```q
-/6 remove "hello" and add " of warcraft" to s
+/6. remove "hello" and add " of warcraft" to s
 
 ssr["hello world"; "hello ";""], " of warcraft"
 world of warcraft
@@ -490,6 +503,30 @@ world of warcraft
 ssr[s;"hello ";""], " of warcraft"
 world of warcraft
 ```
+
+```q
+/7. Find index location for "ryan" in "hello ryan where is ryan"
+
+"hello ryan where is ryan" ss "ryan"
+6 20
+
+/ ss = string search
+/ returns index location
+/ ryan appears twice; at the 6th and 20th index location
+```
+
+```q
+/8. Replace "ryan" with "john"
+
+ssr["hello ryan where is ryan";"ryan";"john"]
+hello johhn where is john
+
+/ ssr = search string replace function
+/ first arg = input string
+/ second arg = what to replace
+/ third arg = what to replace with
+```
+
 
 ### [enumeration] Create an enumeration t2 containing values p q r that is restricted to domain t1
 
@@ -821,7 +858,7 @@ sum users where platform in `gameboy
 ### [list] List Problem Set - TS
 
 ```q
-/1 Retrieve the first 3 items from list p
+/1. Retrieve the first 3 items from list p
 
 p: 100 200 300 400 500 600
 t: "say hello world to bob"
@@ -829,11 +866,12 @@ m: (1 2 3; 10 20 30; 100 200 300)
 
 3#p
 100 200 300
+
 / use # take function to retrieve items from list
 ```
 
 ```q
-/2 From t, retrieve the list "sold"
+/2. From t, retrieve the list "sold"
 
 t?"sold"
 0 8 6 14
@@ -845,15 +883,18 @@ t[0 8 6 14]
 
 / then retrieve it using indexing to return "sold"
 ```
+
 ```q
-/3 Create the nested list ("shoot";"bob") by indexing into t
+/3. Create the nested list ("shoot";"bob") by indexing into t
 
 t?"shoot"
 0 4 8 8 16
+
 / find index positions of each element in string "shoot"
 
 t? "bob"
 19 8 19
+
 / find index positions of each element in string "bob"
 
 t(0 4 8 8 16; 19 8 19)
@@ -864,27 +905,120 @@ t(0 4 8 8 16; 19 8 19)
 / retrieve values using index position of a nested list
 / notice use parathesis ( ) instead of square bracket [ ]
 ```
+
 ```q
-/4 Change the last number in p to 1000
+/4. Change the last number in p to 1000
 
 p[5]: 1000
 / upsert. find index location 5, replace value with 1000
 ```
 
 ```q
-/5 Find the 3 highest numbers in p
+/5. Find the 3 highest numbers in p
 
 3#desc p
 100 500 400
+
 / take 3 numbers from descending list p
 ```
 
 ```q
-/6 Find values of p that are below the mean
+/6. Find values of p that are below the mean
 
-p where p<avg p
+p where p < avg p
 100 200 300 400
 ```
+
+```q
+/7. Given list L and K, find the common numbers in both lists
+l: 7 5 13 20 19 17 30 
+k: 7 17 200 300 400 1000 
+
+l inter k
+7 17
+
+/ inter = finds same values in x inter y
+```
+
+```q
+/8. Find the sum of the first 5 numbers in l
+
+l: 7 5 13 20 19 17 30
+
+sum 5#l
+64
+
+/ take first 5 numbers from l
+/ then sum them together
+```
+
+```q
+/9. Find the result when you remove the last 2 items from k
+
+k: 7 17 200 300 400 1000
+
+-2_k
+7 17 200 300
+
+/ drop last 2 items from k
+```
+
+```q
+/10. Return only numbers in l that are wholly divisible by 5
+
+l: 7 5 13 20 19 17 30 
+
+l mod 5
+2 0 3 0 4 2 0
+
+/ returns remainder where l divide by 5
+/ 0 means fully divisible
+
+l where not l mod 5
+5 20 30
+
+/ l where not l mod 5 = 
+
+/ return value where l mod 5 = 0
+/ not l mod 5 will return the values at 0
+```
+
+```q
+/11. Subtract the average of list l from max value in list k
+
+max[k] - avg [l] 
+984.14
+
+/ or also:
+
+max k - avg l
+9784.14
+```
+
+```q
+/12. Generate list p of 1000 random integers between 0 and 100.
+Find all values in p that are square numbers
+
+p: 1000?100
+a: sqrt p
+
+/ a = list containing square roots of every number in p
+/ a will contain both ints and floats
+
+a = `int$a
+
+/ cast a as an integer (whole number)
+/ since a is made up ints and floats
+
+p where a=`int$a
+
+/ return value in p where a = whole number (square numbers)
+
+count p where a=`int$a
+
+/ count number of p = square numbers
+```
+
 
 <a name="dictionary"></a>
 ### 🔴 4. Dictionary
