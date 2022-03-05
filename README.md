@@ -127,6 +127,108 @@ Tables
 / ~ will match on both value + datatype
 ```
 
+### [gen] What is 2 | 5
+
+```q
+5
+
+/ larger of x | y
+```
+
+### [gen] What is 2 & 5
+
+```q
+2
+
+/ amper = smaller of x & y
+```
+
+### [gen] What is 2 cut 1 2 3 4 5 6
+
+```q
+(1 2; 3 4; 5 6)
+
+/ cuts list into elements of 2
+/ x cut y
+/ y = list
+```
+
+### [gen] What is 1 4 cut 1 2 3 4 5 6
+
+```q
+(2 3 4; 5 6)
+
+/ 2nd element (4) = cut list by 4
+/ first element (1) = AFTER cutting, then drop everything before this element (1) from output
+```
+
+### [gen] What is 2 3 cut 1 2 3 4 5 6
+
+```q
+(3; 4 5 6)
+
+/ 2nd element (3) = cut list into elements of 3
+/ 1st element (2) = drop all elements before 2
+```
+### [gen] What is signum -2 0 1 3
+
+```q
+-1 0 1 1
+
+/ neg, 0, pos pos
+```
+### [gen] What is 1 cross 3 4?
+
+```q
+1 3
+1 4
+
+/ returns all possible combinations of x cross y
+/ note - does NOT multiply or add
+```
+
+### [gen] Cross Lists + Tables
+
+```q
+s:`IBM`MSFT
+v: 1 2
+
+s cross v
+((`ibm;1);(`ibm;2);(`apple;1);(`apple;2))
+
+/ returns a list of tuples
+```
+
+```q
+s:`IBM`MSFT
+v: 1 2
+
+([] s) cross ([] v)
+
+s     | v
+----------
+ibm   | 1
+ibm   | 2
+apple | 1
+apple | 2
+```
+
+```q
+/ building xbar timeseries
+
+time: 09:00 09:15
+sym: `GOOG`IBM
+
+([]sym) cross ([]time)
+
+sym  | time
+-----------
+GOOG | 09:00
+GOOG | 09:15
+ IBM | 09:00
+ IBM | 09:15
+```
+
 ### [system] How do you read a txt file?
 
 ```q
