@@ -1233,8 +1233,9 @@ a   |	1
 ```
 
 ### [dict] Dictionary Problem Set 1 (easy) TS
+
 ```q
-/1 given the below dictionary, find the type, the keys, and its values
+/1. given the below dictionary, find the type, the keys, and its values
 
 d:`p`q`r`s!10 20 40 100
 
@@ -1256,7 +1257,7 @@ value d
 ```
 
 ```q
-/2 add new entry u 200 to dict d
+/2. add new entry u 200 to dict d
 
 d[`u]: 200
 
@@ -1272,7 +1273,7 @@ u  | 200
 ```
 
 ```q
-/3 Change value of p to 2
+/3. Change value of p to 2
 
 d[`p]:2
 
@@ -1286,7 +1287,7 @@ u  | 200
 ```
 
 ```q
-/4 Create dictionary d2, only containing values of p q r from dictionary d
+/4. Create dictionary d2, by TAKING values of p q r from dictionary d
 
 d2:`p`q`r#d
 
@@ -1296,11 +1297,11 @@ p  | 2
 q  | 20
 r  | 40
 
-/ use # take function to take values of p q r from dictionary d
+/ when TAKE # from dict, output is a dict contains both keys + values
 ```
 
 ```q
-/5 Add common elements in d2 and d, only return common keys and values
+/5. Find common keys in d and d2, and retrieve keys + values from combined d+d2
 
 d+d2
 
@@ -1313,16 +1314,28 @@ s  | 100
 u  | 200
 
 / adds all values together where there is a match in keys
+```
 
+```q
 d inter d2
 2 20 40
 
 / dict inter dict will return values occuring in both dicts
+/ but you want to return both keys + values, not just values
+```
 
-key[d] inter k[d2]
+```q
+key[d] inter key[d2]
 `p`q`r
 
-/ have to use key[dict_name] inter key[dict2_name] to return keys in both dict
+/ retrieve keys in both d and d2
+/ inter = retrieves common values 
+/ so this will return the keys in both dict
+```
+
+```q
+/ now that you know the common keys, use TAKE
+/ to retrieve a dict from combined d + d2
 
 (key[d] inter key[d2]) # d + d2
 
@@ -1335,10 +1348,11 @@ r  | 80
 / combining together, you take the keys occuring in both dict from d1 + d2
 / and show its values
 ```
+
 ### [dict] Dictionary Problem Set 2 (Easy) - TS
 
 ```q
-/1 Given the 2 dictionaries below, find those who are greater than 1.7m in height
+/1. Given the 2 dictionaries below, find those who are greater than 1.7m in height
 
 dheight:`john`mark`luke`paul`ian`peter!1.5 1.6 1.7 1.8 1.9 1.4
 dweight:`john`mark`luke`paul`ian`peter!81 72 88 91 55 110
@@ -1364,7 +1378,7 @@ ian  | 55
 peter| 110
 
 dheight > 1.7
-/ dictionary + condition = examines values as booleans, returns as true/false
+/ comparison operator on a dict returns a table of booleans
 
 key  |value
 -----------
@@ -1380,8 +1394,9 @@ paul ian
 
 / where = returns the keys
 ```
+
 ```q
-/2 Find the average height of people who weight over 90
+/2. Find the average height of people who weight over 90
 
 where dweight > 90
 paul peter
