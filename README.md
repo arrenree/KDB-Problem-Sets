@@ -749,6 +749,19 @@ raze string `a`b`c
 42 44 46 48 50 52 54 56 58 60
 ```
 
+### [list] Drop item at index position x
+
+```q
+/ drop item from list at index position 2
+
+k: 1 2 3 4
+k _ 2
+
+/ if you put LIST _ x
+/ then it will remove item from index position x from list
+```
+
+
 ### [list] Problem Set (easy)
 
 ```q
