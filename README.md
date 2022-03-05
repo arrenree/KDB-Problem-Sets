@@ -410,14 +410,14 @@ type 2 3 4
 casting converts one datatype to another
 ```
 
-### [cast] Show 3 ways to conver float 4.5 to an integer
+### [cast] Show 3 ways to conver FLOAT 4.5 to an INT
 ```q
 `int$4.5
 "i"$4.5
 6h$4.5
 ```
 
-### [cast] What happens when you cast a date to an int?
+### [cast] What happens when you cast a DATE to an INT?
 
 ```q
 `int$2000.10.04
@@ -426,7 +426,7 @@ casting converts one datatype to another
 / casts as dates from 2000.01.01
 ```
 
-### [cast] Convert syms a b c to a String
+### [cast] Convert SYMS a b c to a STRING
 
 ```q
 string `a`b`c
@@ -435,7 +435,7 @@ string `a`b`c
 / simply use the string function
 ```
 
-### [cast] How do you cast a string to a sym?
+### [cast] How do you cast CHARS "a","b","c" to a SYM?
 
 ```q
 
@@ -449,7 +449,7 @@ string `a`b`c
 ### [cast] Cast the Following
 
 ```q
-/1 cast "2014.01.01" to a date
+/1. Cast STRING "2014.01.01" to a DATE
 
 "D" $ "2014.01.01"
 -14h
@@ -459,16 +459,16 @@ string `a`b`c
 ```
 
 ```q
-/2 cast `2013.01.01 to a date
+/2. Cast SYM `2013.01.01 to DATE
 
 "D" $ string `2013.01.01
 
 / `2013.01.01 is a sym
-/ requires first to cast to string, then cast to date
+/ requires first to cast to STRING, then cast to DATE
 ```
 
 ```q
-/3 cast 3.14 to an int
+/3. Cast FLOAT 3.14 to an INT
 
 `int $ 3.14 
 3
@@ -478,7 +478,7 @@ string `a`b`c
 ```
 
 ```q
-/4 cast "abcde" to a sym
+/4. Cast STRING "abcde" to a SYM
 
 `$"abcde"
 
@@ -486,6 +486,7 @@ string `a`b`c
 ```
 
 ### [cast] What is parsing?
+
 ```q
 / parsing is converting a string to another datatype.
 ```
