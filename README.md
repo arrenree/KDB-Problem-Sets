@@ -1189,6 +1189,49 @@ count p where a=`int$a
 a dictionary is a data structure that maps domains to a range of values. The keys and values are separated by !
 ```
 
+### [dict] How to retrieve values as a dictionary?
+
+```q
+/ have to use take #
+
+d: `a`b`c!1 2 3
+
+Key | Value
+-----------
+a   |	1
+b   |	2
+c   |	3
+
+`a`b#d
+
+Key | Value
+------------
+a   |	1
+b   |	2
+
+/ when retrieve using take #, result is a dictionary
+```
+
+### [dict] How to retrieve single item as dictionary?
+
+```q
+/ have to use enlist
+
+d: `a`b`c!1 2 3
+
+Key | Value
+------------
+a   |	1
+b   |	2
+c   |	3
+
+(enlist `a)#d
+
+Key | Value
+-----------
+a   |	1
+```
+
 ### [dict] Dictionary Problem Set 1 (easy) TS
 ```q
 /1 given the below dictionary, find the type, the keys, and its values
