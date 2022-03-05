@@ -761,6 +761,23 @@ k _ 2
 / then it will remove item from index position x from list
 ```
 
+### [list] Sublist
+
+```q
+5 sublist 1 2 3
+1 2 3
+
+/ sublist is like take, but ONLY takes whats available
+/ does not wrap around
+```
+
+```q
+2 2 sublist 1 2 3 4 5 6
+3 4
+
+/ from index position 2, take 2 elements
+```
+
 
 ### [list] Problem Set (easy)
 
