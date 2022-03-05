@@ -1151,6 +1151,33 @@ count p where a=`int$a
 
 / count number of p = square numbers
 ```
+### [list] Find ? List Questions
+
+```q
+1 2 3 4 5 ? 3
+2
+
+/ find index position of 3
+/ list ? x 
+/ retrieves index position of x
+```
+
+```q
+1 2 3 4 5 ? 7
+5
+
+/ find index position of 7
+/ not found (out of range), returns max index + 1
+/ 4 (max index position) + 1 = 5
+```
+
+```q
+1 2 2 3 4 ? 2
+1
+
+/ find index position of 2
+/ multiple occurence, only returns first
+```
 
 
 <a name="dictionary"></a>
