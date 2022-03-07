@@ -1756,7 +1756,7 @@ d4,:(enlist`rainfall)!enlist`belfast`cardiff`edinburgh`london!60 65 58 40
 ### [dict] Dictionary Problem Set (AquaQ)
 
 ```q
-/1 create dictionary with letters from a-z with corresponding numbers
+/1 create dictionary with keys as letters from a-z with corresponding numbers
 
 dict: .Q.a ! 1+til 26
 
@@ -1771,7 +1771,7 @@ c  |  3
 ```
 
 ```q
-/2 retrieve values of abc
+/2 retrieve values of abc 
 
 dict "abc"
 1 2 3
@@ -1781,6 +1781,7 @@ dict "abc"
 dict ["abc"]
 1 2 3
 
+/ abc = keys, to retrieve values, use indexing
 / the key values are chars, so need to use parathesis to retrieve
 ```
 
@@ -1826,13 +1827,13 @@ B   | b
 C   | c
 D   | d
 
-/ this dict maps all uppercase to lowercase
+/ create dict2, which maps uppercase keys to lowercase values
 
 dict2 "HELLO WORLD"
 "hello world"
 
 / the uppcase letters act as KEYS
-/ retrieves the lower case value
+/ by indexing the keys, you retrieve the lowercase value
 ```
 
 ```q
@@ -1849,9 +1850,11 @@ q  1101
 r  10
 s  0
 
+
 / the key is simply a string of chars
 / the values are just random "codes" you make up
 ```
+
 ```q
 /8 join numbers 0 to 4 onto the existing dictionary
 
@@ -1908,6 +1911,7 @@ manchester | 955
 tobermory  | 1789
 portsmouth | 544
 ```
+
 ```q
 /10 extract keys from first dictionary
 key d1
@@ -1959,7 +1963,7 @@ cardiff	    | 576.0
 
 d1>d2
 
-/ can simply use comparison operator to check if true or false
+/ can simply use comparison operator to output booleans
 
 key        | value
 ------------------
@@ -1975,9 +1979,8 @@ cardiff	   | 1b
 ```q
 /15 find the average rainfall over the 2 years for the UK
 
-sum(d1+d2)%2
+sum(d1+d2) % 2
 6170.5
-
 
 / d1+d1 will simply add each row together
 / the sum will aggregate all values together into 1 single value
