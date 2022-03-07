@@ -1326,6 +1326,8 @@ d inter d2
 
 ```q
 key[d] inter key[d2]
+(key d) inter (key d2)
+
 `p`q`r
 
 / retrieve keys in both d and d2
@@ -1338,6 +1340,8 @@ key[d] inter key[d2]
 / to retrieve a dict from combined d + d2
 
 (key[d] inter key[d2]) # d + d2
+((key d) inter (key d2)) # (d + d2)
+
 
 key|value
 ---------
