@@ -1427,6 +1427,25 @@ charlie	| 7 8 9
 ```q
 /1. add 2 new rows: delta, echo with 10 11 12 and 13 14 15, respectively
 
+/ UPSERT method
+
+d[`delta, `echo]: ((10, 11, 12); (13, 14, 15))
+
+key     | value
+----------------
+alpha	| 1 2 3
+bravo	| 4 5 6
+charlie	| 7 8 9
+delta   | 10 11 12
+echo    | 13 14 15
+
+/ upsert method you "index" new key [`echo] and assign new values 13, 14, 15
+/ adds key since doesnt exist, along with new values
+```
+
+```q
+/ JOIN ASSIGN method
+
 d,:(`delta`echo)!((10 11 12);(13 14 15))
 
 key     | value
@@ -1437,11 +1456,33 @@ charlie	| 7 8 9
 delta   | 10 11 12
 echo    | 13 14 15
 
-/ need to use , : join assign to update the underlying table
+/ join assign = you JOIN a dict, so needs !
+/ ,: join assign updates the underlying table
+
 ```
 
 ```q
 /2. add 1 new row: golf with value 100
+
+/ UPSERT method
+
+d[enlist `golf]: 100
+
+key     | value
+----------------
+alpha	| 1 2 3
+bravo	| 4 5 6
+charlie	| 7 8 9
+delta   | 10 11 12
+echo    | 13 14 15
+golf    | 100
+
+/ need enlist since upserting single row
+/ enlist only for KEY, no need for value
+```
+
+```q
+/ JOIN ASSIGN method
 
 d,: (enlist `golf)!(enlist 100)
 
@@ -1454,11 +1495,12 @@ delta   | 10 11 12
 echo    | 13 14 15
 golf    | 100
 
+/ join assign = need to add in dict! so need bang !
 / need to use enlist if adding single row to dictionary
 ```
 
 ```q
-/3. Calculate the average value per column
+/3. Calculate the average value per column (per column in values)
 
 key     | value
 ----------------
@@ -1467,18 +1509,27 @@ bravo	| 4 5 6
 charlie	| 7 8 9
 
 avg d
-4 5 6
+33.5 34.2 35
 
 / avg + dictionary name = average value per column
+/ since values are kinda like a matrix, with 3 columns
 ```
 
 ```q
 /4. Calculate the average value per row
 
 avg each d
-2 5 8
 
-/ avg + each + dictionary name = average value per row
+key     | value
+----------------
+alpha	| 2
+bravo	| 5
+charlie	| 8
+delta   | 11
+echo    | 14
+golf    | 100
+
+/ avg each + dictionary name = average value per row
 ```
 
 ### [dict] How do you upsert different keys/values from the original dict's datatype?
@@ -1516,7 +1567,7 @@ d[`a] = 1
 / returns the first entry
 ```
 
-### [dict] Take first 2 items from dict. retrieve value from key 'c
+### [dict] Take first 2 items from dict. Retrieve value from key 'c
 
 ```q
 d: `a`b`c!1 2 3
@@ -1533,7 +1584,7 @@ c   | 3
 / have to use enlist when retrieving single domain
 ```
 
-### [dict] Dictionary Problem Set AquaQ
+### [dict] Dictionary Problem Set 1 AquaQ
 
 ```q
 
@@ -1548,9 +1599,11 @@ toronto	|-5
 sydney	| 9
 tokyo	| 8
 chicago	|-6
+```
 
-/1 extract the hours for tokyo and athens
+[dict] 1. Extract the hours for tokyo and athens
 
+```q
 d1[`tokyo`athens]
 8 2
 
@@ -1566,15 +1619,22 @@ athens | 2
 / when you perform take # on dictionary, returns a dictionary
 ```
 
-```q
-/2 if it's 12:30 in Paris, what time is it in Chicago?
+[dict] 2. If it's 12:30 in Paris, what time is it in Chicago?
 
-(d1`paris)-d1`chicago = 7
+```q
+(d1`paris)-d1`chicago
+7
+
+d1[`paris]-d1[`chicago]
+7
 
 / paris vs chicago 7 hour difference
 / need to convert to hours (cuz 7 is just a long)
 
 ((d1`paris) - d1`chicago)*01:00
+07:00u
+
+(d1[`paris]-d1[`chicago])*01:00
 07:00u
 
 / then calculate difference from 12:30 (paris)
@@ -1583,59 +1643,101 @@ athens | 2
 05:30u
 
 12:30 - (((d1`paris) - d1`chicago)*01:00)
+05:30u
 
 / final answer
 / alternatively syntax could be:
 
 12:30 + 01:00 *(d1`chicago)-d1`paris
+05:30u
 
 / right to left
 ```
 
-```q
-/3 change London's time from 0 to 1
+[dict] 3. change London's time from 0 to 1
 
+```q
 d1[`london]:1
 ```
 
+[dict] 4. add in rome with value of +1
+
 ```q
-/4 add in rome +1
+/ UPSERT method
 
 d1[`rome]:1
 
-/ or alternative syntax
+/ JOIN ASSIGN method
 
 d1,:(enlist `rome)!enlist 1
 
 / when using join assign, must enlist if single atom!
 ```
 
+### [dict] Dictionary Problem Set 2 AquaQ
+
 ```q
+Given:
+
 d3:`belfast`cardiff`edinburg`london!(12 10 11 9; 11 10 10 10; 10 10 12 9; 15 12)
 
-/5 what's the average temp in each city?
+Key	 | Value
+----------------------
+belfast	 | 12 10 11 9
+cardiff	 | 11 10 10 10
+edinburg | 10 10 12 9
+london	 | 15 12
+```
 
+[dict] 1. What's the average temp in each city?
+
+```q
 avg each d3
+
+Key	Value
+----------------
+belfast	 | 10.5
+cardiff	 | 10.25
+edinburg | 10.25
+london	 | 13.5
+
+/ avg each returns average of each key
 ```
 
-```q
-/6 convert all temp from C to F (temp x 9/5 + 32)
+[dict] 2. Convert all temp from C to F (temp x 9/5 + 32)
 
-(d3*(9%5))+32
+```q
+(d3* (9%5) ) + 32
+
+Key	 | Value
+--------------------------------
+belfast	 | 405.6 338 371.8 304.2
+cardiff	 | 371.8 338 338 338
+edinburg | 338 338 405.6 304.2
+london	 | 507 405.6
+
+/ you can amend ALL values in table with math
+/ d3 + 100 = add 100 to every value in d3
 ```
 
-```q
-/7 find the max temp for belfast
+[dict] 3. Find the max temp for belfast
 
+```q
 max d3[`belfast]
+12
+
 / or
+
 max d3`belfast
 12
+
+/ calling d3[`belfast] returns values 12 10 11 9
+/ so max of this is 12
 ```
 
-```q
-/8 Given new dict d4, find max temp for belfast
+[dict] 4. Given new dict d4, find max temp for belfast
 
+```q
 d4:(enlist `temperature)!enlist d3
 
 max d4[`temperature;`belfast]
@@ -1644,11 +1746,13 @@ max d4[`temperature;`belfast]
 / first column = temperature
 / 2nd column is the entire dict of 3
 ```
+
 ```q
-/9 to add a row to d4:
+Add a row to d4:
 
 d4,:(enlist`rainfall)!enlist`belfast`cardiff`edinburgh`london!60 65 58 40
 ```
+
 ### [dict] Dictionary Problem Set (AquaQ)
 
 ```q
