@@ -2056,6 +2056,7 @@ IBM | B    | 10   | 100
 / don't need headers
 / don't need enlist
 ```
+
 ### [table] 5. Upsert Single Row (UPSERT)
 
 ```q
@@ -2161,6 +2162,7 @@ bmw  | 505  | 2021-11-13
 ```
 
 ### [table] how do you INSERT multiple rows into a table at once?
+
 ```
 / method 1
 
@@ -2408,6 +2410,7 @@ MSFT sell  40	 400
 / this will keep column headers the same
 / and append the new rows
 ```
+
 ### [table] How do you join 2 tables with different columns? (add columns)
 
 ```q
@@ -2465,6 +2468,7 @@ e  |john|    ts  | 15
 ```
 
 ### [tables] How do you delete/remove keys from a table?
+
 ```q
 / 0!table or () xkey
 
@@ -2474,6 +2478,7 @@ e  |john|    ts  | 15
 ```
 
 ### [tables] How do you upsert keyed rows/tables into a table?
+
 ```q
 t1:([sym:`a`b`c];ex:`one`two`three;size:100 200 300)
 t2:([sym:`c`d`e];ex:`four`five`six;size:400 500 600)
@@ -2578,7 +2583,7 @@ size| area
 10  | 1
 ```
 
-### [tables] Tables Problem Set TS
+### [tables] Tables Problem Set 1 TS
 
 ```q
 stock: ( [] sym: `MS`C`AAPL; sector:`Financial`Financial`Tech; employees: 100 100 100)
@@ -2588,27 +2593,45 @@ sym |sector    |employees
 MS  |Financial |100
 C   |Financial |100
 AAPL|Tech      |100
+```
 
-/1 Extract the employees numbers (without the header)
+[tables] 1. Extract the employees numbers (without the header)
 
-stock [ ; `employees]
-/ or
+```q
+/ since they only want values and no header, use INDEX retrieve
+
 stock[`employees]
-/ or
-stock.employees
-/ or
-stock`employees
 100 100 100
 ```
 
-```q
-/2 Key the first column in stock table above
+other syntax:
 
-1!stock
+```q
+stock.employees
+```
+```q
+stock`employees
+```
+```q
+stock [ ; `employees]
 ```
 
+[tables] 2. Key the first column in stock table above
+
 ```q
-/3 Display only the first and second rows of the stock table
+1!stock
+
+`sym` |sector    |employees
+-------------------------
+`MS`  |Financial |100
+`C`   |Financial |100
+`AAPL`|Tech      |100
+```
+
+[tables] 3. Display only the first and second rows of the stock table
+
+```q
+/ use TAKE # method
 
 2#stock
 
@@ -2616,15 +2639,21 @@ sym |sector    |employees
 -------------------------
 MS  |Financial |100
 C   |Financial |100
-
-/ or
-
-stock [0 1]
 ```
 
-```q
-/4 Select the last row of stock table as a dictionary
+alternative solution:
 
+```q
+/ use index retrieve method
+
+stock [0 1]
+
+/ returns index position 0 and 1 (first 2 rows)
+```
+
+[tables] 4. Select the last row of stock table as a dictionary
+
+```q
 last stock
 
 key       | value
@@ -2633,14 +2662,14 @@ sym       | AAPL
 sector    | Tech
 employees | 100
 
-/ last will retrieve the last row from table stock
+/ LAST will retrieve the last row from table stock
 / and return it as a dictionary
 ```
 
-```q
-/5 Insert GOOG in the tech sector with 100 employees
+[tables] 5. Insert GOOG in the tech sector with 100 employees
 
-`stock insert (`GOOG;`tech;100)
+```q
+`stock insert(`GOOG; `Tech; 100)
 
 sym |sector    |employees
 -------------------------
@@ -2649,10 +2678,13 @@ C   |Financial |100
 AAPL|Tech      |100
 GOOG|Tech      |100
 
-/ if you insert single row don't need to use enlist
+/ remember need to `stock otherwise error
+/ saves + updates underlying table
+```
 
-/ alternatively, this also works (but more confusing):
+alternative solution:
 
+```q
 insert [`stock; ([] sym: enlist `GOOG; sector: enlist `tech; employees: enlist 100)]
 
 sym |sector    |employees
@@ -2666,9 +2698,9 @@ GOOG|Tech      |100
 / must use enlist when adding single row!!
 ```
 
-```q
-/6 Find the average height of the bosses, the employees, and both the bosses and employees
+### [tables] Tables Problem Set 2 TS
 
+```q
 boss: ( [] name:`bob`bill`belinda; height: 188 186 174)
 employees: ( [] name:`jim`jane`john; height: 180 160 170)
 
@@ -2685,34 +2717,41 @@ name| height
 jim | 180
 jane| 160
 john| 170
-
-avg boss `height
-182.667
-
-avg employees `height
-170f
-
-avg (employees, boss) `height
-176.33
-
-/ joins 2 tables together using simple comma join
-/ calculate the average height from joined table
 ```
 
-```q
-/7 Find the 2 tallest employees
+[tables] 1. Find the average height of the bosses, the employees, and both the bosses and employees
 
-2#`height xdesc employees
+```q
+avg boss[`height]
+182.667
+
+avg employees [`height]
+170f
+
+avg (boss,employees)[`height]
+176.33
+
+/ first JOIN boss and employees tables together
+/ index retrieve values from the height column
+/ then find average
+```
+
+[tables] 2. Find the 2 tallest employees
+
+```q
+2 # `height xdesc employees
 
 name | height
 -------------
 jim  | 180
 john | 170
 
-/ take 2 from employees table, sorted descending by height
+/ first sort employees table by height (xdesc)
+/ syntax is column_name xdesc table_name
+/ then you take the first 2 rows 
 ```
 
-### [tables] Tables Problem Set 2 TS
+### [tables] Tables Problem Set 3 TS
 
 ```q
 stock: ( [sym:`MS`C`AAPL] sector:`Fin`Fin`Tech; employees: 100 100 100)
@@ -2735,15 +2774,58 @@ dt        |sym  |price| size
 2021-01-05|AAPL	|50   | 500
 ```
 
-```q
-/1 Insert the following rows into trade table
+[tables] 1. Insert the following rows into trade table
 
+```q
 dt        |sym  |price| size
 ----------------------------
 2021-11-01|JPM	|1    | 100
 2021-11-02|UBS	|2    | 200
 
-`trade insert (2011.11.01 2011.11.01; `JPM`UBS;1,2;100,200)
+meta trade
+
+c	t f a
+---------------
+dt	d		
+sym	s		
+price	j		
+size	j		
+
+/ since the values you insert HAS to match the datatype of table trade
+/ meta helps you know what each column datatype is
+
+`trade insert (2011.11.01 2021.11.02; `JPM`UBS; 1 2; 100 200)
+
+dt        | sym  | price| size
+-------------------------------
+2021-01-01| C	 |  10  | 100
+2021-01-02| C	 |  20  | 200
+2021-01-03| MS   |  30  | 300
+2021-01-04| C	 |  40  | 400
+2021-01-05| AAPL |  50  | 500
+2021-11-01| JPM	 |   1  | 100
+2021-11-02| UBS	 |   2  | 200
+
+/ can simply insert the values (without headers)
+/ remember to backtick `trade table name
+```
+
+alternative solution:
+
+```q
+/ insert table method
+
+`trade insert( [] dt:2021.11.01+1 ; sym:`JPM`UBS; price:1 2; size: 100 200) 
+
+/ requires column header names
+```
+
+alternative solution:
+
+```q
+/ alternative syntax, but also requires column headers
+
+insert [`trade; ([] dt:2021.11.01+1 ; sym:`JPM`UBS; price:1 2; size: 100 200)]
 
 dt        |sym  |price| size
 ----------------------------
@@ -2755,29 +2837,12 @@ dt        |sym  |price| size
 2021-11-01|JPM	|1    | 100
 2021-11-02|UBS	|2    | 200
 
-/ dont need column headers
-/ need commas between the ints
-
-/ or
-
-`trade insert( [] dt:2021.11.01+1 ; sym:`JPM`UBS; price:1 2; size: 100 200) 
-
-/ need column headers
-/ don't need commas between ints
-
-
-/ or
-
-insert [`trade; ([] dt:2021.11.01+1 ; sym:`JPM`UBS; price:1 2; size: 100 200)]
-
-/ need column headers
-/ inserting a table method
 / have to use backtick table in order to amend the underly table
 ```
 
-```q
-/2 Insert the following record into stock
+[tables] 2. Insert the following record into stock
 
+```q
 sym|sector|employees
 --------------------
 FB |Tech  | 100
@@ -2791,20 +2856,27 @@ C    |Fin   | 100
 AAPL |Tech  | 100
 FB   |Tech  | 100
 
-/ table name + insert (value1, value 2, value 3)
+/ insert values without header
+/ `FB automatically becomes keyed since table column sym is keyed
+/ remember to backtick `stock
 ```
 
-```q
-/3 In the stock table, change the number of employees for C to 300
+[tables] 3. In the stock table, change the number of employees for C to 300
 
+```q
 stock upsert (`C;`Fin;300)
 
-/ must use parathesis
-/ using this method can bypass the enlist requirement
+/ to update table values, use UPSERT
+/ don't need backtick on table name
+```
 
-/ or
+alternative solution:
 
-`stock upsert ([] sym: enlist `C; sector: enlist `Tech; employees: enlist 300)
+```q
+/ alternative syntax
+/ but this requires headers
+
+stock upsert ([sym: enlist`C] employees: enlist 300)
 
 sym|sector|employees
 --------------------
@@ -2813,9 +2885,9 @@ C  |Fin   |300
 / have to use enlist to create a vector for an atom
 ```
 
-```q
-/4 Sort the stock table by sym
+[tables] 4. Sort the stock table by sym
 
+```q
 `sym xasc `stock
 
 sym |sector| employees
@@ -2827,7 +2899,7 @@ MS  |Fin   | 100
 / `column name + xasc + `table name
 ```
 
-### [tables] Tables Problem Set 3 TS
+### [tables] Keyed Tables Problem Set 1 TS
 
 ```q
 p: ( [book:`A`B`B`C; ticker:`MS`AAPL`MS`C] size:100 200 300 400)
@@ -2881,7 +2953,6 @@ upsert [p; ([book:`C`D; ticker:`C`MS]size:400 500)]
 / for `C`C -> updates old value to 400
 / `D`MS 500 -> adds new row
 ```
-
 
 ### [tables] Tables Problem Set 1 AQ
 
