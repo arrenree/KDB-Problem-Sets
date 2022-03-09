@@ -6,13 +6,14 @@
 3. [Lists](#list)
 4. [Dictionary](#dictionary)
 5. [Tables](#tables)
-6. [Functions](#functions)
-7. [qSQL](#qsql)
-8. [Adverbs](#adverbs)
-9. [Attributes](#attributes)
-10. [Joins](#joins)
-11. [@ & . Operator](#at)
-12. [Racking & Alignment](racking)
+6. [Keyed Tables](#key_table)
+7. [Functions](#functions)
+8. [qSQL](#qsql)
+9. [Adverbs](#adverbs)
+10. [Attributes](#attributes)
+11. [Joins](#joins)
+12. [@ & . Operator](#at)
+13. [Racking & Alignment](racking)
 
 <hr>
 
@@ -2312,8 +2313,8 @@ meta t               / shows info on type, foreign keys, and attributes
 ### [table] Show examples of union, except, and inter function on tables
 
 ```q
-t:([] company:`ford`bmw`benz; employees:100 200 300)
-u: ([] company:`ford`bmw`ferrari; employees:5 200 400)
+t:( [] company:`ford`bmw`benz; employees:100 200 300)
+u:( [] company:`ford`bmw`ferrari; employees:5 200 400)
 
 table t
 company | employees
@@ -2335,8 +2336,8 @@ ferrari | 400
 ```q
 /1 UNION TABLE = merges 2 tables together, but does NOT dupe values!
 
-t:([] company:`ford`bmw`benz; employees:100 200 300)
-u: ([] company:`ford`bmw`ferrari; employees:5 200 400)
+t:( [] company:`ford`bmw`benz; employees:100 200 300)
+u:( [] company:`ford`bmw`ferrari; employees:5 200 400)
 
 t union u
 
@@ -2471,8 +2472,8 @@ MSFT sell  40	 400
 / can join tables together by adding extra columns
 / similar to LEFT JOIN
 
-t1:([] sym: `IBM`AAPL`GOOG; ex: `nyse`nyse`nasdaq)
-t2:([] price:10 20 30; size: 100 200 300)
+t1:( [] sym: `IBM`AAPL`GOOG; ex: `nyse`nyse`nasdaq)
+t2:( [] price:10 20 30; size: 100 200 300)
 
 t1
 sym  ex
@@ -2499,187 +2500,6 @@ GOOG nasdaq  30   300
 / use ,' each both adverb to combine tables together
 / t1 and t2 have diff column names
 / but same number of rows
-```
-
-### [tables] How do you add/change keys in a table?
-
-```q
-/ use 1!table or xkey
-
-kt
-id |name|employer| age
-----------------------
-a  |jane|  citi  | 11
-b  |jim |  citi  | 22
-c  |kim |    ms  | 13
-e  |john|    ts  | 15
-
-2!k2
-
-/or
-
-`id`name xkey k2
-
-`id` |`name`|employer| age
-----------------------
-`a`  |`jane`|  citi  | 11
-`b`  |`jim` |  citi  | 22
-`c`  |`kim` |    ms  | 13
-`e`  |`john`|    ts  | 15
-
-```
-
-### [tables] How do you delete/remove keys from a table?
-
-```q
-/ 0!table or () xkey
-
-0!kt
-/or
-() xkey kt
-```
-
-### [tables] How do you upsert keyed rows/tables into a table?
-
-```q
-t1:( [sym:`a`b`c]; ex:`one`two`three; size:100 200 300)
-t2:( [sym:`c`d`e]; ex:`four`five`six; size:400 500 600)
-
-upsert[t1;t2]
-
-`sym` | ex    | size
-------------------
-`a`   | one   | 100
-`b`   | two   | 200
-`c`   | four  | 400
-`d`   | five  | 500
-`e`   | six   | 600
-
-/ both tables have to be keyed!
-/ the schemas have to match (column names)
-/ if key exists and matches, updates value (c match, replaces old values)
-/ if new key, adds new row (d and e)
-
-/ alternative syntax
-
-t1,t2
-
-`sym` | ex    | size
-------------------
-`a`   | one   | 100
-`b`   | two   | 200
-`c`   | four  | 400
-`d`   | five  | 500
-`e`   | six   | 600
-
-/ since the tables are KEYED
-/ and the SCHEMA are the same
-/ you can simply "join" the tables together
-/ and return the same result
-```
-
-alternative syntax:
-
-```q
-/ you can also upsert by typing out a table
-
-upsert[t1;( [sym:`f`g] ex:`seven`eight; size: 700 800)]
-
-sym | ex    | size
-------------------
-a   | one   | 100
-b   | two   | 200
-c   | four  | 400
-f   | seven | 700
-g   | eight | 800
-```
-
-### [table] Show 2 ways to retrieve values as a table from a keyed table
-
-```q
-t1:([sym:`a`b`c];ex:`one`two`three;size:100 200 300)
-
-t1
-`sym` | ex    | size
-------------------
-`a`   | one   | 100
-`b`   | two   | 200
-`c`   | four  | 400
-`d`   | five  | 500
-`e`   | six   | 600
-```
-
-Method 1 - Retrieve Values of sym a and b
-
-```q
-t1 ( [] sym:`a`b)
-
-ex  | size
------------
-one | 100
-two | 200
-
-/ sym is keyed in t1
-/ using this syntax to query the KEYS in column sym
-/ returns the VALUES
-```
-
-Method 2 - Retrieve Values of sym a and b
-
-```q
-( [] sym:`a`b) # t1
-
-`sym` | ex  | size
-----------------
-`a`   | one | 100
-`b`   | two | 200
-
-/ by using take #, you return a table
-/ including the sym column
-```
-
-### [table] Retrieve values from Keyed table
-
-```q
-/ so in this case, you have 2 columns that are KEYED
-
-kt:([employer:`kx`ms`ms;loc:`NY`NY`HK] size: 10 20 30; area: 1 2 3)
-
-`employer`| `loc`|size|area
-----------------------------
-`kx`	  | `NY` | 10 | 1
-`ms`	  | `NY` | 20 | 2
-`ms`	  | `HK` | 30 | 3
-```
-
-[keyed tables] 1. Retrieve values as a dictionary for keys ms and HK
-
-```q
-/ you want to return the values for keys = MS + HK
-
-kt`ms`HK
-
-key  | value
------------
-size | 30
-area | 3
-
-/ notice this only returns the VALUES
-```
-
-[keyed tables] 2. Retrieve values where keys = ms/HK and kx/NY
-
-```q
-kt(`ms`HK;`kx`NY)
-
-size| area
------------
-30  | 3
-10  | 1
-
-/ so you are querying 2 sets of keys
-/ `ms`HK and `kx`NY
-/ returns VALUES only
 ```
 
 ### [tables] Tables Problem Set 1 TS
@@ -2998,73 +2818,20 @@ MS  |Fin   | 100
 / `column name + xasc + `table name
 ```
 
-### [tables] Keyed Tables Problem Set 1 TS
-
-```q
-p: ( [book:`A`B`B`C; ticker:`MS`AAPL`MS`C] size:100 200 300 400)
-
-`book`| `ticker`| size
-----------------------
-`A`   | `MS`    | 100
-`B`   | `AAPL`  | 200
-`B`   | `MS`    | 300
-`C`   | `C`     | 400
-```
-
-```q
-/1 Retrieve entries where book is B, using select**
-
-select from p where book=`B
-
-book | ticker|size
-------------------
-`B`  | `AAPL`| 200
-`B`  | `MS`  | 300
-```
-
-```q
-/2 Retrieve entries where book is C and ticker is c, using take**
-
-/ this doesnt work for some reason - come back to this
-
-( [book:enlist`C; ticker:enlist`C]) # p
-
-book | ticker| size
--------------------
-`C`  | `C`   | 400
-
-/ need to use enlist since only one row
-```
-
-```q
-/3 Upsert the following values in **
-
-`book` | `ticker`|size
-----------------------
-`A`    | `MS`    | 100
-`B`    | `AAPL`  | 200
-`B`    | `MS`    | 300
-`C`    | `C`     |**400**
-**`D`**|**`MS`** |**500**
-
-upsert [p; ([book:`C`D; ticker:`C`MS]size:400 500)]
-
-/ for `C`C -> updates old value to 400
-/ `D`MS 500 -> adds new row
-```
-
 ### [tables] Tables Problem Set 1 AQ
 
-```q
-/1 create 3 lists of 4 elements each for a, b, c
+[tables] 1. Create 3 lists called a, b, c with 4 elements each
 
+```q
 a: 1 2 3 4
 b: `a`b`c`d
 c: 100 200 300 400
+```
 
-/2 create a table using these 3 lists
+[tables] 2. Create a table using these 3 lists
 
-t:([] a;b;c)
+```q
+t:( [] a;b;c)
 
 a b c
 --------
@@ -3073,51 +2840,77 @@ a b c
 3 c 300
 4 d 400
 
-/3 create a dictionary using this table
+/ you can simply create a table using lists 
+/ which are vectors of equal length
+```
 
+[tables] 3. Create a dictionary using this table
+
+```q
 flip t
+
 key|value
 -----------------
 a  | 1 2 3 4
 b  | `a`b`c`d
 c  | 100 200 300 400
+
+/ a table is just a flipped dictionary
+/ so you can flip a table back into a dictionary
 ```
 
+[tables] 4. Create empty table sym (sym), side (char), size (int), price (float)
+
 ```q
-/1 create empty table sym (sym), side (char), size (int), price (float)
+trade:( [] sym:`$(); side:`char$(); size:`int$(); price:`float$())
 
-trade:([] sym:`$(); side:`char$(); size:`int$(); price:`float$())
+sym | side | size | price
 
-/ note for sym all you need is ` to cast
+/ created empty table trade
+/ to cast datatype sym use backtick `
 ```
-```q
-/2 create another table, lasttrade, which is a copy of trade, but sym is keyed
 
+[tables] 5. Create another table, lasttrade, which is a copy of trade, but sym is keyed
+
+```q
 lasttrade: 1!trade
+
+`sym` | side | size | price
+
+/ created empty table lasttrade, with keyed sym column
 ```
 
-```q
-/3 is there a difference in the metadata between 2 tables?
+[tables] 6. Is there a difference in the metadata between 2 tables?
 
+```q
 meta trade ~ meta lasttrade
 1b (true)
+
+/ no difference when you key columns
+/ meta queries TYPE, foreign key, attributes
 ```
 
-```q
-/4 is there a difference in type?
+[tables] 7. Is there a difference in type?
 
+```q
 type trade ~ type lasttrade
 0b (false)
+
+/ once you KEY a table, the TYPE becomes a dictionary
+/ so YES, the metadata will change once you key
 
 / trade = 98h = table
 / lasttrade = 99 = dict (since you keyed)
 ```
 
+[tables] Joining rows to table
+
 ```q
-/5 use 3 join commands to add rows to trade 
-     / sym IBM, MSFT, AAPL
-     / side "B" or "S"
-     / consistent values for other columns
+/ use 3 join commands to add rows to trade 
+/ sym: IBM, MSFT, AAPL
+/ side: "B" or "S"
+/ size: 10i 20i 30i
+/ price: 100f 200f 300f
 
 trade
 sym|side|size|price
@@ -3127,38 +2920,49 @@ trade,:(`IBM;"B";10i; 100f)
 trade,:(`MSFT;"S";20i;200f)
 trade,:(`APPL,"B";30i;300f)
 
-/ note - when using ,: join assign to insert data into table, you HAVE TO
-/ specify datatype, otherwise will fail
-/ for ex, simply appending 10, 100 will fail
+/ JOIN ASSIGN ,: dont need columns
+/ values separated by semi colon ;
+/ don't need backtick trade table
+/ need to specify datatype since the table was assigned datatypes earlier
 ```
 
-```q
-/6 use a single join command to add 3 more rows into join
+[tables] Use a single join command to add 3 more rows into join
 
+```q
 / method 1: simply build a table
 
 trade:([] sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10 20 30; price: 100 200 300)
 
-/ method 2: INSERT multiple
+sym  | side | size | price
+---------------------------
+IBM  | B    | 10   | 100.0
+MSFT | S    | 20   | 200.0
+AAPL | B    | 30   | 300.0
+```
 
+Method 2: INSERT multiple rows
+
+```q
 `t insert(`IBM`MSFT`AAPL;"B","S","B";10i, 20i, 30i;100f, 200f, 300f)
 
 sym  | side | size | price
--------------------------------
+---------------------------
 IBM  | B    | 10   | 100.0
 MSFT | S    | 20   | 200.0
 AAPL | B    | 30   | 300.0
 
-/ when inserting multiple rows, no header!
-/ must use correct datatype!
+/ when INSERT multiple rows, no column headers!
+/ must backtick table name `t
 / ints and floats separated by commas!
+```
 
-/ method 3: UPSERT multiple
+Method 3: UPSERT multiple
 
-`t upsert([]sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10i, 20i, 30i; price: 100f, 200f, 300f)
+```q
+`t upsert( []sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10i, 20i, 30i; price: 100f, 200f, 300f)
 
 sym  | side | size | price
--------------------------------
+--------------------------
 IBM  | B    | 10   | 100.0
 MSFT | S    | 20   | 200.0
 AAPL | B    | 30   | 300.0
@@ -3168,12 +2972,28 @@ AAPL | B    | 30   | 300.0
 / must have commas between ints and floats!
 ```
 
-```q
-/7 fill lasttrade with data from trade
+[tables] Fill lasttrade with data from trade
 
+```q
 lasttrade:trade
-lasttrade,:trade
+
+sym  | side | size | price
+--------------------------
+IBM  | B    | 10   | 100.0
+MSFT | S    | 20   | 200.0
+AAPL | B    | 30   | 300.0
+
+/ you can simply "assign" table lasttrade to trade
 ```
+
+alternative syntax:
+
+```q
+lasttrade,'trade
+
+/ this joins the 2 tables together
+```
+
 ### [tables] Tables Problem Set 2 AQ
 
 ```q
@@ -3189,8 +3009,29 @@ mush  | veg  | 0.88  | 45
 eggs  | veg  | 1.55  | 92
 ```
 
+[tables] 2. Add row of tomato, veg, 1.35 70
+
 ```q
-/2 add row of tomato, veg, 1.35 70
+/ insert method (most straightforward)
+
+`stock insert (`tomato;`veg;1.35;70)
+
+item   | brand| price| order
+----------------------------
+soda   | fry  | 1.5  | 50
+bacon  | pork | 1.99 | 82
+mush   | veg  | 0.88 | 45
+eggs   | veg  | 1.55 | 92
+tomato | veg  | 1.35 | 70
+
+/ INSERT no header
+/ need to backtick `stock table
+```
+
+alternative syntax:
+
+```q
+/ JOIN ASSIGN method
 
 stock,:(`tomato;`veg;1.35;70)
 
@@ -3203,16 +3044,49 @@ eggs   | veg  | 1.55 | 92
 tomato | veg  | 1.35 | 70
 ```
 
-```q
-/3 key the table according to item and brand
+[tables] 3. Key the table according to item and brand
 
+```q
 2!stock
+
+`item`   | `brand`| price| order
+----------------------------
+`soda`   | `fry`  | 1.5  | 50
+`bacon`  | `pork` | 1.99 | 82
+`mush`   | `veg`  | 0.88 | 45
+`eggs`   | `veg`  | 1.55 | 92
+`tomato` | `veg`  | 1.35 | 70
+
+/ use ! method to key
+```
+
+alternative syntax:
+
+```q
 `item`brand xkey stock
 
-/4 does the meta data change when you key/unkey tables?
+`item`   | `brand`| price| order
+--------------------------------
+`soda`   | `fry`  | 1.5  | 50
+`bacon`  | `pork` | 1.99 | 82
+`mush`   | `veg`  | 0.88 | 45
+`eggs`   | `veg`  | 1.55 | 92
+`tomato` | `veg`  | 1.35 | 70
 
-no, it does not
+/ use xkey method to key
 ```
+
+[tables] 4. Does the meta data change when you key/unkey tables?
+
+```q
+(meta stock) ~ (meta (2!stock))
+1b
+
+/ true, the 2 tables match
+/ so no, changing keys does not affect a tables meta
+```
+
+[tables] Tables Problem Set 3 AQ
 
 ```q
 trader:([]item:`soda`bacon`mush`eggs`tomato;brand:`fry`pork`veg`veg`veg;price:1.5 1.99 0.88 1.55 1.35; order:200 180 110 210 100)
@@ -3224,11 +3098,14 @@ bacon  | pork | 1.99 | 180
 mush   | veg  | 0.88 | 110
 eggs   | veg  | 1.55 | 210
 tomato | veg  | 1.35 | 100
+```
 
-/4 create new table, totalorders, which has sum of both orders from traders
-/ drop the price column before adding together
+[tables] 1. Create new table, totalorders, which has sum of both orders from traders
 
-totalorders:(2!(enlist `price)_stock)+(2!(enlist `price)_trader)
+```q
+/ also, drop the price column before adding together
+
+totalorders:(2!(enlist `price)_stock) + (2!(enlist `price)_trader)
 
 item   | brand| order
 ----------------------
@@ -3238,25 +3115,34 @@ mush   | veg  | 155
 eggs   | veg  | 302
 tomato | veg  | 170
 
-/ need to key the tables before adding together
-/ but also need to drop the column
-/ since only dropping 1 column, need to use enlist + col name
+/ first, need to KEY the tables before adding together
+/ since you have 2 columns of syms, and 1 column of ints
+/ need to KEY BOTH SYM COLUMNS 2!
+/ second, need to also DROP the price column before adding
+/ since only dropping 1 column, need to use ENLIST
 ```
 
-```q
-/5 create new list called newprices, which is 75% of original price
+[tables] 2. Create new list called newprices, which is 75% of stock's price
 
-newprices:0.75*stock`price
+```q
+newprices:0.75 * stock[`price]
 1.125 1.4925 0.66 1.1625 1.0125
 
-/ syntax for operations on columns is tablename`colname
+/ using indexing to retrieve price values from stock table
+/ alternative syntax: stock`price
 ```
 
-```q
-/6 join newprices to the totalorders table
+[tables] 3. Join newprices to the totalorders table
 
-totalorders:totalorders,' ([] newp:newprices)
-/ this method you are appending the column to existing table
+```q
+/ newprices = list of values
+/ trying to join these values onto a table as a column
+
+totalorders: totalorders,' ( [] newprices)
+
+/ so ([] newprices) turns the list into a single column
+/ then you simply join it onto existing totalorders table
+/ since the number of rows add up, it appends the column
 
 item   |brand |order | newprices
 --------------------------------
@@ -3265,12 +3151,14 @@ bacon  | pork |	262  | 1.4925
 mush   | veg  |	155  | 0.66
 eggs   | veg  |	302  | 1.1625
 tomato | veg  |	170  | 1.0125
+```
 
-/ alternatively:
+alternative solution:
+
+```q
+/ QSQL method:
 
 update newp:newprices from totalorders
-
-/ this is the SQL method (probably cleaner)
 
 item   |brand |order | newprices
 --------------------------------
@@ -3283,8 +3171,21 @@ tomato | veg  |	170  | 1.0125
 / update col that doesnt exist will append it to table
 ```
 
+[tables] 4. With the 75% discount, how much savings per week will the stock and trader have?
+
 ```q
-/7 how much savings per week will the manager and trader have?
+stock
+
+`item`   | `brand`| price| order
+--------------------------------
+`soda`   | `fry`  | 1.5  | 50
+`bacon`  | `pork` | 1.99 | 82
+`mush`   | `veg`  | 0.88 | 45
+`eggs`   | `veg`  | 1.55 | 92
+`tomato` | `veg`  | 1.35 | 70
+
+/ price x order = notional
+/ notional * 0.25 = savings
 
 sum ((0!stock)`price)*((0!stock)`order) *0.25
 128.72
@@ -3321,104 +3222,25 @@ type
 / this doesnt work anymore (since its keyed)
 ```
 
-### [tables] Tables Problem Set 3 AQ
+alternative syntax:
 
 ```q
+/ QSQL method (honestly, easier)
 
-tab1:([id:"abc"]pupil:`john`paul`rachel;subject:`maths`physics`chem;mark:96 55 82)
+stock:update savings: price*order*0.25 from stock
 
-id| pupil |subject  | mark
---------------------------
-a | john  | maths   | 96
-b | paul  | physics | 55
-c | rachel| chem    | 82
-```
+item  | brand | price | order | savings
+---------------------------------------
+soda  | fry   | 1.5   | 50    | 18.75
+bacon | pork  | 1.99  | 82    | 40.795
+mush  | veg   | 0.88  | 45    | 9.9
+eggs  | veg   | 1.55  | 92    | 35.65
+tomato| veg   | 1.35  | 70    | 23.624
 
-```q
-/1 extract dictionary corresponding to id = b
+select sum savings from stock
+128.72
 
-tab1["b"]
-
-key     | value
------------------
-pupil	| paul
-subject	| physics
-mark	| 55
-
-/ note - id columns are chars not sym! 
-```
-
-```q
-/2 add the 2 rows of information to tab1
-
-(id = d;pupil = emma; subject = maths; mark = 76)
-(id = e;pupil = michael;subject = bio; mark = 63)
-
-tab1,:([id:"de"]pupil:`emma`michael; subject:`maths`bio;mark:76 63)
-
-id| pupil  |subject  | mark
---------------------------
-a | john   | maths   | 96
-b | paul   | physics | 55
-c | rachel | chem    | 82
-d | emma   | maths   | 76
-e | michael| bio     | 63
-
-/ id are keyed strings so need " "
-/ other values are `syms
-```
-
-```q
-/3 remove entire keyed column from tab1 rename new table tab2
-
-tab2: value tab1
-
-/ value + table will only return its values
-
-pupil  |subject  | mark
---------------------------
-john   | maths   | 96
-paul   | physics | 55
-rachel | chem    | 82
-emma   | maths   | 76
-michael| bio     | 63
-
-/ alternatively you could do this:
-
-tab2:delete id from tab1
-
-pupil  |subject  | mark
---------------------------
-john   | maths   | 96
-paul   | physics | 55
-rachel | chem    | 82
-emma   | maths   | 76
-michael| bio     | 63
-
-/ note - since tab2 is a keyed table (`id is keyed), you cannot "drop" the column
-/ if you want to drop the column, must first unkey
-
-() xkey `tab1
-(enlist `id)_tab1
-
-pupil  |subject  | mark
---------------------------
-john   | maths   | 96
-paul   | physics | 55
-rachel | chem    | 82
-emma   | maths   | 76
-michael| bio     | 63
-
-```
-
-```
-/4 find first index position where chem appears in tab2
-
-tab2[`subject]?`chem
-2
-
-/ index position 2 is where subject = `chem appears
-/ utilize the ? find operator to search for index position of value
+/ so much cleaner!
 ```
 
 ### [tables] Tables Problem Set (GS)
@@ -3655,8 +3477,394 @@ NYSE   13:00	0
 update d: ({exec max num from active where ex=x`ex, time within x`start`end} each orders) from orders
 ```
 
+<a name="key_table"></a>
+### 🔴 6. Keyed Tables
+[Top](#top)
+
+### [keyed tables] How do you add/change keys in a table?
+
+```q
+kt
+id |name|employer| age
+----------------------
+a  |jane|  citi  | 11
+b  |jim |  citi  | 22
+c  |kim |    ms  | 13
+e  |john|    ts  | 15
+
+2!kt
+
+`id` |`name`|employer| age
+--------------------------
+`a`  |`jane`|  citi  | 11
+`b`  |`jim` |  citi  | 22
+`c`  |`kim` |    ms  | 13
+`e`  |`john`|    ts  | 15
+
+/ keys the first 2 columns of table kt
+```
+
+alternative solution:
+
+```q
+`id`name xkey kt
+
+`id` |`name`|employer| age
+----------------------
+`a`  |`jane`|  citi  | 11
+`b`  |`jim` |  citi  | 22
+`c`  |`kim` |    ms  | 13
+`e`  |`john`|    ts  | 15
+```
+
+### [keyed tables] How do you delete/remove keys from a table?
+
+```q
+`id` |`name`|employer| age
+--------------------------
+`a`  |`jane`|  citi  | 11
+`b`  |`jim` |  citi  | 22
+`c`  |`kim` |    ms  | 13
+`e`  |`john`|    ts  | 15
+
+0!kt
+
+id | name |employer| age
+--------------------------
+a  | jane |  citi  | 11
+b  | jim  |  citi  | 22
+c  | kim  |    ms  | 13
+e  | john |    ts  | 15
+
+/ 0! removes all keys from table
+```
+
+alternative syntax:
+
+```q
+`id` |`name`|employer| age
+--------------------------
+`a`  |`jane`|  citi  | 11
+`b`  |`jim` |  citi  | 22
+`c`  |`kim` |    ms  | 13
+`e`  |`john`|    ts  | 15
+
+() xkey kt
+
+id | name |employer| age
+--------------------------
+a  | jane |  citi  | 11
+b  | jim  |  citi  | 22
+c  | kim  |    ms  | 13
+e  | john |    ts  | 15
+```
+
+### [keyed tables] How do you upsert keyed rows/tables into a table?
+
+```q
+t1:( [sym:`a`b`c]; ex:`one`two`three; size:100 200 300)
+t2:( [sym:`c`d`e]; ex:`four`five`six; size:400 500 600)
+
+upsert[t1;t2]
+
+`sym` | ex    | size
+------------------
+`a`   | one   | 100
+`b`   | two   | 200
+`c`   | four  | 400
+`d`   | five  | 500
+`e`   | six   | 600
+
+/ both tables have to be keyed!
+/ the schemas have to match (column names)
+/ if key exists and matches, updates value (c match, replaces old values)
+/ if new key, adds new row (d and e)
+```
+
+alternative syntax
+
+```q
+/ using JOINS method
+
+t1,t2
+
+`sym` | ex    | size
+------------------
+`a`   | one   | 100
+`b`   | two   | 200
+`c`   | four  | 400
+`d`   | five  | 500
+`e`   | six   | 600
+
+/ since the tables are KEYED
+/ and the SCHEMA are the same
+/ you can simply "join" the tables together
+/ and return the same result
+```
+
+alternative syntax:
+
+```q
+/ you can also upsert by typing out a table
+
+upsert[t1;( [sym:`f`g] ex:`seven`eight; size: 700 800)]
+
+sym | ex    | size
+------------------
+a   | one   | 100
+b   | two   | 200
+c   | four  | 400
+f   | seven | 700
+g   | eight | 800
+```
+
+### [keyed table] Show 2 ways to retrieve values as a table from a keyed table
+
+```q
+t1:([sym:`a`b`c];ex:`one`two`three;size:100 200 300)
+
+t1
+`sym` | ex    | size
+------------------
+`a`   | one   | 100
+`b`   | two   | 200
+`c`   | four  | 400
+`d`   | five  | 500
+`e`   | six   | 600
+```
+
+Method 1 - Retrieve Values for sym a and b
+
+```q
+t1 ( [] sym:`a`b)
+
+ex  | size
+-----------
+one | 100
+two | 200
+
+/ sym is keyed in t1
+/ using this syntax to query the KEYS in column sym
+/ returns the VALUES
+```
+
+Method 2 - Retrieve Values for sym a and b
+
+```q
+( [] sym:`a`b) # t1
+
+`sym` | ex  | size
+----------------
+`a`   | one | 100
+`b`   | two | 200
+
+/ by using take #, you return a table
+/ including the sym column
+```
+
+### [keyed table] Retrieve values from multi-keyed table
+
+```q
+/ so in this case, you have 2 columns that are KEYED
+
+kt:([employer:`kx`ms`ms;loc:`NY`NY`HK] size: 10 20 30; area: 1 2 3)
+
+`employer`| `loc`|size|area
+----------------------------
+`kx`	  | `NY` | 10 | 1
+`ms`	  | `NY` | 20 | 2
+`ms`	  | `HK` | 30 | 3
+```
+
+1. Retrieve values as a dictionary for keys ms and HK
+
+```q
+/ you want to return the values for keys = MS + HK
+
+kt`ms`HK
+
+key  | value
+-----------
+size | 30
+area | 3
+
+/ notice this only returns the VALUES
+```
+
+2. Retrieve values where keys = ms/HK and kx/NY
+
+```q
+kt(`ms`HK;`kx`NY)
+
+size| area
+-----------
+30  | 3
+10  | 1
+
+/ so you are querying 2 sets of keys
+/ `ms`HK and `kx`NY
+/ returns VALUES only
+```
+
+### [keyed tables] Keyed Tables Problem Set 1 TS
+
+```q
+p: ( [book:`A`B`B`C; ticker:`MS`AAPL`MS`C] size:100 200 300 400)
+
+`book`| `ticker`| size
+----------------------
+`A`   | `MS`    | 100
+`B`   | `AAPL`  | 200
+`B`   | `MS`    | 300
+`C`   | `C`     | 400
+```
+
+1. Retrieve entries where book is B, using select
+
+```q
+/ QSQL method
+
+select from p where book=`B
+
+book | ticker|size
+------------------
+`B`  | `AAPL`| 200
+`B`  | `MS`  | 300
+```
+
+```q
+/2 Retrieve entries where book is C and ticker is c, using take**
+
+/ this doesnt work for some reason - come back to this
+
+( [book:enlist`C; ticker:enlist`C]) # p
+
+book | ticker| size
+-------------------
+`C`  | `C`   | 400
+
+/ need to use enlist since only one row
+```
+
+```q
+/3 Upsert the following values in **
+
+`book` | `ticker`|size
+----------------------
+`A`    | `MS`    | 100
+`B`    | `AAPL`  | 200
+`B`    | `MS`    | 300
+`C`    | `C`     |**400**
+**`D`**|**`MS`** |**500**
+
+upsert [p; ([book:`C`D; ticker:`C`MS]size:400 500)]
+
+/ for `C`C -> updates old value to 400
+/ `D`MS 500 -> adds new row
+```
+
+### [tables] Tables Problem Set 3 AQ
+
+```q
+
+tab1:([id:"abc"]pupil:`john`paul`rachel;subject:`maths`physics`chem;mark:96 55 82)
+
+id| pupil |subject  | mark
+--------------------------
+a | john  | maths   | 96
+b | paul  | physics | 55
+c | rachel| chem    | 82
+```
+
+```q
+/1 extract dictionary corresponding to id = b
+
+tab1["b"]
+
+key     | value
+-----------------
+pupil	| paul
+subject	| physics
+mark	| 55
+
+/ note - id columns are chars not sym! 
+```
+
+```q
+/2 add the 2 rows of information to tab1
+
+(id = d;pupil = emma; subject = maths; mark = 76)
+(id = e;pupil = michael;subject = bio; mark = 63)
+
+tab1,:([id:"de"]pupil:`emma`michael; subject:`maths`bio;mark:76 63)
+
+id| pupil  |subject  | mark
+--------------------------
+a | john   | maths   | 96
+b | paul   | physics | 55
+c | rachel | chem    | 82
+d | emma   | maths   | 76
+e | michael| bio     | 63
+
+/ id are keyed strings so need " "
+/ other values are `syms
+```
+
+```q
+/3 remove entire keyed column from tab1 rename new table tab2
+
+tab2: value tab1
+
+/ value + table will only return its values
+
+pupil  |subject  | mark
+--------------------------
+john   | maths   | 96
+paul   | physics | 55
+rachel | chem    | 82
+emma   | maths   | 76
+michael| bio     | 63
+
+/ alternatively you could do this:
+
+tab2:delete id from tab1
+
+pupil  |subject  | mark
+--------------------------
+john   | maths   | 96
+paul   | physics | 55
+rachel | chem    | 82
+emma   | maths   | 76
+michael| bio     | 63
+
+/ note - since tab2 is a keyed table (`id is keyed), you cannot "drop" the column
+/ if you want to drop the column, must first unkey
+
+() xkey `tab1
+(enlist `id)_tab1
+
+pupil  |subject  | mark
+--------------------------
+john   | maths   | 96
+paul   | physics | 55
+rachel | chem    | 82
+emma   | maths   | 76
+michael| bio     | 63
+
+```
+
+```
+/4 find first index position where chem appears in tab2
+
+tab2[`subject]?`chem
+2
+
+/ index position 2 is where subject = `chem appears
+/ utilize the ? find operator to search for index position of value
+```
+
 <a name="functions"></a>
-### 🔴 6. Functions
+### 🔴 7. Functions
 [Top](#top)
 
 
@@ -4167,7 +4375,7 @@ f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, tim
 ```
 
 <a name="qsql"></a>
-### 🔴 qSQL
+### 🔴 8. qSQL
 [Top](#top)
 
 ### [QSQL] Find the first price and time for AAPL by date
@@ -5323,7 +5531,7 @@ update average:avg mark by class, subject from marks
 <hr>
 
 <a name="adverbs"></a>
-### 🔴 Adverbs
+### 🔴 9. Adverbs
 [Top](#top)
 
 ### [adverb] What is an ADVERB?
@@ -5577,7 +5785,7 @@ allows for faster queries
 ```
 
 <a name="joins"></a>
-### 🔴 Joins
+### 🔴 10. Joins
 [Top](#top)
 
 ### [join] What are some differences between left join and union join?
@@ -6031,7 +6239,7 @@ t2 uj t1
 ```
 
 <a name="at"></a>
-### 🔴 @ & . Operator
+### 🔴 11. @ & . Operator
 [Top](#top)
 
 ### [@ Operator] Problem Set from AQ
@@ -6202,7 +6410,7 @@ AAPL | 11.9   149
 ```
 
 <a name="racking"></a>
-### 🔴 Racking & Alignment
+### 🔴 12. Racking & Alignment
 [Top](#top)
 
 ### [QSQL] Racking xbar Problem Set 1 AQ
