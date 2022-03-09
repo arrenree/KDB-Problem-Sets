@@ -2026,7 +2026,11 @@ A keyed table - is a table of keyed records mapped to a table of value records.
 ### [table] Creating Blank Table with Datatypes
 
 ```q
-/ Given Blank Table with following Datatypes:
+/ create an empty table with the following columns/datatypes:
+/ sym (sym)
+/ side (char)
+/ size (int)
+/ price (float)
 
 t: ([] sym:`$(); side: `char$(); size:`int$();price:`float$())
 
@@ -2045,7 +2049,8 @@ sym | side | size | price
 IBM | B    | 10   | 100
 
 / must use correct datatypes
-/ can ignore column header
+/ JOIN ASSIGN can ignore column header
+/ DON'T need to backtick table t
 ```
 
 ### [table] 2. Insert Single Row (using INSERT)
@@ -2053,20 +2058,21 @@ IBM | B    | 10   | 100
 ```q
 `t insert(`IBM;"B";10i;100f)
 
-/ don't need headers
+/ INSERT don't need headers
 / don't need enlist
+/ but NEED to backtick table name
 ```
 
 ### [table] 5. Upsert Single Row (UPSERT)
 
 ```q
+/ Upsert `GOOG; "B"; 30i; 300f
 
-`t upsert ([] sym:enlist`GOOG; side: enlist "B"; size: enlist 30; price: enlist 300f)
+`t upsert (`GOOG;"B"; 30i; 300f)
 
-/ upsert syntax is the same
-/ but you need to use enlist if only upserting single row
-/ need column header
-/ need correct datatype
+/ same syntax as INSERT
+/ notice you don't need to use enlist
+/ don't need column headers
 ```
 
 ### [table] 3. Insert Multiple Rows (INSERT)
@@ -2088,8 +2094,10 @@ AAPL | B    | 30   | 300.0
 
 / no column header!
 / must use correct datatype!
-/ ints and floats separated by commas!
+/ ints have to be separated by commas
+/ floats have to be separated by commas
 ```
+
 ### [table] 4. Upsert Multiple Rows (UPSERT)
 
 ```q
@@ -2107,7 +2115,7 @@ IBM  | B    | 10   | 100.0
 MSFT | S    | 20   | 200.0
 AAPL | B    | 30   | 300.0
 
-/ to UPSERT multiple, have to upsert a table 
+/ to UPSERT multiple, have to upsert a TABLE 
 / MUST include column names
 / must have commas between ints and floats!
 ```
@@ -2129,8 +2137,8 @@ brand| model| date
 ------------------------
 bmw  | 505  | 2021-11-13
 
-/ don't need column headers
-/ don't need enlist when using insert single row
+/ INSERT don't need column headers
+/ INSERT don't need enlist when using inserting single row
 / need corret datatype
 ```
 
@@ -2158,6 +2166,7 @@ brand| model| date
 ------------------------
 bmw  | 505  | 2021-11-13
 
+/ UPSERT has same syntax as INSERT
 / note - you cannot upsert multiple rows; have to upsert a dictionary
 ```
 
@@ -2175,7 +2184,15 @@ audi   | s4   | 2021-11-13
 ferrari| F50  | 2021-11-13
 benz   | S500 | 2021-11-13
 
-/ method 2:
+/ can INSERT multiple lines using same syntax
+/ no column headers
+/ remember to backtick table name `cars
+```
+
+Alternative Solution:
+
+```q
+/ alternative syntax
 
 insert[`cars;(`ferrari`benz;`F500`S500;2021.11.13 2021.11.13)]
 
@@ -2192,25 +2209,35 @@ benz   | S500 | 2021-11-13
 ```q
 / you cannot upsert multiple rows into a table
 / instead must upsert a dictionary
+```
 
-t:([]fruit:`apple`orange; price: 11 23; quantity:100 200)
+```q
+given table t:
 
-fruit | price | quantity
---------------------
-apple |	11    |	100
-orange| 23    |	200
-
-`t upsert ([] fruit:`pear`banana; price: 20 30)
+t:( []fruit:`apple`orange; price: 11 23; quantity:100 200)
 
 fruit | price | quantity
 --------------------
 apple |	11    |	100
 orange| 23    |	200
-pear  |	20    |	
-banana|	30    |	
 
+```
+
+```q
+/ upsert pear, banana, 20 30 into t
+
+`t upsert ( [] fruit:`pear`banana; price: 20 30)
+
+fruit  | price | quantity
+-------------------------
+apple  |   11  |   100
+orange |   23  |   200
+pear   |   20  |	
+banana |   30  |	
+
+/ UPSERTING multiple rows = upsert TABLE
+/ need column names
 / notice you can skip columns when upserting (quantity left blank)
-
 ```
 
 ### [table] What is the difference between xcol and xcols?
@@ -2218,11 +2245,21 @@ banana|	30    |
 ```q
 / xcol is used to rename table columns
 / xcols is used to rearrange table columns
+```
+
+[tables] xcol example
+
+```q
+/ xcol renames columns
+
+t: ( [] company: `ford`bmw; employee: 300 100)
 
 company | employee
 ------------------
 ford    |   300
 bmw     |   100
+
+/ rename company to a and employee to b
 
 `a`b xcol t
 
@@ -2233,8 +2270,15 @@ bmw | 100
 
 / renames first 2 columns from company/employee to a/b
 / xcol will only change col names from left to right
+/ have to use backtick + new col name
+```
 
-/2 xcols example:
+[tables] xcols example:
+
+```q
+/ xcols re-arranges columns
+
+t: ( [] company: `ford`bmw; employee: 300 100)
 
 company | employee
 ------------------
@@ -2286,8 +2330,13 @@ bmw     | 200
 ferrari | 400
 ```
 
+[tables] Union Table Example
+
 ```q
 /1 UNION TABLE = merges 2 tables together, but does NOT dupe values!
+
+t:([] company:`ford`bmw`benz; employees:100 200 300)
+u: ([] company:`ford`bmw`ferrari; employees:5 200 400)
 
 t union u
 
@@ -2299,14 +2348,13 @@ benz    | 300
 ford    | 5
 ferrari | 400
 
-/ ford is 100 in t and 5 in u = returns 2 different rows of values
-/ bmw is 200 in both = returns single row of 200
-/ benz only appears in t = appends row
-/ ferrari only appears in u = appends new row
-
+/ matches on keys (bmw). if same value, copies value (200)
 / does NOT dupe same values
-/ any values that do NOT equal, adds as new row
+/ if match on key (ford), but no match on value (100 v 5), returns BOTH values
+/ if no match on key (ferrari), returns key + value as new row
 ```
+
+[tables] EXCEPT Table Example
 
 ```q
 /2 EXCEPT TABLE = only returns values in left table NOT in right table
@@ -2333,10 +2381,12 @@ ford    | 100
 benz    | 300
 
 / returns item in t NOT in u
-/ although the key matches in ford, the values dont match
-/ bmw matches, so removes
-/ no match in benz, returns
+/ if match on key (ford) but not value (100 v 5), returns key + value in table x
+/ if match on key (bmw) and value (200), REMOVE
+/ if no match on key (benz), returns key + value
 ```
+
+[tables] INTER table Example
 
 ```q
 /3 INTER TABLE = only returns common elements in both t and u (inner join) 
@@ -2361,6 +2411,7 @@ company | employees
 --------------------
 bmw     | 200 
 
+/ only returns matches in both key (bmw) and value (200)
 ```
 
 ### [table] Show how to append using table joins , (comma)
@@ -2377,13 +2428,14 @@ bmw	| 200
 benz	| 300
 
 / joins empty table t with new table
-
+/ essentially you add rows by joining a table into table
 ```
 
 ### [table] How do you join 2 tables with same columns? (add rows)
 
 ```q
-/ both tables must have same schema (column names + datatype)
+/ if 2 tables columns MATCH, can JOIN to ADD ROW
+/ called vertical joins
 
 t1
 sym  side price size
@@ -2397,7 +2449,7 @@ sym  side price size
 GOOG buy   30 	 300
 MSFT sell  40	 400
 
-t1,t2
+t1, t2
 
 sym  side price size
 ---------------------
@@ -2406,7 +2458,7 @@ AAPL sell  20	 200
 GOOG buy   30 	 300
 MSFT sell  40	 400
 
-/ simply use comma to join 2 tables together with same schema
+/ simply use comma to join 2 tables together with same schema (column names)
 / this will keep column headers the same
 / and append the new rows
 ```
@@ -2414,6 +2466,11 @@ MSFT sell  40	 400
 ### [table] How do you join 2 tables with different columns? (add columns)
 
 ```q
+/ if 2 tables have same number of rows
+/ and NO matching columns
+/ can join tables together by adding extra columns
+/ similar to LEFT JOIN
+
 t1:([] sym: `IBM`AAPL`GOOG; ex: `nyse`nyse`nasdaq)
 t2:([] price:10 20 30; size: 100 200 300)
 
@@ -2440,9 +2497,12 @@ AAPL nyse    20   200
 GOOG nasdaq  30   300
 
 / use ,' each both adverb to combine tables together
+/ t1 and t2 have diff column names
+/ but same number of rows
 ```
 
 ### [tables] How do you add/change keys in a table?
+
 ```q
 / use 1!table or xkey
 
@@ -2455,7 +2515,9 @@ c  |kim |    ms  | 13
 e  |john|    ts  | 15
 
 2!k2
+
 /or
+
 `id`name xkey k2
 
 `id` |`name`|employer| age
@@ -2480,8 +2542,8 @@ e  |john|    ts  | 15
 ### [tables] How do you upsert keyed rows/tables into a table?
 
 ```q
-t1:([sym:`a`b`c];ex:`one`two`three;size:100 200 300)
-t2:([sym:`c`d`e];ex:`four`five`six;size:400 500 600)
+t1:( [sym:`a`b`c]; ex:`one`two`three; size:100 200 300)
+t2:( [sym:`c`d`e]; ex:`four`five`six; size:400 500 600)
 
 upsert[t1;t2]
 
@@ -2494,10 +2556,30 @@ upsert[t1;t2]
 `e`   | six   | 600
 
 / both tables have to be keyed!
-/ the schemas have to match (col names)
+/ the schemas have to match (column names)
 / if key exists and matches, updates value (c match, replaces old values)
 / if new key, adds new row (d and e)
+
+/ alternative syntax
+
+t1,t2
+
+`sym` | ex    | size
+------------------
+`a`   | one   | 100
+`b`   | two   | 200
+`c`   | four  | 400
+`d`   | five  | 500
+`e`   | six   | 600
+
+/ since the tables are KEYED
+/ and the SCHEMA are the same
+/ you can simply "join" the tables together
+/ and return the same result
 ```
+
+alternative syntax:
+
 ```q
 / you can also upsert by typing out a table
 
@@ -2510,7 +2592,6 @@ b   | two   | 200
 c   | four  | 400
 f   | seven | 700
 g   | eight | 800
-
 ```
 
 ### [table] Show 2 ways to retrieve values as a table from a keyed table
@@ -2526,10 +2607,12 @@ t1
 `c`   | four  | 400
 `d`   | five  | 500
 `e`   | six   | 600
+```
 
-/ method 1 - Retrieve Values Where sym is a and b
+Method 1 - Retrieve Values of sym a and b
 
-t1 ([] sym:`a`b)
+```q
+t1 ( [] sym:`a`b)
 
 ex  | size
 -----------
@@ -2537,25 +2620,29 @@ one | 100
 two | 200
 
 / sym is keyed in t1
-/ by querying a table of 2 syms, you get the values as a table
+/ using this syntax to query the KEYS in column sym
+/ returns the VALUES
 ```
 
-```q
-/ method 2 - Retrieve Values Where sym is a and b
+Method 2 - Retrieve Values of sym a and b
 
-([] sym:`a`b) # t1
+```q
+( [] sym:`a`b) # t1
 
 `sym` | ex  | size
 ----------------
 `a`   | one | 100
 `b`   | two | 200
 
-/ by using take #, you return a table including the sym column
+/ by using take #, you return a table
+/ including the sym column
 ```
 
-### [table] Retrieve values from keyed table
+### [table] Retrieve values from Keyed table
 
 ```q
+/ so in this case, you have 2 columns that are KEYED
+
 kt:([employer:`kx`ms`ms;loc:`NY`NY`HK] size: 10 20 30; area: 1 2 3)
 
 `employer`| `loc`|size|area
@@ -2563,8 +2650,12 @@ kt:([employer:`kx`ms`ms;loc:`NY`NY`HK] size: 10 20 30; area: 1 2 3)
 `kx`	  | `NY` | 10 | 1
 `ms`	  | `NY` | 20 | 2
 `ms`	  | `HK` | 30 | 3
+```
 
-/1 retrieve values as a dictionary for keys `ms and `HK
+[keyed tables] 1. Retrieve values as a dictionary for keys ms and HK
+
+```q
+/ you want to return the values for keys = MS + HK
 
 kt`ms`HK
 
@@ -2573,14 +2664,22 @@ key  | value
 size | 30
 area | 3
 
-/2 retrieve values where keys = ms/HK and kx/NY
+/ notice this only returns the VALUES
+```
 
+[keyed tables] 2. Retrieve values where keys = ms/HK and kx/NY
+
+```q
 kt(`ms`HK;`kx`NY)
 
 size| area
 -----------
 30  | 3
 10  | 1
+
+/ so you are querying 2 sets of keys
+/ `ms`HK and `kx`NY
+/ returns VALUES only
 ```
 
 ### [tables] Tables Problem Set 1 TS
