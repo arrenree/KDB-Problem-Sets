@@ -2021,7 +2021,8 @@ r13   | 557 704 944 867 1681 674 1152
 ```q
 A table - is a flipped dictionary. Vectors of data are organized by columns.
 
-A keyed table - is a table of keyed records mapped to a table of value records.
+A keyed table - is a dictionary mapping a table of key records to a table of value records.
+
 ```
 
 ### [table] Creating Blank Table with Datatypes
