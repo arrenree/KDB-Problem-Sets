@@ -3619,7 +3619,7 @@ f   | seven | 700
 g   | eight | 800
 ```
 
-### [keyed table] Show 2 ways to retrieve values as a table from a keyed table
+### [keyed table] SINGLE KEY TABLE PROBLEM SET
 
 ```q
 t1:([sym:`a`b`c];ex:`one`two`three;size:100 200 300)
@@ -3634,9 +3634,27 @@ t1
 `e`   | six   | 600
 ```
 
-Method 1 - Retrieve Values for sym a and b
+1. Retrieve SINGLE ROW as a DICTIONARY <br/>
+(SINGLE KEY TABLE)
 
 ```q
+t1`a
+
+Key  | Value
+------------
+ex   | one
+size | 100
+
+/ don't need ENLIST
+/ simply returns VALUES from key a as dictionary
+```
+
+2. Retrieve MULTI ROW as DICTIONARY <br/>
+(SINGLE KEY TABLE)
+
+```q
+/ table lookup method
+
 t1 ( [] sym:`a`b)
 
 ex  | size
@@ -3644,14 +3662,35 @@ ex  | size
 one | 100
 two | 200
 
-/ sym is keyed in t1
-/ using this syntax to query the KEYS in column sym
-/ returns the VALUES
+/ NOTE - even tho underlying column sym is KEYED
+/ when you retrieve, you leave [ ] blank
+/ and simply retrieve the column names sym:`a`b
+/ outputs VALUES as a dictionary
 ```
 
-Method 2 - Retrieve Values for sym a and b
+3. Retrieve SINGLE ROW as TABLE <br/>
+(SINGLE KEY TABLE)
 
 ```q
+/ use TAKE # Method
+
+( [] sym:enlist`b) # t1
+
+`sym` | ex  | size
+----------------
+`a`   | one | 100
+
+/ need ENLIST since only 1 row
+/ by using take #, you return a table
+/ includes the KEY column
+```
+
+4. Retrieve MULTI ROW as TABLE <br/>
+(SINGLE KEY TABLE)
+
+```q
+/ use TAKE # Method
+
 ( [] sym:`a`b) # t1
 
 `sym` | ex  | size
@@ -3660,14 +3699,12 @@ Method 2 - Retrieve Values for sym a and b
 `b`   | two | 200
 
 / by using take #, you return a table
-/ including the sym column
+/ includes the KEY column
 ```
 
-### [keyed table] Retrieve values from multi-keyed table
+### [keyed table] MULTI KEY TABLE PROBLEM SET
 
 ```q
-/ so in this case, you have 2 columns that are KEYED
-
 kt:([employer:`kx`ms`ms;loc:`NY`NY`HK] size: 10 20 30; area: 1 2 3)
 
 `employer`| `loc`|size|area
@@ -3675,12 +3712,15 @@ kt:([employer:`kx`ms`ms;loc:`NY`NY`HK] size: 10 20 30; area: 1 2 3)
 `kx`	  | `NY` | 10 | 1
 `ms`	  | `NY` | 20 | 2
 `ms`	  | `HK` | 30 | 3
+
+/ both employer and loc are keyed columns
 ```
 
-1. Retrieve values as a dictionary for keys ms and HK
+1. Retrieve SINGLE ROW as a DICTIONARY <br/>
+(MUTLI KEY TABLE)
 
 ```q
-/ you want to return the values for keys = MS + HK
+/ retrieve values for keys = MS + HK as a dictionary
 
 kt`ms`HK
 
@@ -3689,12 +3729,16 @@ key  | value
 size | 30
 area | 3
 
-/ notice this only returns the VALUES
+/ returns VALUES as a DICTIONARY
+/ for set of keys `MS + `HK
 ```
 
-2. Retrieve values where keys = ms/HK and kx/NY
+2. Retrieve MULTI ROWs as a DICTIONARY <br/>
+(MUTLI KEY TABLE)
 
 ```q
+/ Retrieve values where keys = ms/HK and kx/NY
+
 kt(`ms`HK;`kx`NY)
 
 size| area
@@ -3705,6 +3749,42 @@ size| area
 / so you are querying 2 sets of keys
 / `ms`HK and `kx`NY
 / returns VALUES only
+```
+
+3. Retrieve SINGLE ROWs as a TABLE <br/>
+(MUTLI KEY TABLE)
+
+```q
+( [] employer:enlist`kx; loc:`NY) # et
+
+`employer`|`loc`|size|area
+--------------------------
+`kx`      | `NY`| 10 | 1
+
+/ have to use ENLIST for single row
+/ NOTE - even though underlying table is keyed
+/ when RETRIEVE using TAKE #
+/ leave the [ ] blank
+```
+
+4. Retrieve MULTI ROWS as a TABLE <br/>
+(MULTI KEY TABLE)
+
+```q
+/ uses the TAKE # function
+/ retrieve values for keys `ms`HK + `kx`NY
+
+( [] employer:`ms`kx; loc:`HK`NY) # et
+
+employer | loc | size | area
+----------------------------
+ms	 | HK  |   30 |   3
+kx	 | NY  |   10 |   1
+
+/ using TAKE # returns a table which includes the KEY columns
+/ NOTE - even tho underlying table is keyed
+/ when retrieving, leave [ ] BLANK
+/ and simply call the col names
 ```
 
 ### [keyed tables] Keyed Tables Problem Set 1 TS
@@ -3733,22 +3813,25 @@ book | ticker|size
 `B`  | `MS`  | 300
 ```
 
+2. Retrieve entries where book is C and ticker is c, using take**
+
 ```q
-/2 Retrieve entries where book is C and ticker is c, using take**
-
-/ this doesnt work for some reason - come back to this
-
-( [book:enlist`C; ticker:enlist`C]) # p
+( [] book:enlist`C;ticker:enlist`C) # p
 
 book | ticker| size
 -------------------
 `C`  | `C`   | 400
 
 / need to use enlist since only one row
+/ NOTE - even tho underlying table is keyed
+/ when retrieving, leave [ ] BLANK
+/ and simply call the col names
 ```
 
+3. Upsert the following values in **
+
 ```q
-/3 Upsert the following values in **
+/ Upsert the values encased with **
 
 `book` | `ticker`|size
 ----------------------
