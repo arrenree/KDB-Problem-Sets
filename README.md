@@ -3847,7 +3847,7 @@ upsert [p; ([book:`C`D; ticker:`C`MS]size:400 500)]
 / `D`MS 500 -> adds new row
 ```
 
-### [tables] Tables Problem Set 3 AQ
+### [keyed tables] Tables Problem Set AQ
 
 ```q
 
@@ -3860,8 +3860,23 @@ b | paul  | physics | 55
 c | rachel| chem    | 82
 ```
 
+[keyed tables] 1. Extract dictionary corresponding to id = b
+
 ```q
-/1 extract dictionary corresponding to id = b
+id"b"
+
+key     | value
+-----------------
+pupil	| paul
+subject	| physics
+mark	| 55
+
+/ note - id columns are chars not sym! 
+```
+
+alternative syntax
+
+```q
 
 tab1["b"]
 
@@ -3874,11 +3889,36 @@ mark	| 55
 / note - id columns are chars not sym! 
 ```
 
-```q
-/2 add the 2 rows of information to tab1
+[keyed tables] 2. Add the 2 rows of information to tab1
 
-(id = d;pupil = emma; subject = maths; mark = 76)
-(id = e;pupil = michael;subject = bio; mark = 63)
+```q
+/ Add the 2 rows to tab1
+
+(id = "d";pupil = emma; subject = maths; mark = 76)
+(id = "e";pupil = michael;subject = bio; mark = 63)
+```
+
+```q
+/ UPSERT method
+
+upsert [tab1; ([id:"de"] pupil: `emma`michael; subject:`maths`bio; mark: 76 63)]
+
+id| pupil  |subject  | mark
+--------------------------
+a | john   | maths   | 96
+b | paul   | physics | 55
+c | rachel | chem    | 82
+d | emma   | maths   | 76
+e | michael| bio     | 63
+
+/ id is a KEY column
+/ since id datatype is char, need parathesis " "
+```
+
+alternative syntax
+
+```
+/ JOIN ASSIGN method
 
 tab1,:([id:"de"]pupil:`emma`michael; subject:`maths`bio;mark:76 63)
 
@@ -3890,13 +3930,14 @@ c | rachel | chem    | 82
 d | emma   | maths   | 76
 e | michael| bio     | 63
 
-/ id are keyed strings so need " "
+/ id is a KEY column
+/ since id datatype is char, need parathesis " "
 / other values are `syms
 ```
 
-```q
-/3 remove entire keyed column from tab1 rename new table tab2
+3. Remove entire keyed column from tab1 rename new table tab2
 
+```q
 tab2: value tab1
 
 / value + table will only return its values
@@ -3908,8 +3949,12 @@ paul   | physics | 55
 rachel | chem    | 82
 emma   | maths   | 76
 michael| bio     | 63
+```
 
-/ alternatively you could do this:
+alternative syntax: 
+
+```q
+/ QSQL method
 
 tab2:delete id from tab1
 
@@ -3920,7 +3965,11 @@ paul   | physics | 55
 rachel | chem    | 82
 emma   | maths   | 76
 michael| bio     | 63
+```
 
+to "drop" the id column
+
+```q
 / note - since tab2 is a keyed table (`id is keyed), you cannot "drop" the column
 / if you want to drop the column, must first unkey
 
@@ -3934,7 +3983,6 @@ paul   | physics | 55
 rachel | chem    | 82
 emma   | maths   | 76
 michael| bio     | 63
-
 ```
 
 ```
