@@ -4025,12 +4025,411 @@ tab2[`subject]?`chem
 / in this case, 5 is an implicit variable
 ```
 
-
-### [func] Function Problem Set 1 TS
+### [func] Anonymous String Function Problem Set (AQ)
 
 ```q
-/1 Create a function that accepts 2 arguments (r and h), and returns vol of cone 
+/ create a function that uses SSR (string search replace)
+/ to convert sym `welcome to string "welcoME"
 
+/ quick reminder on SSR
+
+ssr["hello ryan where is ryan";"ryan";"john"]
+hello johhn where is john
+```
+
+### [func] 1. Pass single sym through function
+
+```q
+f: {ssr[(string x);y;z] }
+f[`welcome;"me";"ME"]
+"welcoME"
+
+/ so x gets converted from `sym to string
+/ then SSR is run on string "welcome"
+/ and replaces "me" with "ME"
+```
+
+### [func] 2. re-written as lambda function
+
+```q
+/ alternative syntax (lambda function)
+
+{ssr[string x;y;z]} [`welcome; "me";"ME"]
+"welcoME"
+
+/ did not define function (lambda)
+/ uses implicit arguments x, y, z
+/ passes arguments immediately after function
+/ string x = ONLY applies to argument x
+```
+
+### [func] 3. Alternative method to call arguments 
+
+```q
+/ alternative syntax (lambda + alt method to call argument)
+
+{ssr[string x;y;z]} [ ; "me";"ME"] `welcome
+"welcoME"
+
+/ so sym `welcome is implicit argument x
+/ since arguments y and z are already defined as "me" and "ME"
+/ this is useful when iterating through a LIST of syms
+```
+
+### [func] 4. re-write function to pass a LIST of syms
+
+```q
+/ instead of converting one sym
+/ need to iterate function through list of syms
+
+f:{ssr [string x;y;z]} 
+f[ ;"me";"ME"] each `welcome`home`mermaid
+"welcoME"
+"hoME"
+"MErmaid"
+
+/ function remains the same
+/ but when you CALL the function, need adverb EACH
+/ this iterates through each sym
+/ the list of syms `welcome`home`mermaid gets passed through x
+/ REQUIRES x to be left blank inside [ ] 
+/ while locking in arguments y and z as constants
+```
+
+### [func] 5. re-written as lambda function
+
+```q
+/ lambda notation
+
+{ssr [string x;y;z]} [ ;"me";"ME"] each `welcome`home`mermaid
+"welcoME"
+"hoME"
+"MErmaid"
+
+/ function remains the same
+/ but when you CALL the function, need adverb EACH
+/ this iterates through each sym
+/ the list of syms `welcome`home`mermaid gets passed through x
+/ REQUIRES x to be left blank inside [ ] 
+/ while locking in arguments y and z as constants```
+```
+
+### [func] Projected Function Case Study - TS
+
+```q
+/1. create first function called raise
+
+raise: {x xexp y}
+raise [10; 2 3 4]
+100 1000 1000f
+ 
+/ calls x = 10 and y = 2 3 4
+```
+
+```q
+/2. create second function called g, which projects function raise
+/ keeps x constant @ 10
+
+g: raise [10; ]
+g 1 2 3
+10 100 1000
+
+/ you've already created function raise previously
+/ so g is a PROJECTION of the original function RAISE
+/ so x = constant 10
+/ y becomes arguments you call in (1 2 3)
+```
+
+```q
+/3.  create another function square, which projects function raise
+
+square: raise[ ;2]
+square 1 2 3
+1 4 9
+
+/ in this case, leaves first argument blank (x)
+/ and keeps second argument constant at 2
+/ calls in 1 2 3 for x xexp 2
+```
+
+### [func] Generate list of 100 random numbers, sum all values > 50 using loop
+
+```q
+/ generate list of 100 random numbers from 0-99
+/ sum all values in list > 50 using while loop
+
+d: 100?100
+i: 0
+r1: 0
+
+while [i < count d; if [d[i]>50; r1+:d[i] ]; i+:1]
+
+/ d = list of 100 random numbers from 0-99
+/ i = iterative counter (goes from 0-99). Counts through every element of list d
+/ r1 = result of while loop
+
+/ while i is less than total number of items in list d (99)
+/ if value of list d at index position i is less than 50
+/ add this value to results list (r1)
+/ then go onto next iteration (i+1)
+
+/ remember, WHILE LOOPS -> if first argument is TRUE, execute all arguments that follow
+/ WHILE LOOP = used as iterative counter through all elements of list d (0-99)
+/ IF STATEMENT = tests IF condition true, add to list
+```
+
+### [func] Vector Operation Solution
+
+```
+HOWEVER, much faster using vector operations:
+
+r2: sum d where d > 50
+
+/ so use vector operations whenever possible
+/ also a lot more flexible:
+
+max sum d where d>50
+min sum d where d>50
+avg sum d where d>50
+```
+
+### [func] Prime Numbers Case Study - TS
+
+```q
+/ create function that finds primes up to argument x
+/ since you are returning list of numbers
+/ will require an 1) empty list
+/ and 2) an iterator to check every number up to x
+
+/ iterator starts from 1
+/ if iterator is prime, append to list r (need to use ,: NOT sum)
+/ then go onto next number
+/ keep checking until WHILE condition is no longer true (a<n)
+/ then return list r
+
+findprime: {[n] r:(); a:1; while [a<n; if[isprime[a];r,:a]; a:a+1];r}
+findprime 10 
+2 3 5 7
+
+/ n = single argument
+/ r() = empty list thats gonna contain our result
+/ a starts from 1 (iterator)
+/ while a(1) < n = TRUE
+/ if a = prime number,
+/ append a to list r (r,:a = append a to list r)
+/ go through every value of a (a+:1)
+/ finally, return our list r
+
+/ in other words..
+/ starting from 1, look up to our argument
+/ checking if each number is a prime number
+/ and if it is, append it to our list (r)
+/ finally, return the list of primes
+/ still need to write the isPrime function
+
+/ a:1, n:5
+/ while a(1) < n(5) = TRUE
+/ if a(1) = prime = FALSE
+/ skip rest of while loop
+/ a:a+1 = 1+1 = 2
+
+/ while a(2) < n(5) = TRUE
+/ if a(2) = prime = TRUE
+/ append a(2) to r (2)
+/ a:a+1 = 2+1 = 3
+
+/ while a(3) < n(5) = TRUE
+/ if a(3) = prime = TRUE
+/ append a(3) to r (2,3)
+/ a:a+1 = 3+1 = 4
+
+/ while a(4) < n(5) = TRUE
+/ if a(4) = prime = FALSE
+/ skip rest of while loop
+/ a:a+1 = 4+1 = 5
+
+/ while a(5) < n(5) = FALSE
+/ skips entire while loop
+/ returns r (2, 3)
+```
+
+```q
+/ isPrime function
+
+/ create function with 1 argument input
+/ and checks whether argument is Prime (True) or not (False)
+
+/ prime = any num can only % by itself and 1
+/ prime numbers begin on 2
+/ will need 3 components:
+/ 1. number < 2 (not prime)
+/ 2. number = 2 (prime)
+/ 3. number > 2 (could be prime)
+
+/ the outcomes for component 1 and 2 are quite binary. 
+/ component 3 -> requires you to check if number has any factors
+/ which means dividing by every number up to x number
+
+/ general reminder:
+/ IF brackets [contain condition + statement to execute if true]
+/ WHILE brackets [contain condition + statement to execute if true]
+
+isprime:{if[x<2; :0b]; a:2; while[a<x; if[(x mod a)=0; :0b]; a+:1]; 1b}
+
+Component 1 (number < 2)
+/ if argument less than 2, return FALSE 0b (not prime)
+/ since primes cannot be less than 2
+/ if[x<2; :0b]
+/ single colon : means return. nothing after gets executed
+/ if x = 1
+/ x(1) < (2) (TRUE) so returns 0b (not prime)
+/ if FALSE, then moves onto NEXT statement
+
+Component 2 (number = 2)
+/ Create variable a, which begins on 2
+/ a is your iterator (will check every number up to x number)
+/ while[a<x; if_false_skip_this_entire_while_loop]; 1b
+/ while condition a < x is FALSE
+/ skip ENTIRE while loop
+/ and go straight to the end, return TRUE 1B (prime)
+/ if x = 2
+/ x(2) < a(2) = FALSE. Skip while loop
+/ goes to end, returns 1b (True)
+
+Component 3 (number > 3)
+/ while condition a < x is TRUE (iterator < x number)
+/ check if a is a factor of x number
+/ this check is done by x mod a = 0 (even number/factor exists = NOT PRIME)
+/ if TRUE, return false :0b
+/ otherwise, iterate through until WHILE condition (a<i) is no longer true
+
+/ if x = 5
+/ a(2) < x(5) = TRUE
+/ x(5) mod a(2) = 0 = FALSE = skips :0b
+/ a:a+1 so 2 + 1 = 3
+/ a(3) < x(5) = TRUE
+/ x(5) mod a(3) = 0 = FALSE = skips :0b
+/ a:a+1 so 3+1 = 4
+/ a(4) < x(5) = TRUE
+/ x(5) mod a(4) = 0 = FALSE = skips :0b
+/ a(5) < x(5) = FALSE, SKIPS entire while loop
+/ goes to end, returns 1b (True) 
+```
+
+Vector Based Solution
+
+```q
+/ the above function uses control statements and loops
+/ but this is very slow
+/ instead, can re-write without do or while loops 
+/ using a vector based solution
+```
+
+isprime Vector Solution
+
+```q
+/ re-write isprime function using vector based solution
+
+/ original function
+
+isprime:{if[x<2; :0b]; a:2; while[a<x; if[(x mod a)=0; :0b]; a+:1]; 1b}
+
+/ we can rewrite the while loop portion
+
+/ instead of looping through every iteration of argument x 
+/ we can simply use til to generate a list
+
+{til x} 10
+0 1 2 3 4 5 6 7 8 9
+
+/ removes first 2 elements (since not prime)
+
+{2_til x} 10
+2 3 4 5 6 7 8 9
+/ drops 0, 1 since not prime
+
+/ check each number if it is a factor of argument x(10)
+
+{x mod 2_til x} 10
+0 1 2 0 4 3 2 1
+
+/ 10 mod 2 = 0
+/ 10 mod 3 = 1
+/ 10 mod 4 = 2
+/ 0 means no remainder = factor of x = NOT PRIME
+
+/ show us factors of argument x
+
+{0=x mod 2_til x} 10
+10010000b
+/ shows us factors of argument 10
+/ 1 = true
+/ 0 = false
+
+/ are there ANY factors of 10? (mod = 0)
+
+{any 0=x mod 2_til x} 10
+1b
+/ TRUE, because list contains SOME factors of 10
+
+/ does the list NOT contain any factors of 10?
+
+{not any 0=x mod 2_til x} 10
+0b
+/ FALSE, because list DOES contain factors of 10
+/ hence, NOT prime
+
+/ still need component for numbers less than 2
+/ so re-use the x<2 IF/Else clause
+
+isprimeB: {if[x<2; :0b]; not any 0=x mod 2_til x}
+isprimeB 10
+0b
+
+/ x(10)<2 = FALSE, skips if statement
+/ goes onto second statement
+/ FALSE, 10 is NOT prime
+```
+
+findprimes Vector Solution
+
+```q
+/ re-write findprimes function using vector based solution
+
+/ original findprime function:
+
+findprime: {[n] r:(); a:1; while [a<n; if[isprime[a];r,:a]; a:a+1];r}
+
+/ use til instead of while loop
+
+{til x} 10
+0 1 2 3 4 5 6 7 8 9
+
+/ perform isprime function on EACH of the numbers
+{isprimeB each til x} 10
+0011010100b
+
+/ returns us a list of booleans
+/ does this list contain any prime?
+/ 0 = no
+/ 1 = yes
+
+/ convert booleans BACK into numbers
+/ want 1 (true) = prime turned back into numbers
+/ use WHERE function
+
+findprimesB: {where isprimeB each til x}
+findprimesB 10
+2 3 5 7
+```
+
+### [func] Function Problem Set 1 - TS
+
+## [func] 1. Volume of cone function
+
+```q
+/ create func called volc that accepts 2 arguments (r and h)
+/ returns volume of cone
 / vol of cone = 1/3 * pi * r^2 * h
 / pi = -4 * atan -1
 
@@ -4039,48 +4438,83 @@ volc[2;3]
 12.57
 
 / define arguments [r;h] first
-/ define variable pi as part of your function
+/ define variable pi
 / must have space after atan and before -1
+/ no space for volc[2;3]
 ```
 
+## [func] 2. Area and Volume of cone function
+
 ```q
-/2 Write a function sph that takes radius and returns the area and volume
-/ output expected as a dictionary
+/ create function, called sph, that accepts argument radius
+/ and returns the area and volume of a cone as a dict
 
-/ v = 4/3 * pi * r^3
-/ a = 4 * pi * r^2
+/ volume = 4/3 * pi * r^3
+/ area = 4 * pi * r^2
+/ pi = -4 * atan -1
 
-sph: { [r] pi:-4*atan -1; a:(4%3)*pi*r xexp 3; v:4*pi*r xexp 2; `area`volume ! (a;v)}
+sph:{[r] pi:-4 * atan -1; v:(4%3)*pi*r xexp 3; a:4* pi * r xexp 2; `area`volume!(a;v)}
 sph[1]
 
 key    | value
 ----------------
-area   | 4.18
-volume | 12.56
+area   | 12.56
+volume | 4.188
 
 / define argument [r]
+/ you can define variables with functions inside your function!
 / define variable pi with formula
 / define variable a with formula
 / define variable v with formula
-/ show dictionary with symbols `area `volume against values a and v
+/ then you can create dictionary using the variables you defined
+/ show dictionary with keys `area `volume against values a and v
+/ create keys as syms (`area`volume) mapped to values defined by your variables (a;v)
 ```
 
+## [func] 3. Implicit Arguments and Global Variables
+
 ```q
-/3 Given raise:{x xexp y}, create function that is projection of the raise. Root[9] = 3
+/ create function, setc, that takes 1 implicit argument
+/ and sets the value of global variable c to that argument
+
+c:10
+
+setc: {x::c}
+setc[15]
+10
+
+/ set global variable c to 10
+/ x is your implicit variable
+/ you assign x the value of global variable c
+/ so WHATEVER value you call using setc, it assigns
+/ that value to the global value of q
+/ so even though you call func with 15
+/ the output is 10 (global variable)
+```
+
+## [func] 4. Projected Functions
+
+```q
+/ raise:{x xexp y}
+/ create projection of raise called root
+/ which calculates the square root of argument 
+/ ie, root[9] = 3
 
 raise: {x xexp y}
 root: raise[ ; 0.5]
 root[9]
 3
 
-/ an embedded function is a function within another function
-/ root function sets y as 0.5
-/ so root 9 = x
+/ first define function raise
+/ then we take a PROJECTION of that function, rename as root
+/ and we set the y variable CONSTANT as 0.5
+/ this allows the projected function ROOT to only allow 1 input as x
+/ so the projected function will always be x xexp 0.5
 ```
 
-```q
-/4 Convert all elements of mixed list l to a string
+## [func] 5. Convert all elements of list l to a string
 
+```q
 l: (100;`price;1b)
 
 string l
@@ -4089,84 +4523,301 @@ string l
 "1b"
 
 / l is a list of long, sym, and boolean
-/ remember, mixed lists have to be contained in parathesis ( )
+/ simply using the "string" function, converts all elements to strings
+/ mixed lists have to be contained in parathesis ( )
 ```
 
+## [func] 6. Given string st, replace "cow" with "kangaroo"
+
 ```q
-/5 Given the string, find and replace "cow" with "kangaroo"**
+/ st: "the cow jumped over the moon"
 
 st: "the cow jumped over the moon"
-
 ssr [st; "cow";"kangaroo"]
 "the kangaroo jumped over the moon"
 
 / ssr = string search replace.
-/ syntax = ssr [listname + find this + replace with this]
+/ first condition = string
+/ second condition = what to target
+/ third condition = what to replace with
+```
+
+## [func] 7. Create function that takes [name;age] and returns "hello age year old name"
+
+```q
+/ create function, sayHi, that takes 2 arguments: name and age
+/ and returns "hello age year old name"
 ```
 
 ```q
-/6 Create function sayHi that takes name and age as arguments and behaves as the following
-
-/ sayHi["joe";90]
-/ "hello 90 year old joe"
-
-sayHi:{[name;age] "hello ", string[age]," year old ", name}
+sayHi:{[name;age] "hello " , string[age] , " year old " , name}
 sayHi["joe";90]
 hello 90 year old joe
 
 / name and age are your arguments
-/ "hello" and "year old" are simply strings or lists of characters
-/ you have to convert raw data values into strings (age = int), use , to concatenate the strings together
-/ need to convert [age] to string
+/ name is a string
+/ age is an int
+/ the output is a list of chars (or one long string)
+/ so you have to convert your [age] argument to a string
+/ and join them together using string concatenation
+/ string concatenation simply done with a comma ,
 / when you define argument "joe" have to use parathesis otherwise wont work
 ```
 
-```q
-/7 I have a box of 7 eggs, find the median and average weight
+## [func] 8. Arithmetic on Lists
 
-eggs: 10 20 30 40 50 60 70
+```q
+/ I have a box of 7 eggs, and the weights are
+/ eggs: 10 20 30 40 50 60 70
+/ find the median and average weight of these eggs
 
 med eggs
-40
+40f
 
 avg eggs
-40
+40f
+
+/ note, division will always return a float
+/ apparently same with med and avg functions
 ```
 
+## [func] 9. Weighted Averaged WAVG Function
+
 ```q
-/8 I sold 2 boxes of eggs. 1 box had 10 eggs and sold for $50 each. The other had 20 eggs and sold for $100 each. Find the average price paid per egg**
+/ I sold 2 boxes of eggs
+/ one box had 10 eggs and i sold each egg for 50 each
+/ the other box had 20 eggs and i sold each for 100 each
+/ find the average price paid per egg
 
 10 20 wavg 50 100
 83.3
 
-/ wavg = weight average function
-/ num1 num2 wavg value1 value2
-
+/ to find the average price per egg
+/ you want to find the weighted average of the 2 lists
+/ wavg = weighted average function
+/ qty1 qty2 wavg value1 value2
 ```
 
-```q
-/9 Generate list k of 10 random integers. Find the moving average with window size of 3
+## [func] 10. Moving Average Window Functions
+
+```
+/ generate list k with 10 random ints
+/ find moving average with window size of 3
 
 k: 10?10
+8 7 9 9 7 7 1 9 1 0
 
 mavg[3;k]
-8 4.5 6 5 6 5 5.33 4.33 5 4.67
+8 7.5 8 8.3 8.3 7.6 5 5.6 3.6 3.3
 ```
 
 ```q
-/10 Find the 3 largest numbers in list k
+/ Find the 3 largest numbers in list k
+
+desc k
+9 9 9 8 7 7 7 1 1 0
 
 3#desc k
-9 8 8 
+9 9 9 
 
 / take 3 of the largest from k, sort by desc
 ```
 
 ```q
-/11 Find the difference between the successive elements of k
+/ Find the difference between the successive elements of k
+
+k
+8 7 9 9 7 7 1 9 1 0
 
 deltas k
-8 -7 8 -4 -1 2 0 -5 7 -3
+8 -1 2 0 -2 0 -6 8 -8 -1
+
+/ the deltas functions returns the difference (delta) of each element
+/ 8-0 = 8
+/ 7-8 = -1
+/ 9-7 = 2
+/ etc
+```
+
+## [func] 11. Factorial Function using While Loops
+
+```q
+/ Create function factw, which uses a loop to write a factorial function
+/ factorial = multiply every iteration up to number x
+
+factw:{i:1; r:1; while[i<x; r*:i; i+:1];:r*x}
+factw 4
+24
+
+/ while loop, so need some sort of iterative counter (i)
+/ want to mutiply every iteration of x, up to x 
+/ so also need an empty list to store these iterations (r) 
+/ first define i:1 (no point starting at 0)
+/ and define r:1 (this is the list of numbers you want to multiply)
+/ while i is less than implicit argument x (your input number)
+/ multiply i with r, and r becomes that new number (r*:i mean r: r*i)
+/ then move onto next iteration (i+:1 means i:i+1)
+/ keep running this while loop until x-1, then stop executing
+/ finally, return r * x (your original input)
+```
+
+```q
+/ alternative syntax (shorter)
+
+factw:{r:i:1; while[i<=x; r*:i; i+:1];r}
+factw 3
+
+/ x is implicit variable= 3
+/ set r = i = 1
+/ while i(1) <= x(3) TRUE, execute following statements
+/ r = r(1) * i(1) = 1
+/ i = i(1) + 1 = 2
+
+i(2) <= x(3) TRUE, so continue executing
+/ r = r(1) x i(2) = 2
+/ i = i(2) + 1 = 3
+
+i(3) <= x(3) TRUE
+/ r = r(2) x i(3) = 6
+/ i = i(3) + 1 = 4
+
+i(4) <= x(3) FALSE, so returns r = 6
+```
+
+## [func] 12. Factorial Function using Vector Conditional
+
+```q
+/ re-write the factorial function as factp WITHOUT using loops
+/ must use vector conditional approach
+
+/ to replace WHILE loop using vector conditional
+/ usually replaces with til function
+
+til 4
+0 1 2 3
+
+1_til 4
+1 2 3
+
+prd 1_til 4
+1*2*3
+
+4 * prd 1_til 4
+1*2*3*4
+
+/ so putting it all together, replacing variable with x
+
+factp:{x*prd 1_til x}
+factp 4
+24
+
+/ KEY TAKEAWAY
+/ prds = multiplies all elements together
+/ must remember to drop first element 0 (otherwise will all be 0)
+/ must multiple original x back in
+/ since til only generates list up to, but not including x
+```
+
+## [func] 13. Timing Calculations
+
+```q
+/ Demonstrate which calculation is faster,
+/ factorial using loops or via KDB (vector conditional)
+/ use \ts to time
+/ do function useful (do x number times)
+
+\ts do[1000;factw 12]
+4 1008
+
+/ 4 miliseconds 1008 bytes of memory
+
+\ts do[1000;factp 12]
+0 1008
+
+/ 0 miliseconds 1008 bytes of memory
+```
+
+## [func] 14. Protetcted Evaluations on Functions
+
+```q
+/ Create function called safefact
+/ that wraps factp with protected evaluation
+/ to return null On instead of error 
+/ when calling on a negative number
+
+safefact:{@[factp; x; 0N]}
+safefact -10
+0N
+
+/ you "wrap" your function using the @ operator ("apply")
+/ @ = apply 
+/ first condition = factp function
+/ if TRUE, return x
+/ if FALSE, return ON
+```
+
+## [func] 15. If/Else Statements (w reverse operator)
+
+```q
+/ Write a function called isPalindrome 
+/ that accepts single argument as a list of ints 
+/ returns `yes if list of ints is a palindrome
+/ otherwise return `no
+
+/ palindrome = same forwards + backwards
+/ example = 1 2 3 3 2 1
+
+isPalindrome:{$[x~reverse x;`yes;`no]}
+isPalindrome 1 2 2 1
+yes
+
+/ since we are taking in 1 argument
+/ with a binary outcome (true vs false)
+/ need to use if/else statement $ [ ]
+/ implicit argument x is a list of integers
+/ need to utilize REVERSE function 
+/ to compare if x = reverse x
+```
+
+## [func] 16. Find the sum of all multiples of 3 or 5 below 1000
+
+```q
+/ check every number up to 1000
+/ if its a factor of 3 or 5
+/ x mod 3 = 0
+/ x mod 5 = 0
+
+/1. generate list of ints from 0-999
+
+til 1000
+0 1 2 3...999
+
+/2. check if number is a factor of 3 or 5
+
+{(0=x mod 3) or (0=x mod 5)} [til 1000]
+1001011
+
+/ you get a list of booleans
+/ ie, true, the number is a factor of 3 or 5
+/ IMPORTANT! the 0 = has to come in FRONT of (0=x mod 5)
+/ (x mod 5 = 0) does NOT work
+
+/3. CONVERT list of booleans to their numbers, use WHERE
+
+where {(0=x mod 3) or (0=x mod 5)} [til 1000]
+0 3 5 6 9 10 12 15 18 20 21 
+
+/4. lastly, use sum to add up all numbers in the list
+
+sum where {(0 = x mod 3) or (0 = x mod 5)} [til 1000]
+233168
+
+/ by using anonymous function, you can perform QSQL (sum where)
+/ as well as call argument x as a list (til 1000) in place
+/ x mod 3 and x mod 5 = search for any multiples of 3 or 5
+/ since dividing by a factor will be 0
+/ oddly enough, the 0 = in (0 = x mod 3) HAS TO come first
+/ (x mod 3 = 0) doesn't work for some reason
 ```
 
 ### [func] Functions Problem Set 1 AQ
