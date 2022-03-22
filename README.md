@@ -4004,7 +4004,6 @@ tab2[`subject]?`chem
 
 ```q
 / a lambda expression is an anonymous function
-/ functions in q are anonymous; it acquires a name only once it is assigned to a variable.
 ```
 
 ### [func] What are local variables?
@@ -4820,91 +4819,106 @@ sum where {(0 = x mod 3) or (0 = x mod 5)} [til 1000]
 / (x mod 3 = 0) doesn't work for some reason
 ```
 
-### [func] Functions Problem Set 1 AQ
+### [func] Functions Problem Set 1 - AQ
+
+[func] 1. write function f that calculates the square of a number
 
 ```q
-/1 write function that calculates square of a number
-
 f:{[a] a*a}
+
 ```
 
-```q
-/2 execute f with a:5 and assign result to new variable b
+[func] 2. write new funciton g, which takes square of first argument divided by square of second argument
 
-a:5
-b:f[a]
+```q
+
+g: {(x*x) % (y*y)}
+g [2;4]
+0.25
 ```
 
-```q
-/3 write new funciton g, which takes square of first argument divided by square of second argument
+[func] 3. execute g with arguments a and b, store this to c
 
-g:{(x*x) % y*y}
+```q
+c: g[a;b] 
+
 ```
 
-```q
-/4 execute g with arguments a and b, store this to c
-
-c:g[a;b] 
-```
+[func] 4. create dyadic function f1 indicating whether the product of 2 numbers is greater than sum
 
 ```q
-/5 create dyadic function f1 indicating whether product of 2 numbers is greater than sum
+/ dyadic means 2 arguments
 
 f1: {(x*y) > x+y}
 ```
 
+[func] 5. write this func with proper KDB order of operations g1: x^5-3x^2 + 5
+
 ```q
-/6 write formual g1: x^5-3x^2 + 5
-/ when x=4
+/ then call the function when x=4
 
 g1:{((x xexp 5) - 3*(x xexp 2))+5}
 g1[4]
 981f
+
+/ note - you have to put 3*(x xexp 2)
+/ an int next to parenthesis won't automatically mutiply
 ```
 
-```q
-/7 create function that calculates area of triangle. height = 7, base = 10
+[func] 6. create function that calculates area of triangle
 
-t:{x*y%2}
-t[7;10]
+```q
+/ then call func with arguments height = 7, base = 10
+
+t:{x * y % 2 }
+t [7;10]
 35
 ```
 
-```q
-/8 create function that calculates the sum of 2 squares of a number x
+[func] 7. create function that calculates the sum of 2 squares of a number x
 
-f:{x xexp 2 + x xexp 2}
-f:{2*(x xexp 2)}
+```q
+
+f: {x xexp 2 + x xexp 2}
+f: {(x*x) + x*x}
 ```
 
+[func] 8. create a function that calculates a^3+b^2+c
+
 ```q
-/9 create a function that calculates a^3+b^2+c
-/ find value of function at 13,3,6
+/ then call your function with arguments: 13,3,6
 
 f:{(x xexp 3) + (y xexp 2) + z}
-f[13;3;6]
+f [13;3;6]
 2212
+
+/ have to use parathensis ( ) around xexp
 ```
 
-```q
-/10 BMI is weight divide by height squared. create an implicit formula
+[func] 9. BMI is weight divide by height squared. create an implicit formula
 
-bmi: {x%y*y}
+```q
+bmi: { x % (y*y) }
 ```
 
-```q
-/11 create a func called perimeters, which will take perimeter of a square and return its area
+[func] 10. create a func called perimeters, which will take perimeter of a square and return its area
 
-perimeter:{(x%4) xexp 2}
+```q
+perimeter:{ (x%4) xexp 2}
 perimeter[8]
 4
 ```
 
-```q
-/12 car depreciates 15% first 3 years, then 8% next 3 years. create func k to find value after 6 years (original value 15000)
+[func] 11. Car Depreciation Problem
 
-k:{x*(0.85 xexp 3)*(0.92 xexp 3)}
-k[15000]
+```q
+/ a car depreciates 15% every year for the first 3 years
+/ then 8% every year for the next 3 years
+/ create func k to find value after 6 years
+/ with original value 15000
+
+k: {x*(0.85 xexp 3)*(0.92 xexp 3) }
+k [15000]
 7173.1765
 ```
 
@@ -5156,6 +5170,38 @@ f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, tim
 / you want to filter the MAX TIMESTAMP by the date
 / the ORDER of the fby also matters a lot. 
 ```
+
+### [func] Int Case Study - GS
+
+1. create table called price
+
+```q
+/ with columns date, ticker, ex, and price
+
+price: ([] date: 2021.01.21 2021.03.21 2021.09.21; ticker:`AAPL`AAPL`MSFT; ex: `US`UW`US; price: 10 20 30)
+
+date       | ticker | ex | price
+--------------------------------
+2021-01-21 | AAPL   | US | 10
+2021-03-21 | AAPL   | UW | 20
+2021-09-21 | MSFT   | US | 30
+```
+
+2. create function called f
+
+```q
+/ takes in 3 args: sym, startdate, enddate
+/ and returns the price that falls within the startdate and enddate
+
+f:{[sym;start;end] select from price where date within (start;end), ticker in sym}
+f[`AAPL;2021.02.21; 2021.08.21]
+
+date       | ticker | ex | price
+---------------------------------
+2021-03-21 | AAPL   | UW | 20
+```
+
+
 
 <a name="qsql"></a>
 ### 🔴 8. qSQL
