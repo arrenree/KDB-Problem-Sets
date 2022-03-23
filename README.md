@@ -7,13 +7,14 @@
 4. [Dictionary](#dictionary)
 5. [Tables](#tables)
 6. [Keyed Tables](#key_table)
-7. [Functions](#functions)
-8. [qSQL](#qsql)
-9. [Adverbs](#adverbs)
-10. [Attributes](#attributes)
-11. [Joins](#joins)
-12. [@ & . Operator](#at)
-13. [Racking & Alignment](racking)
+7. [Foreign Key Restrictions](#fkey_table)
+8. [Functions](#functions)
+9. [qSQL](#qsql)
+10. [Adverbs](#adverbs)
+11. [Attributes](#attributes)
+12. [Joins](#joins)
+13. [@ & . Operator](#at)
+14. [Racking & Alignment](racking)
 
 <hr>
 
@@ -3995,8 +3996,339 @@ tab2[`subject]?`chem
 / utilize the ? find operator to search for index position of value
 ```
 
+<a name="fkey_table"></a>
+### 🔴 7. Foreign Key Restrictions
+[Top](#top)
+
+### [fkey] Problem Set 1 - TS
+
+```q
+/ 1. Given [company] and [employee] tables
+
+company:([sym:`TS`KX`C`AAPL`GOOG`MS] advice: 6?`HOLD`BUY`SELL; level: 6?100)
+company
+sym   |advice| level
+---------------------
+`TS`  | HOLD | 40
+`KX`  | HOLD | 51
+`C`   | SELL | 55
+`AAPL`|	BUY  | 90
+`GOOG`|	SELL | 73
+`MS`  |	SELL | 90
+
+employee:( [] name:`ryan`charlie`arthur`greg; employer:`TS`KX`KX`MS)
+
+employee 
+name   |employer
+-----------------
+ryan   | TS
+charlie| KX
+arthur | KX
+greg   | MS
+```
+
+[fkey] 1. set an FKEY for the employer column from employee table
+
+```q
+/ 1. set an FKEY for the [employer column] from [employee table] 
+/ to the domain of [company table]
+
+update `company$employer from `employee
+```
+
+[fkey] 2. Use meta to check fkey
+
+```q
+/2. confirm the fkey is set for column employer
+
+meta employee
+
+c       | t |   f   | a
+------------------------
+name    | s |       |		
+employer| s |company| 	
+
+/ meta shows [employer column] has an fkey set to [company table]
+```
+
+[fkey] 3. Upserting values not in fkey
+
+```q
+/3. upsert name:`james`claire and employer:`RBS`RBS into the [employee table]
+
+/ need to FIRST add RBS into the company domain (as a keyed sym)
+/ remember  need to use enlist when adding single rows
+
+insert[`company; ([sym:enlist `RBS] advice:enlist `SELL; level: enlist 20)]
+
+company
+sym   |advice| level
+---------------------
+`TS`  | HOLD | 40
+`KX`  | HOLD | 51
+`C`   | SELL | 55
+`AAPL`|	BUY  | 90
+`GOOG`|	SELL | 73
+`MS`  |	SELL | 90
+`RBS` | SELL | 20
+
+/ now you can append james and claire
+
+upsert[employee; ( [] name:`james`claire; employer:`RBS`RBS)]
+
+employee 
+name   |employer
+-----------------
+ryan   | TS
+charlie| KX
+arthur | KX
+greg   | MS
+james  | RBS
+claire | RBS
+```
+
+[fkey] 4. Retrieving Values from fkey
+
+```q
+/4. Retrieving Values from fkey
+
+/ from the [employee table], retrieve the values from the [advice column]
+/ and the [level column] from the [company table]
+
+company
+sym   |advice| level
+---------------------
+`TS`  | HOLD | 40
+`KX`  | HOLD | 51
+`C`   | SELL | 55
+`AAPL`|	BUY  | 90
+`GOOG`|	SELL | 73
+`MS`  |	SELL | 90
+`RBS` | SELL | 20
+
+employee
+name   |employer
+-----------------
+ryan   | TS
+charlie| KX
+arthur | KX
+greg   | MS
+james  | RBS
+claire | RBS
+
+meta employee
+c       |t|   f   |a
+----------------------
+name    |s|       |		
+employer|s|company| 	
+```
+
+```q
+update employer.advice, employer.level from employee
+
+name   |employer|advice|level
+---------------------------
+ryan   |TS	|SELL  |12
+charlie|KX      |BUY   |10
+arthur |KX      |BUY   |10
+greg   |MS      |SELL  |90
+```
+
+### [fkey] Retrieve values from multi fkey - TS
+
+```q
+office: ([sym:`TS`KX`C; loc:`LDN`NY`LDN] employees:10+3?1000)
+
+office
+`sym` | `loc`  | employees
+---------------------------
+`TS`  | `LDN`  | 875
+`KX`  | `NY`   | 354
+`C`   | `LDN`  | 1007
+
+/ columns SYM and LOC are KEYED
+
+employee: ([] name:`ryan`charlie`arthur; employer:`TS`KX`KX; city:`LDN`NY`NY)
+
+employee
+name   |employer|city
+-------------------
+ryan   |TS      |LDN
+charlie|KX      |NY
+arthur |KX      |NY
+```
+
+[fkey] 1. Set the fkey for employee table
+
+```q
+/ fkey the [employer] and [city] columns from [employee]
+/ to the domain of [office] table
+
+exec `office$flip (employer;city) from employee
+0 1 1
+
+/ since the [office table] has 2 keyed columns
+/ you have to "cast" the 2 columns as fkey
+/ ignore the flip syntax
+/ set fkey by linking the [EMPLOYER column] and [CITY] from [employee table]
+/ to the domain of [office table] (keyed columns)
+
+/ ryan    -> look for TS and LDN in office table, found on row 0
+/ charlie -> look for KX and NY in office table, found on row 1
+/ arthur  -> look for KX and NY in office table, found on row 1
+```
+
+[fkey] 2. Add new column to employee table
+
+```q
+/ from [employee table]
+/ add new column called [empOffice]
+/ which returns the INDEX LOCATION of fkey [employer] and [city] columns
+/ from the [office table]
+
+update empOffice:`office$flip(employer;city) from `employee
+
+employee
+name   |employer|city|empOffice
+-----------------------------
+ryan   |TS      |LDN |	0
+charlie|KX      |NY  |	1
+arthur |KX      |NY  |	1
+
+/ adds new column [empOffice], and sets fkey to domain of [office table]
+
+/ ryan    -> look for TS and LDN in office table, found on row 0
+/ charlie -> look for KX and NY in office table, found on row 1
+/ arthur  -> look for KX and NY in office table, found on row 1
+```
+
+[fkey] 3. Check meta of employee table
+
+```q
+/ check if the new column empOffice has an fkey
+
+meta employee
+c        |t|  f   | a
+----------------------
+name     |s|	  |	
+employer |s|	  |
+city     |s|	  |
+empOffice|j|office|
+
+/ meta shows us [empOffice] has an foreign key 
+/ referencing the [office table]
+```
+
+[fkey] 4. Retrieve fkey values
+
+```q
+/ add to the [employee table]
+/ new columns [sym] and [loc] from the [office table]
+/ using the fkey from the [empOffice column]
+
+update empOffice.sym, empOffice.loc from employee
+
+name   |employer|city|empOffice| sym| loc
+-------------------------------------------
+ryan   |   TS   |LDN |	 0     | TS | LDN
+charlie|   KX   |NY  |   1     | KX | NY
+arthur |   KX   |NY  |   1     | KX | NY
+
+/ prev set [empOffice column] as foreign key
+/ to the domain of [office table]
+/ so you can pull in values from [office table]
+```
+
+### [fkey] FKEY Problem Set - TS
+
+```q
+book: ([id:`fmgoh`fddig`lefhe`bfjnf] name:`jim`allen`bob`sherman)
+
+book
+`id`    | name
+----------------
+`fmgoh` | jim
+`fddig` | allen
+`lefhe` | bob
+`bfjnf` | sherman
+
+trade:([] date:2021.01.01; time: 09:00; sym:`D`AA`UPS`A; price:109 93 34 56; size: 100; cond: " ","B","A","C"; bookID:`fmgoh`fddig`lefhe`bfjnf)
+
+trade
+date      |  time | sym |price| size|cond|bookId
+-------------------------------------------------
+2021.01.01| 09:00 |   D | 109 | 100 |    | fmgoh
+2021.01.01| 09:00 |  AA |  93 | 100 | B  | fddig
+2021.01.01| 09:00 | UPS |  34 | 100 | A  | lefhe
+2021.01.01| 09:00 |   A |  56 | 100 | C  | bfjnf
+```
+
+[fkey] 1. Insert new fkey column into trade table
+
+```q
+/ Insert new fkey column into [trade table]
+/ called [owner], linking the [trade] and [book] table
+/ using [bookID]
+
+update owner: `book$bookId from `trade
+
+date      |  time | sym |price| size|cond|bookId | owner
+---------------------------------------------------------
+2021.01.01| 09:00 |   D | 109 | 100 |    | fmgoh | fmgoh
+2021.01.01| 09:00 |  AA |  93 | 100 | B  | fddig | fddig
+2021.01.01| 09:00 | UPS |  34 | 100 | A  | lefhe | lefhe
+2021.01.01| 09:00 |   A |  56 | 100 | C  | bfjnf | bfjnf
+
+/ so if you ADD the column set as an fkey (bookID)
+/ it returns the DOMAIN of the keyed table (keyed columns)
+/ [bookID] from [trade] was set as fkey to [book]
+/ adding the column returns the keyed column from [book]
+```
+
+[fkey] 2. Check the meta to confirm fkey
+
+```q
+meta trade
+
+c      | t |   f  | a
+-----------------------
+date   | d |	  |	
+time   | u |	  |	
+sym    | s |	  |	
+price  | j |	  |	
+size   | j |	  |	
+cond   | c |	  |	
+bookID | s |	  |	
+owner  | s | book |	
+
+
+/ [owner column] from [trade] has an fkey
+/ to [book table]
+```
+
+[fkey] 3. Retrieving fkey values
+
+```q
+/ Join the [book table] onto the [trade table]
+/ and add the name of the person who did trade
+
+update owner.name from `trade
+
+date      |  time | sym |price| size|cond|bookId | owner | name
+---------------------------------------------------------------
+2021.01.01| 09:00 |   D | 109 | 100 |    | fmgoh | fmgoh | jim
+2021.01.01| 09:00 |  AA |  93 | 100 | B  | fddig | fddig | allen
+2021.01.01| 09:00 | UPS |  34 | 100 | A  | lefhe | lefhe | bob
+2021.01.01| 09:00 |   A |  56 | 100 | C  | bfjnf | bfjnf | sherman
+
+/ [owner column] has an fkey set to [book table]
+/ so you use that column to pull values from [book table]
+/ name = column name from book you want to retrieve values from
+```
+
+
 <a name="functions"></a>
-### 🔴 7. Functions
+### 🔴 8. Functions
 [Top](#top)
 
 
@@ -5204,7 +5536,7 @@ date       | ticker | ex | price
 
 
 <a name="qsql"></a>
-### 🔴 8. qSQL
+### 🔴 9. qSQL
 [Top](#top)
 
 ### [QSQL] Find the first price and time for AAPL by date
@@ -6360,7 +6692,7 @@ update average:avg mark by class, subject from marks
 <hr>
 
 <a name="adverbs"></a>
-### 🔴 9. Adverbs
+### 🔴 10. Adverbs
 [Top](#top)
 
 ### [adverb] What is an ADVERB?
@@ -6572,7 +6904,7 @@ depr[;8]\[5;100]
 
 
 <a name="attributes"></a>
-### 🔴 Attributes
+### 🔴 11. Attributes
 [Top](#top)
 
 
@@ -6614,7 +6946,7 @@ allows for faster queries
 ```
 
 <a name="joins"></a>
-### 🔴 10. Joins
+### 🔴 12. Joins
 [Top](#top)
 
 ### [join] What are some differences between left join and union join?
@@ -7068,7 +7400,7 @@ t2 uj t1
 ```
 
 <a name="at"></a>
-### 🔴 11. @ & . Operator
+### 🔴 13. @ & . Operator
 [Top](#top)
 
 ### [@ Operator] Problem Set from AQ
@@ -7239,7 +7571,7 @@ AAPL | 11.9   149
 ```
 
 <a name="racking"></a>
-### 🔴 12. Racking & Alignment
+### 🔴 14. Racking & Alignment
 [Top](#top)
 
 ### [QSQL] Racking xbar Problem Set 1 AQ
