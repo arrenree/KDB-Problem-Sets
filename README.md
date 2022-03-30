@@ -5512,28 +5512,211 @@ f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, tim
 
 price: ([] date: 2021.01.21 2021.03.21 2021.09.21; ticker:`AAPL`AAPL`MSFT; ex: `US`UW`US; price: 10 20 30)
 
+price:
 date       | ticker | ex | price
 --------------------------------
-2021-01-21 | AAPL   | US | 10
-2021-03-21 | AAPL   | UW | 20
-2021-09-21 | MSFT   | US | 30
+2021-01-21 |  AAPL  | US | 10
+2021-03-21 |  AAPL  | UW | 20
+2021-09-21 |  MSFT  | US | 30
 ```
 
 2. create function called f
 
 ```q
-/ takes in 3 args: sym, startdate, enddate
-/ and returns the price that falls within the startdate and enddate
+/ takes in 3 args: [sym, startdate, enddate]
+/ queries the price table 
+/ and returns the syms that falls within the [startdate] and [enddate]
 
-f:{[sym;start;end] select from price where date within (start;end), ticker in sym}
-f[`AAPL;2021.02.21; 2021.08.21]
+f:{ [sym;start;end] select from price where date within (start;end), ticker in sym}
+f[`AAPL;2021.01.21; 2021.12.21]
 
 date       | ticker | ex | price
 ---------------------------------
+2021-01-21 | AAPL   | US | 10
 2021-03-21 | AAPL   | UW | 20
+
+/ syntax is where COL_NAME (date) within (arg2;arg3)
+/ COL_NAME (ticker) in (arg1)
 ```
 
+3. create 2nd table called input
 
+```q
+/ with 3 columns: ticker, start date, end date
+
+input: ([] ticker: `AAPL`AAPL`MSFT; start: 2021.01.01 2021.03.01 2021.06.01; end: 2021.03.01 2021.06.30 2021.08.01)
+
+ticker |   start    |    end
+--------------------------------
+AAPL   | 2021-01-01 | 2021-03-01
+AAPL   | 2021-03-01 | 2021-06-30
+MSFT   | 2021-06-01 | 2021-08-01
+```
+
+4. from input table, query the price table
+
+```q
+/ from the [input table], retrieve the [syms] from original [price table]
+/ that match the [start] and [end dates] from [input]
+
+/ thought process:
+
+/ check if [ticker] from [price] = [ticker] from [input],
+/ WHERE [date] from [price] falls within [start/end] from [input]
+/ you need to query ENTIRE row from input table [sym + start + end]
+/ then iterate through EACH row
+
+/ so you can either run this query 3x, or you can iterate through each row using EACH
+/ since you have 3 arguments (sym, start, end) from the original function
+/ you can query these args as a LIST of values corresponding from [input table]
+```
+
+```q
+/ Method 1:
+
+/ since each row in table = dictionary
+/ you can first retrieve a list of values from each column
+/ for ex, ticker values would be `AAPL`AAPL`MSFT
+/ then INPUT these [list of values] for each argument
+/ then use EACH to iterate the function through each row
+
+input table
+ticker |   start    |    end
+--------------------------------
+AAPL   | 2021-01-01 | 2021-03-01
+AAPL   | 2021-03-01 | 2021-06-30
+MSFT   | 2021-06-01 | 2021-08-01
+
+input`ticker
+`AAPL`AAPL`MSFT
+
+input`start
+(2021-01-01d; 2021-03-01d; 2021-06-01d)
+
+input`end
+(2021-03-01d; 2021-06-30d; 2021-08-01d)
+
+/ using same function as earlier:
+
+f:{ [sym;start;end] select from price where date within (start;end), ticker in sym}
+raze f'[input`ticker;input`start;input`end]
+
+ticker |   start    |    end
+--------------------------------
+AAPL   | 2021-01-01 | 2021-03-01
+AAPL   | 2021-03-01 | 2021-06-30
+
+/ original function doesnt change
+/ orig func = from price table, retrieve syms where date within (start;end) 
+/ your inputs = [LIST OF VALUES] from EACH column from input table
+/ f' = run the function through EACH row (doesnt work if you do f each)
+/ the output is a list of 3 tables, so to collapse 1 layer, use RAZE
+/ raze = (,/)
+```
+
+Method 2
+
+```q
+/ Method 2: Alternative Syntax
+
+/ instead of querying original function
+/ with lists of values by column as the 3 arguments
+/ you can re-write the function
+/ and use x to query the corresponding columns in the input table
+/ iterating through each row using EACH
+
+price:
+date       | ticker | ex | price
+--------------------------------
+2021-01-21 |  AAPL  | US | 10
+2021-03-21 |  AAPL  | UW | 20
+2021-09-21 |  MSFT  | US | 30
+
+input:
+ticker |   start    |    end
+--------------------------------
+AAPL   | 2021-01-01 | 2021-03-01
+AAPL   | 2021-03-01 | 2021-06-30
+MSFT   | 2021-06-01 | 2021-08-01
+
+f1:{select from price where date within x`start`end, ticker in x`ticker}
+raze f1 each input
+
+/ so you create function f1, which takes implicit argument x
+/ as the [input table]
+/ from [price table], find where [date from price] is within [start, end from x]
+/ and where [ticker from price] is = [ticker in x]
+
+/ if you think about it, its the same syntax as table_name`col_name
+/ only x is now the table name
+
+/ to iterate through [EACH ROW] of [input table], you have use [EACH]
+/ you return a list of tables, so need RAZE to level it 
+```
+
+Method 3
+
+```q
+/ 2. create new function querying the [input table]
+/ and use [sym] and [date] from [price table] as arguments
+
+price:
+date       | ticker | ex | price
+--------------------------------
+2021-01-21 |  AAPL  | US | 10
+2021-03-21 |  AAPL  | UW | 20
+2021-09-21 |  MSFT  | US | 30
+
+input:
+ticker |   start    |    end
+--------------------------------
+AAPL   | 2021-01-01 | 2021-03-01
+AAPL   | 2021-03-01 | 2021-06-30
+MSFT   | 2021-06-01 | 2021-08-01
+
+f2:{ [sym;date] select from input where date within (start;end), sym in ticker}
+
+/ you can query one by one (each row)
+
+f2 [`AAPL;2021.01.21]
+
+ticker |   start    |    end
+--------------------------------
+AAPL   | 2021-01-01 | 2021-03-01
+
+f2[`MSFT;2021.09.21]
+
+ticker |   start    |    end
+--------------------------------
+/ null since no match
+
+/ but its probably more efficient to use adverb EACH
+/ and query through entire table 
+
+/ retrieve list of VALUES per COLUMN
+
+price`ticker
+`AAPL`AAPL`MSFT
+
+/ values for column [ticker] from [price table]
+
+price`date
+(2021-01-21d; 2021-03-21d; 2021-09-21d)
+
+/ values for column [date] from [price table]
+
+raze f2'[price`ticker; price`date]
+
+ticker |   start    |    end
+--------------------------------
+AAPL   | 2021-01-01 | 2021-03-01
+AAPL   | 2021-03-01 | 2021-06-30
+
+/ you are calling function with a LIST of 3 values
+/ so you get a LIST of 3 tables
+/ must use raze to flatten 1 level
+/ also must use ' = each to iterate through each row
+```
 
 <a name="qsql"></a>
 ### 🔴 9. qSQL
