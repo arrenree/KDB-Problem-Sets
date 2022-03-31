@@ -5284,16 +5284,16 @@ date       | sym  | time	               | src | price | size
 2014-04-21 | AAPL | 2014-04-21T08:11:23.934000 |  L  | 25.35 | 8945
 ```
 
-[func 8.1] create function with 3 arguments (sym, startdate, enddate)
+[func 8.1] create function with 3 arguments (symbols, startdate, enddate)
 
 ```q
 / name this func tradeticks
 / queries a date range and sym filter
 / taking in 3 arguments (startdate, enddate, symbols)
 
-tradeticks:{[startdate;enddate;symbols] 
+tradeticks:{ [startdate;enddate;symbols] 
             select date, sym, time, size, price 
-            from trade
+            from trades
             where date within (startdate;enddate), sym in symbols}
             
 tradeticks[2021.11.03;2021.11.04;`MS]
@@ -5304,13 +5304,19 @@ date      sym time         size  price
 2021-11-03 MS 09:30:01.768 95500 81.06
 2021-11-03 MS 09:30:01.928 13400 82.90
 
-/ date range = date within startdate/enddate
-/ symbol list = sym in list of symbols
+/ date (from trades) within (startdate;enddate) from ARG
+/ COL WITHIN ARG
+
+/ sym (from trades) in symbols (from arg)
+/ COL in ARG
 ```
+
+[func 8.2] Extract temporal data from Timestamp
 
 ```q
 / 2.1 Extracting temporal data from Timestamp
-/ assume table called depth
+
+select from depth
 
 depth
 time                       sym  price
@@ -5319,24 +5325,21 @@ time                       sym  price
 2021-11-07T08:14:59.215000 ORCL 35.16
 2021-11-07T08:21:30.944000 NOK  42.01
 
-/ notice time datatype is timestamp (includes date and time)
+/ notice [time column] datatype is timestamp (includes date and time)
 
 meta depth
 
-
-c    |t|f|a
-------------
-time	|p| |		
-sym	|s| |g
-bid1	| |f|		
+c    | t | f | a
+------------------
+time | p |   |		
+sym  | s |   | g
+bid1 |   | f |		
 
 / time column is datatype p = timestamp
 ```
-
+[func 8.3] Extract the TIMESTAMP from timestamp
 
 ```q
-/2.2 Extract the TIMESTAMP
-
 select time from depth
 
 time
@@ -5348,9 +5351,9 @@ time
 / since time is already of timestamp datatype, just need to extract
 ```
 
-```q
-/2.3 Extract the DATE from timestamp
+[func 8.4] extract the DATE from timestamp
 
+```q
 select `date$time from depth
 
 time
@@ -5361,10 +5364,9 @@ time
 
 / extract time, then cast timestamp to date datatype
 ```
+[func 8.5] extract the TIME from timestamp
 
 ```q
-/2.4 extract the time from timestamp
-
 select time.time from depth
 select `time$time from depth
 
@@ -5373,16 +5375,22 @@ time
 08:04:21.425
 08:14:59.215
 08:21:30.944
+
+/ time column is in timestamp format (date + time)
+/ to strip out only the time
+/ need to cast it as a time datatype
 ```
 
+[func 8.6] create tradeticks2 with additional parameters: starttime and endtime
+
 ```q
-/2 create func2, which adds additional parameters: start time and end time. 
 / this func will only extract the trades that fall within time range
+/ original equation's parameters = sym, startdate, enddate
 / hint - need to extract the time portion from timestamp e.g time.time or `time$time
 
-tradeticks2:{[startdate;enddate;symbols;starttime;endtime] 
+tradeticks2:{ [startdate; enddate; symbols; starttime; endtime] 
             select date, sym, time, size, price 
-            from trade
+            from trades
             where date within (startdate;enddate), sym in symbols,
             `time$time within (starttime;endtime)}
 
@@ -5394,25 +5402,31 @@ date      sym time         size  price
 2021-11-03 MS 09:30:17.573 18400 96.09
 2021-11-03 MS 09:30:21.264 8500 101.73
 
-/ so in this case, time is in the timestamp temporal format of 2021.01.01D09:00:00
-/ need to extract only the time portion
-/ so that your argument inputs for starttime;endtime make sense
+/ [time column] from trades is in the timestamp temporal format of 2021.01.01D09:00:00
+/ need to extract only the time portion by CASTING as time
+/ such that it matches your arguments for starttime and endtime
 ```
 
-```q
-/3 create function which is same as func1, but uses a start timestamp and end timestamp as the parameters
-/ it should query across the date boundaries (should include all ticks within that period)
-/ make sure it uses date partitions correctly. date portion should be run first and separately from timestamp query
+[func 8.7] create function3, but uses a start timestamp and end timestamp as parameters
 
-tradeticks3:{[starttimestamp;endtimestamp;symbols] 
+```q
+/ it should query across the date boundaries (should include all ticks within that period)
+/ so your args = timestamp format
+/ make sure it uses date partitions correctly
+/ date portion should be run first and separately from timestamp query
+
+tradeticks3:{ [starttimestamp; endtimestamp; symbols] 
             select date, sym, time, size, price 
-            from trade 
+            from trades 
             where date within `date$(starttimestamp;endtimestamp), sym in symbols,
             time within (starttimestamp;endtimestamp)}
 
-/ inputs are timestamps, which include date+time
-/ need to filter first by date within the timestamp
-/ then time within the timestamp
+/ arguments are TIMESTAMPS datatype = DATE + TIME
+/ need [date column] from table to fall within [starttimestamp] and [endtimestamp] (from your arg)
+/ so need to cast your argments TIMESTAMP into DATES
+
+/ need [time column] from table to fall within [starttimestamp] and [endtimestamp] (from your arg)
+/ so need to cast your arguments TIMESTAMP into TIME 
 
 tradeticks3[2021.11.07D09:00;2021.11.07D10:00;`AAPL]
 
@@ -5423,6 +5437,8 @@ date       sym  time         size  price
 2021-11-07 AAPL 09:30:22.052 1500  95.94
 
 ```
+
+
 ```q
 / i dont get this
 
