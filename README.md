@@ -4332,19 +4332,19 @@ date      |  time | sym |price| size|cond|bookId | owner | name
 [Top](#top)
 
 
-### [func] What is a lambda expression?
+[func 1.1] What is a lambda expression?
 
 ```q
 / a lambda expression is an anonymous function
 ```
 
-### [func] What are local variables?
+[func 1.2] What are local variables?
 
 ```q
 / a variable that is created and exist only for the duration of an application
 ```
 
-### [func] What is function prefix syntax?
+[func 1.3] What is function prefix syntax?
 
 ```q
 / a unary function is a function with only one parameter
@@ -4356,7 +4356,7 @@ date      |  time | sym |price| size|cond|bookId | owner | name
 / in this case, 5 is an implicit variable
 ```
 
-### [func] Anonymous String Function Problem Set (AQ)
+### [func 2.0] Anonymous String Function Problem Set (AQ)
 
 ```q
 / create a function that uses SSR (string search replace)
@@ -4368,7 +4368,7 @@ ssr["hello ryan where is ryan";"ryan";"john"]
 hello johhn where is john
 ```
 
-### [func] 1. Pass single sym through function
+[func 2.1] Pass single sym through function
 
 ```q
 f: {ssr[(string x);y;z] }
@@ -4380,7 +4380,7 @@ f[`welcome;"me";"ME"]
 / and replaces "me" with "ME"
 ```
 
-### [func] 2. re-written as lambda function
+[func 2.2] re-written as lambda function
 
 ```q
 / alternative syntax (lambda function)
@@ -4394,7 +4394,7 @@ f[`welcome;"me";"ME"]
 / string x = ONLY applies to argument x
 ```
 
-### [func] 3. Alternative method to call arguments 
+[func 2.3] Alternative method to call arguments 
 
 ```q
 / alternative syntax (lambda + alt method to call argument)
@@ -4407,7 +4407,7 @@ f[`welcome;"me";"ME"]
 / this is useful when iterating through a LIST of syms
 ```
 
-### [func] 4. re-write function to pass a LIST of syms
+[func 2.4] re-write function to pass a LIST of syms
 
 ```q
 / instead of converting one sym
@@ -4427,7 +4427,7 @@ f[ ;"me";"ME"] each `welcome`home`mermaid
 / while locking in arguments y and z as constants
 ```
 
-### [func] 5. re-written as lambda function
+[func 2.5] re-written as lambda function
 
 ```q
 / lambda notation
@@ -4445,7 +4445,7 @@ f[ ;"me";"ME"] each `welcome`home`mermaid
 / while locking in arguments y and z as constants```
 ```
 
-### [func] Projected Function Case Study - TS
+### [func 3.0] Projected Function Case Study - TS
 
 ```q
 /1. create first function called raise
@@ -4483,7 +4483,7 @@ square 1 2 3
 / calls in 1 2 3 for x xexp 2
 ```
 
-### [func] Generate list of 100 random numbers, sum all values > 50 using loop
+### [func 4.0] Generate list of 100 random numbers, sum all values > 50 using loop
 
 ```q
 / generate list of 100 random numbers from 0-99
@@ -4509,7 +4509,7 @@ while [i < count d; if [d[i]>50; r1+:d[i] ]; i+:1]
 / IF STATEMENT = tests IF condition true, add to list
 ```
 
-### [func] Vector Operation Solution
+### [func 4.1] Vector Operation Solution
 
 ```
 HOWEVER, much faster using vector operations:
@@ -4524,7 +4524,7 @@ min sum d where d>50
 avg sum d where d>50
 ```
 
-### [func] Prime Numbers Case Study - TS
+### [func 5.0] Prime Numbers Case Study - TS
 
 ```q
 / create function that finds primes up to argument x
@@ -4647,7 +4647,7 @@ Component 3 (number > 3)
 / goes to end, returns 1b (True) 
 ```
 
-Vector Based Solution
+[func 5.1] Vector Based Solution
 
 ```q
 / the above function uses control statements and loops
@@ -4656,7 +4656,7 @@ Vector Based Solution
 / using a vector based solution
 ```
 
-isprime Vector Solution
+[func 5.2] isprime Vector Solution
 
 ```q
 / re-write isprime function using vector based solution
@@ -4722,7 +4722,7 @@ isprimeB 10
 / FALSE, 10 is NOT prime
 ```
 
-findprimes Vector Solution
+[func 5.3] findprimes Vector Solution
 
 ```q
 / re-write findprimes function using vector based solution
@@ -4754,9 +4754,9 @@ findprimesB 10
 2 3 5 7
 ```
 
-### [func] Function Problem Set 1 - TS
+### [func 6.0] Function Problem Set 1 - TS
 
-## [func] 1. Volume of cone function
+[func 6.1] Volume of cone function
 
 ```q
 / create func called volc that accepts 2 arguments (r and h)
@@ -4774,7 +4774,7 @@ volc[2;3]
 / no space for volc[2;3]
 ```
 
-## [func] 2. Area and Volume of cone function
+[func 6.2] Area and Volume of cone function
 
 ```q
 / create function, called sph, that accepts argument radius
@@ -4802,7 +4802,7 @@ volume | 4.188
 / create keys as syms (`area`volume) mapped to values defined by your variables (a;v)
 ```
 
-## [func] 3. Implicit Arguments and Global Variables
+[func 6.3] Implicit Arguments and Global Variables
 
 ```q
 / create function, setc, that takes 1 implicit argument
@@ -4823,7 +4823,7 @@ setc[15]
 / the output is 10 (global variable)
 ```
 
-## [func] 4. Projected Functions
+[func 6.4] Projected Functions
 
 ```q
 / raise:{x xexp y}
@@ -4843,7 +4843,7 @@ root[9]
 / so the projected function will always be x xexp 0.5
 ```
 
-## [func] 5. Convert all elements of list l to a string
+[func 6.5] Convert all elements of list l to a string
 
 ```q
 l: (100;`price;1b)
@@ -4858,7 +4858,7 @@ string l
 / mixed lists have to be contained in parathesis ( )
 ```
 
-## [func] 6. Given string st, replace "cow" with "kangaroo"
+[func 6.6] Given string st, replace "cow" with "kangaroo"
 
 ```q
 / st: "the cow jumped over the moon"
@@ -4873,7 +4873,7 @@ ssr [st; "cow";"kangaroo"]
 / third condition = what to replace with
 ```
 
-## [func] 7. Create function that takes [name;age] and returns "hello age year old name"
+[func 6.7] Create function that takes [name;age] and returns "hello age year old name"
 
 ```q
 / create function, sayHi, that takes 2 arguments: name and age
@@ -4895,7 +4895,7 @@ hello 90 year old joe
 / when you define argument "joe" have to use parathesis otherwise wont work
 ```
 
-## [func] 8. Arithmetic on Lists
+[func 6.8] Arithmetic on Lists
 
 ```q
 / I have a box of 7 eggs, and the weights are
@@ -4912,7 +4912,7 @@ avg eggs
 / apparently same with med and avg functions
 ```
 
-## [func] 9. Weighted Averaged WAVG Function
+[func 6.9] Weighted Averaged WAVG Function
 
 ```q
 / I sold 2 boxes of eggs
@@ -4929,7 +4929,7 @@ avg eggs
 / qty1 qty2 wavg value1 value2
 ```
 
-## [func] 10. Moving Average Window Functions
+[func 6.10] Moving Average Window Functions
 
 ```
 / generate list k with 10 random ints
@@ -4970,7 +4970,7 @@ deltas k
 / etc
 ```
 
-## [func] 11. Factorial Function using While Loops
+[func 6.11] Factorial Function using While Loops
 
 ```q
 / Create function factw, which uses a loop to write a factorial function
@@ -5015,7 +5015,7 @@ i(3) <= x(3) TRUE
 i(4) <= x(3) FALSE, so returns r = 6
 ```
 
-## [func] 12. Factorial Function using Vector Conditional
+[func 6.12] Factorial Function using Vector Conditional
 
 ```q
 / re-write the factorial function as factp WITHOUT using loops
@@ -5049,7 +5049,7 @@ factp 4
 / since til only generates list up to, but not including x
 ```
 
-## [func] 13. Timing Calculations
+[func 6.13] Timing Calculations
 
 ```q
 / Demonstrate which calculation is faster,
@@ -5068,7 +5068,7 @@ factp 4
 / 0 miliseconds 1008 bytes of memory
 ```
 
-## [func] 14. Protetcted Evaluations on Functions
+[func 6.14] Protetcted Evaluations on Functions
 
 ```q
 / Create function called safefact
@@ -5087,7 +5087,7 @@ safefact -10
 / if FALSE, return ON
 ```
 
-## [func] 15. If/Else Statements (w reverse operator)
+[func 6.15] If/Else Statements (w reverse operator)
 
 ```q
 / Write a function called isPalindrome 
@@ -5110,7 +5110,7 @@ yes
 / to compare if x = reverse x
 ```
 
-## [func] 16. Find the sum of all multiples of 3 or 5 below 1000
+[func 6.16] Find the sum of all multiples of 3 or 5 below 1000
 
 ```q
 / check every number up to 1000
@@ -5151,16 +5151,16 @@ sum where {(0 = x mod 3) or (0 = x mod 5)} [til 1000]
 / (x mod 3 = 0) doesn't work for some reason
 ```
 
-### [func] Functions Problem Set 1 - AQ
+### [func 7.0] Functions Problem Set 1 - AQ
 
-[func] 1. write function f that calculates the square of a number
+[func 7.1] write function f that calculates the square of a number
 
 ```q
 f:{[a] a*a}
 
 ```
 
-[func] 2. write new funciton g, which takes square of first argument divided by square of second argument
+[func 7.2] write new funciton g, which takes square of first argument divided by square of second argument
 
 ```q
 
@@ -5169,14 +5169,14 @@ g [2;4]
 0.25
 ```
 
-[func] 3. execute g with arguments a and b, store this to c
+[func 7.3] execute g with arguments a and b, store this to c
 
 ```q
 c: g[a;b] 
 
 ```
 
-[func] 4. create dyadic function f1 indicating whether the product of 2 numbers is greater than sum
+[func 7.4] create dyadic function f1 indicating whether the product of 2 numbers is greater than sum
 
 ```q
 / dyadic means 2 arguments
@@ -5184,7 +5184,7 @@ c: g[a;b]
 f1: {(x*y) > x+y}
 ```
 
-[func] 5. write this func with proper KDB order of operations g1: x^5-3x^2 + 5
+[func 7.5] write this func with proper KDB order of operations g1: x^5-3x^2 + 5
 
 ```q
 / then call the function when x=4
@@ -5197,7 +5197,7 @@ g1[4]
 / an int next to parenthesis won't automatically mutiply
 ```
 
-[func] 6. create function that calculates area of triangle
+[func 7.6] create function that calculates area of triangle
 
 ```q
 / then call func with arguments height = 7, base = 10
@@ -5207,7 +5207,7 @@ t [7;10]
 35
 ```
 
-[func] 7. create function that calculates the sum of 2 squares of a number x
+[func 7.7] create function that calculates the sum of 2 squares of a number x
 
 ```q
 
@@ -5215,7 +5215,7 @@ f: {x xexp 2 + x xexp 2}
 f: {(x*x) + x*x}
 ```
 
-[func] 8. create a function that calculates a^3+b^2+c
+[func 7.8] create a function that calculates a^3+b^2+c
 
 ```q
 / then call your function with arguments: 13,3,6
@@ -5227,13 +5227,13 @@ f [13;3;6]
 / have to use parathensis ( ) around xexp
 ```
 
-[func] 9. BMI is weight divide by height squared. create an implicit formula
+[func 7.9] BMI is weight divide by height squared. create an implicit formula
 
 ```q
 bmi: { x % (y*y) }
 ```
 
-[func] 10. create a func called perimeters, which will take perimeter of a square and return its area
+[func 7.10] create a func called perimeters, which will take perimeter of a square and return its area
 
 ```q
 perimeter:{ (x%4) xexp 2}
@@ -5241,7 +5241,7 @@ perimeter[8]
 4
 ```
 
-[func] 11. Car Depreciation Problem
+[func 7.11] Car Depreciation Problem
 
 ```q
 / a car depreciates 15% every year for the first 3 years
@@ -5254,18 +5254,41 @@ k [15000]
 7173.1765
 ```
 
-### [func] Functions Problem Set 2 (med) - AquaQ
+### [func 8.0] Functions Problem Set 2 (med) - AquaQ
 
 ```q
 / load fakedb.q
 
+makehdb[`:hdb;10;1000;1000]
+
+/ `: directory name
+/ 10 = number of partitions
+/ 1000 = trades in each table
+/ 1000 = number of quotes in each table
+
+\l hdb
+
 \a
 `depth`quotes`trades
-
 ```
 
 ```q
-/ 1. create function that queries a date range and sym filter
+select from trades
+
+date       | sym  | time	               | src | price | size
+--------------------------------------------------------------------
+2014-04-21 | AAPL | 2014-04-21T08:00:44.437000 |  O  | 25.34 | 1785
+2014-04-21 | AAPL | 2014-04-21T08:04:41.246000 |  L  | 25.34 |  427
+2014-04-21 | AAPL | 2014-04-21T08:04:47.586000 |  L  | 25.34 | 1528
+2014-04-21 | AAPL | 2014-04-21T08:08:09.192000 |  L  | 25.35 | 8136
+2014-04-21 | AAPL | 2014-04-21T08:11:23.934000 |  L  | 25.35 | 8945
+```
+
+[func 8.1] create function with 3 arguments (sym, startdate, enddate)
+
+```q
+/ name this func tradeticks
+/ queries a date range and sym filter
 / taking in 3 arguments (startdate, enddate, symbols)
 
 tradeticks:{[startdate;enddate;symbols] 
@@ -5420,7 +5443,7 @@ tradeticks3:{[starttimestamp;endtimestamp;symbols]
             tradeticks3[starttimestamp;endtimestamp;symbols]]}
 ```
 
-### [func] Functions Problem Set 3 (hard) - AQ
+### [func 9.0] Functions Problem Set 3 (hard) - AQ
 
 ```q
 / 1 write a func that calc the avg spread between bid and ask per date 
@@ -5464,7 +5487,8 @@ date       | sym  | high  | low  | open | close
 2021-11-11 | AAPL | 109.9 | 50.0 | 62.3	| 76.1
 ```
 
-### [func] Function Problem Set GS
+### [func 10.0] Function Problem Set GS
+
 ```q
 / Create a function that will return latest prices (with max timestamp within the date) for the date.
 / If there is not any price for that particular date, return the latest previous price
@@ -5512,9 +5536,9 @@ f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, tim
 / the ORDER of the fby also matters a lot. 
 ```
 
-### [func] Int Case Study - GS
+### [func 11.0] Int Case Study - GS
 
-1. create table called price
+[func 11.1] create table called price
 
 ```q
 / with columns date, ticker, ex, and price
@@ -5529,7 +5553,7 @@ date       | ticker | ex | price
 2021-09-21 |  MSFT  | US | 30
 ```
 
-2. create function called f
+[func 11.2] create function called f
 
 ```q
 / takes in 3 args: [sym, startdate, enddate]
@@ -5548,7 +5572,7 @@ date       | ticker | ex | price
 / COL_NAME (ticker) in (arg1)
 ```
 
-3. create 2nd table called input
+[func 11.3] create 2nd table called input
 
 ```q
 / with 3 columns: ticker, start date, end date
@@ -5562,7 +5586,7 @@ AAPL   | 2021-03-01 | 2021-06-30
 MSFT   | 2021-06-01 | 2021-08-01
 ```
 
-4. from input table, query the price table
+[func 11.4] from input table, query the price table
 
 ```q
 / from the [input table], retrieve the [syms] from original [price table]
@@ -5623,7 +5647,7 @@ AAPL   | 2021-03-01 | 2021-06-30
 / raze = (,/)
 ```
 
-Method 2
+[func 11.5] Method 2
 
 ```q
 / Method 2: Alternative Syntax
@@ -5663,7 +5687,7 @@ raze f1 each input
 / you return a list of tables, so need RAZE to level it 
 ```
 
-Method 3
+[func 11.6] Method 3
 
 ```q
 / 2. create new function querying the [input table]
