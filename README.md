@@ -5257,7 +5257,16 @@ k [15000]
 ### [func] Functions Problem Set 2 (med) - AquaQ
 
 ```q
-/ 1 create function that queries a date range and sym filter, taking in 3 arguments (startdate, enddate, symbols)
+/ load fakedb.q
+
+\a
+`depth`quotes`trades
+
+```
+
+```q
+/ 1. create function that queries a date range and sym filter
+/ taking in 3 arguments (startdate, enddate, symbols)
 
 tradeticks:{[startdate;enddate;symbols] 
             select date, sym, time, size, price 
