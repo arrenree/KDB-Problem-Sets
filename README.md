@@ -5311,11 +5311,9 @@ date      sym time         size  price
 / COL in ARG
 ```
 
-[func 8.2] Extract temporal data from Timestamp
+[func 8.2] Extracting temporal data from Timestamp
 
 ```q
-/ 2.1 Extracting temporal data from Timestamp
-
 select from depth
 
 depth
@@ -5389,10 +5387,10 @@ time
 / hint - need to extract the time portion from timestamp e.g time.time or `time$time
 
 tradeticks2:{ [startdate; enddate; symbols; starttime; endtime] 
-            select date, sym, time, size, price 
-            from trades
-            where date within (startdate;enddate), sym in symbols,
-            `time$time within (starttime;endtime)}
+              select from trades where 
+	      date within (startdate;enddate), 
+	      sym in symbols,
+              `time$time within (starttime;endtime) }
 
 tradeticks2[2021.11.03;2021.11.04;`MS; 09:30:00;09:31:00]
 
@@ -5410,23 +5408,28 @@ date      sym time         size  price
 [func 8.7] create function3, but uses a start timestamp and end timestamp as parameters
 
 ```q
-/ it should query across the date boundaries (should include all ticks within that period)
-/ so your args = timestamp format
-/ make sure it uses date partitions correctly
-/ date portion should be run first and separately from timestamp query
+/ arguments = symbols, starttimestamp, endtimestamp
+/ timestamp args = TIMESTAMP format
 
-tradeticks3:{ [starttimestamp; endtimestamp; symbols] 
-            select date, sym, time, size, price 
-            from trades 
-            where date within `date$(starttimestamp;endtimestamp), sym in symbols,
-            time within (starttimestamp;endtimestamp)}
+/ break up the query such that DATE and TIME
+/ are extracted from the TIMESTAMP argument
+/ and queried separately
+
+tradeticks3:{ [ticker;starttimestamp;endtimestamp]
+              select from trades where
+              sym in ticker,
+              `date$time within `date$(starttimestamp;endtimestamp),
+              `time$time within `time$(starttimestamp;endtimestamp) }
 
 / arguments are TIMESTAMPS datatype = DATE + TIME
-/ need [date column] from table to fall within [starttimestamp] and [endtimestamp] (from your arg)
-/ so need to cast your argments TIMESTAMP into DATES
 
-/ need [time column] from table to fall within [starttimestamp] and [endtimestamp] (from your arg)
-/ so need to cast your arguments TIMESTAMP into TIME 
+/ need to extract [DATE] from [timestamp value] from [time column]
+/ and query [DATE] from your [timestamp argument]
+/ cast both as `date$
+
+/ need to extract [TIME] from [timestamp value] from [time column]
+/ and query [TIME] from your [timestamp argument]
+/ cast both as `time$
 
 tradeticks3[2021.11.07D09:00;2021.11.07D10:00;`AAPL]
 
@@ -5435,29 +5438,65 @@ date       sym  time         size  price
 2021-11-07 AAPL 09:30:21.088 20600 62.30
 2021-11-07 AAPL 09:30:21.490 900   59.15
 2021-11-07 AAPL 09:30:22.052 1500  95.94
-
 ```
-
 
 ```q
 / i dont get this
 
-/4 Update func3 such that if the start timestamp is = first second of day, and end timestamp = last second of day
-/ then it doesnt execute the where filter on the time column
+/ Update func3 such that if the starttimestamp is = first second of day, 
+/ and endtimestamp = last second of day
+/ then it DOESN'T execute the WHERE filter on the time column
 
 / hint start of day timestamp = 1d xbar timestamp or
 / `timestamp$00:00+`date$timestamp
+
 / to get endtime, subtract 1 from the start of next date
 / -1+`timestamp$1+`date$endtimestamp
 
-tradeticks3:{[starttimestamp;endtimestamp;symbols] 
-            $[starttimestamp=`timestamp$00:00+`date$starttimestamp)and
-            (endtimestamp=-1+`timestamp$1+`date$endtimestamp);
-            /call tradeticks
-            tradeticks[`date\$starttimestamp;`date$endtimestamp;symbols];
-            /call tradetick3
-            tradeticks3[starttimestamp;endtimestamp;symbols]]}
+tradeticks3:{ [starttimestamp; endtimestamp; symbols] 
+             $[starttimestamp = `timestamp$00:00 + `date$starttimestamp) and
+              (endtimestamp = -1 + `timestamp$1 + `date$endtimestamp);
+            
+	    / call tradeticks
+            	    tradeticks[`date\$starttimestamp;`date$endtimestamp;symbols];
+            
+	    /call tradetick3
+            tradeticks3[starttimestamp;endtimestamp;symbols]] }
+
+/ so this is using a simple IF/OR statement
+/ IF first condition is true
+/ execute first statement
+/ otherwise, execute last statement
 ```
+
+[func 8.8] create function, quotechanges, to retrieve data when bid or ask changes
+
+```q
+/ create a function called quotechanges
+/ select from quote table
+/ for a given date list and symbol
+/ retrieve the data where either bid or ask price changes
+
+select from quotes
+
+date       | sym  | time                       |  bid  |  ask
+---------------------------------------------------------------
+2014-04-21 | AAPL | 2014-04-21T08:05:56.520000 | 25.34 | 25.35
+2014-04-21 | AAPL | 2014-04-21T08:18:39.592000 | 25.34 | 25.35
+2014-04-21 | AAPL | 2014-04-21T08:23:23.765000 | 25.33 | 25.38
+2014-04-21 | AAPL | 2014-04-21T08:33:55.105000 | 25.34 | 25.39
+
+
+quotechanges:{ [dates;symbols]
+		select from quotes where
+		date in dates, 
+		sym in symbols,
+		(differ bid) or differ ask}
+
+/
+```
+
+
 
 ### [func 9.0] Functions Problem Set 3 (hard) - AQ
 
