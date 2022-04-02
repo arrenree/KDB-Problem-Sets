@@ -5448,7 +5448,7 @@ date       sym  time         size  price
 / then it DOESN'T execute the WHERE filter on the time column
 
 / hint start of day timestamp = 1d xbar timestamp or
-/ `timestamp$00:00+`date$timestamp
+/ `timestamp$00:00 + `date$timestamp
 
 / to get endtime, subtract 1 from the start of next date
 / -1+`timestamp$1+`date$endtimestamp
@@ -5487,7 +5487,7 @@ date       | sym  | time                       |  bid  |  ask
 2014-04-21 | AAPL | 2014-04-21T08:33:55.105000 | 25.34 | 25.39
 
 
-quotechanges:{ [dates;symbols]
+quotechanges:{ [dates; symbols]
 		select from quotes where
 		date in dates, 
 		sym in symbols,
@@ -5509,10 +5509,10 @@ quotechanges:{ [dates;symbols]
 / need new col called avgspread
 
 avgspread:{ [startdate; enddate; symbols]
-            select avgspread: avg ask-bid by date, sym from quote
+            select avgspread: avg ask-bid by date, sym from quotes
 	    where date within (startdate;enddate), sym in symbols}
 
-avgspread[2021.11.09;2021.11.11;`GOOG]
+avgspread[2021.11.09; 2021.11.11; `GOOG]
 
 date       | sym  | avgspread
 -----------------------------
@@ -5529,13 +5529,13 @@ date       | sym  | avgspread
 / for a given date range and list of instruments
 
 / HLOC buckets by date and sym
-/ for given date range = need start date and end date as args
+/ for given date range = need [start date] and [end date] as args
 / args = startdate, enddate, symbols
 
 dailystats1: { [startdate; enddate; symbols]
                select high: max price, low:min price, open: first price,
                close: last price
-               by date, sym from trade
+               by date, sym from trades
                where date within (startdate;enddate), sym in symbols}
 
 dailystats1[2021.10.01; 2021.11.11; `AAPL]
@@ -5563,9 +5563,19 @@ dailystats2: { [startdate; enddate; symbols]
 		from trades
 		where date within (startdate;enddate), sym in symbols}
 
-/ KDB has a built in function called WAVG
+dailystats2[2021.10.01; 2021.11.11; `AAPL]
+
+date       | sym  | high  | low  | open | close | vwap
+-----------------------------------------------------------
+2021-11-07 | AAPL | 109.9 | 50.0 | 78.6 |  68.0 | 2,570.77
+2021-11-08 | AAPL | 109.9 | 50.0 | 60.8 |  90.4 | 2,568.23
+2021-11-09 | AAPL | 109.9 | 50.0 | 55.1	|  77.0 | 2,448.23
+2021-11-10 | AAPL | 109.9 | 50.0 | 72.2	|  93.3 | 2,349.31
+2021-11-11 | AAPL | 109.9 | 50.0 | 62.3	|  76.1 | 2,973.91
+
+/ KDB has a built in function called [WAVG]
 / used for calculating weighted averages
-/ size wavg price = VWAP calculation
+/ [size wavg price] = VWAP calculation
 ```
 
 [func 9.4] Bucketing data by time period using xbar
@@ -5573,53 +5583,64 @@ dailystats2: { [startdate; enddate; symbols]
 ```q
 / create function, dailystats3
 / which is the same as dailystats2
-/ but includes a bucketing value of type timespan
-/ using xbar
-/ add bucket as an arg
+/ but includes a BUCKETING value of [type timespan] using xbar
+/ add [bucket] as an arg
 
-dailystats2: { [startdate; enddate; symbols; bucket]
+dailystats3: { [startdate; enddate; symbols; bucket]
 		select high:max price, low: min price, open: first price,
 		close: last price, vwap: size wavg price
 		by date, sym, bucket xbar time
 		from trades
 		where date within (startdate;enddate), sym in symbols}
 
-/ need to test
+dailystats3[2014.04.20; 2014.04.21;`AAPL; 08:04:47.586000]
 
+date	   | sym | time                       |high | low |open |close|vwap
+-----------------------------------------------------------------------------
+2014-04-21 | AAPL| 2014-04-21T07:39:19.548000 |25.39|25.16|25.34| 25.2|2650.7
+2014-04-21 | AAPL| 2014-04-21T15:44:07.134000 |25.19|25.15|25.17|25.15|2122.1
+
+/ add a "bucket" grouping using xbar
+/ bucket xbar time = takes [time column], groups by [bucket ARG]
+/ [bucket ARG] = timespan datatype
+/ timespan format = 12:00:00.000000000
 ```
 
-[func 9.5] Opening price same as prev close price
+[func 9.5] Opening price same as prev close price [med]
 
 ```q
 / create dailystats 4
 / which is the same as dailystats3
-/ but make sure the OPEN price returned in each bucket is actually the open price
-/ the open price should = close price of prev bucket for same symbol
+/ since you've grouped values by [buckets]
+/ the [open price] "should" = [close price] of prev bucket for same symbol
+/ but what if there's no prev close (ie, the FIRST bucket)
 
-/ update opening price to prev close
-/ fill against the open price to handlw here
-/ there is no prev close (the first bucket)
+/ hence, we want to update OPEN PRICE = to PREV CLOSE (for each bucket)
 
 dailystats4: { [startdate; enddate; symbols; bucket]
 		update open:open^prev close
 		by sym
 		from dailystats3[startdate; enddate; symbols; bucket] }
-		
-/ need to test
+
+
+
+/ update the open column from prev function
+/ embedded function - creating new function from old function
+/ need to include arguments from old function 
+/ ^ replaces nulls on right with atom on left
+/ so replaces the [OPEN] value with [PREV CLOSE] value
 ```
 
-[func 9.6] Calculating TWAP
+[func 9.6] Calculating TWAP [hard]
 
 ```q
 / create function that calculates the VWAP and TWAP per day per symbol
 / for a supplied list of dates and symbols
 
-/ While VWAP = weighted by size = quantity wavg price
-/ TWAP = weighted by length of time exist as last price
-/ need to get time diff between ticks and multiply by price
-/ deltas time = tells us diff btwn consecutive times
-/ need to use "next" to move it along
-/ at each point, its the diff btwn current value and next
+/ While VWAP = volume weighted by size = size wavg price
+/ TWAP = weighted by [length of time] that exists as last price
+/ so TWAP = time wavg price
+/ need to get [time diff] between ticks and multiply by price
 
 twapandvwap1: { [startdate; enddate; symbols]
 		select vwap: size wavg price, 
@@ -5628,40 +5649,52 @@ twapandvwap1: { [startdate; enddate; symbols]
 		from trades
 		where date within (startdate; enddate),
 		sym in symbols }
-		
-/ need to check this
-/ lookup next deltas time
+
+twapandvwap1[2014.04.20;2014.04.21;`AAPL]
+
+date       | sym  | vwap  | twap
+----------------------------------
+2014-04-21 | AAPL | 25.28 | 25.25
+
+/ deltas time = tells us diff btwn consecutive times
+/ need to use "next" to move it along
+/ at each point, its the diff btwn [current value] and [next]
+/ [next deltas time] = the entire time 
 ```
 
-[func 9.7] Calculating max disparity per date
+[func 9.7] Calculating max disparity btwn VWAP and TWAP [hard]
 
 ```q
 / create function twapandvwap2
-/ which calculates the max disparity per date
-/ using fby
+/ which calculates the max disparity per date using fby
 
 twapandvwap1: { [startdate; enddate; symbols]
 		select from
-		(update diff:100*abs 1-twap%vwap
-		from twapandvwap1[startdate;enddate;symbols] )
+		  (update diff:100*abs 1-twap%vwap
+		  from twapandvwap1[startdate;enddate;symbols] )
 		where diff=(max;diff) fby sym}
-		
-		
-/ need to check this
+
+/ you want to figure out where the largest disparity
+/ between vwap and twap are
+/ so essentially you're taking vwap/twap -1 *100
+/ order of operations right to left
+/ this is the [DIFF]
+/ then you filter by sym for the [max diff]
 ```
 
-[func 9.8] Calculating standard deviations
+[func 9.8] Calculating standard deviations [hard]
 
 ```q
 / create function called bigdays
-/ which returns across one month window
-/ any days where the vol of shares traded was greater
-/ than n stddevs from the avg for that month
+/ which returns across [one month window]
+/ any days where the [vol of shares traded] was greater
+/ than [n stddevs] from the avg for that month
+/ so your args = n month, n stddev
 
-/ need to select total quantity traded each day
-/ then calc the avg and dev
+/ need to select [total quantity traded] each day
+/ then calc the [avg] and [dev]
 / and find any outliers
-/ pass a month as the parameter
+/ pass a [month] as the parameter
 
 bigdays: { [mnth;stddevs]
 	   select from
@@ -5670,8 +5703,20 @@ bigdays: { [mnth;stddevs]
 	     where date.month = mnth)
 	   where (abs tradecount-avg tradecount) > stddevs*dev tradecount}
 
-/ need to test this
+/ tradecount = total trades per day
+/ cast size to long (so no decimals)
+/ then sum them all up
 
+/ take [date column] from table = 2014.04.21d
+/ and cast as a [month] = 2014.04m
+/ this will match your arg input of [mnth]
+
+/ standard deviation = measures dispersion of dataset relative to its mean
+/ calcuated as square root of its valence
+/ dev = kdb function to calc standard deviation
+
+/ filter where trades per day - avg trades per day
+/ is greater than x standard deviations from trades per day
 ```
 
 
