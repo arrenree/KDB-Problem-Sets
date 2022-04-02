@@ -4341,9 +4341,8 @@ date      |  time | sym |price| size|cond|bookId | owner | name
 ### 🔴 8. Functions
 [Top](#top)
 
-### [func 1.0] Intro to Functions
+### 🔵 [func 1.0] Intro to Functions
 <a name="func_intro"></a>
-[Top](#top)
 
 [func 1.1] What is a lambda expression?
 
@@ -4369,7 +4368,7 @@ date      |  time | sym |price| size|cond|bookId | owner | name
 / in this case, 5 is an implicit variable
 ```
 
-### [func 2.0] Functions on Strings - AQ
+### 🔵 [func 2.0] Functions on Strings - AQ
 <a name="func_strings"></a>
 [Top](#top)
 
@@ -4460,7 +4459,7 @@ f[ ;"me";"ME"] each `welcome`home`mermaid
 / while locking in arguments y and z as constants```
 ```
 
-### [func 3.0] Projected Functions - TS
+### 🔵 [func 3.0] Projected Functions - TS
 <a name="func_proj"></a>
 [Top](#top)
 
@@ -4500,7 +4499,7 @@ square 1 2 3
 / calls in 1 2 3 for x xexp 2
 ```
 
-### [func 4.0] Function Loop Problem Set - TS 
+### 🔵 [func 4.0] Function Loop Problem Set - TS 
 <a name="func_loop"></a>
 [Top](#top)
 
@@ -4543,7 +4542,7 @@ min sum d where d>50
 avg sum d where d>50
 ```
 
-### [func 5.0] Prime Numbers Problem Set - TS
+### 🔵 [func 5.0] Prime Numbers Problem Set - TS
 <a name="func_prime"></a>
 [Top](#top)
 
@@ -4776,10 +4775,9 @@ findprimesB 10
 2 3 5 7
 ```
 
-### [func 6.0] Function Problem Set 1 - TS
+### 🔵 [func 6.0] Function Problem Set 1 - TS
 <a name="func_set1TS"></a>
 [Top](#top)
-
 
 [func 6.1] Volume of cone function
 
@@ -5176,7 +5174,7 @@ sum where {(0 = x mod 3) or (0 = x mod 5)} [til 1000]
 / (x mod 3 = 0) doesn't work for some reason
 ```
 
-### [func 7.0] Functions Problem Set 1 (easy) - AQ
+### 🔵 [func 7.0] Functions Problem Set 1 (easy) - AQ
 <a name="func_set1AQ"></a>
 [Top](#top)
 
@@ -5282,10 +5280,9 @@ k [15000]
 7173.1765
 ```
 
-### [func 8.0] Functions Problem Set 2 (med) - AQ
+### 🔵 [func 8.0] Functions Problem Set 2 (med) - AQ
 <a name="func_set2AQ"></a>
 [Top](#top)
-
 
 
 ```q
@@ -5528,7 +5525,7 @@ quotechanges:{ [dates; symbols]
 / differ bid or differ ask = any change in bid or ask
 ```
 
-### [func 9.0] Functions Problem Set 3 (med/hard) - AQ
+### 🔵 [func 9.0] Functions Problem Set 3 (med/hard) - AQ
 <a name="func_set3AQ"></a>
 [Top](#top)
 
@@ -5958,7 +5955,7 @@ volbucket | starttime    | endtime
 / retrieving FROM another function, so need to include [all arguments]
 ```
 
-### [func 10.0] Functions Problem Set 4 - AQ
+### 🔵 [func 10.0] Functions Problem Set 4 - AQ
 <a name="func_set4AQ"></a>
 [Top](#top)
 
