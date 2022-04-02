@@ -5830,6 +5830,33 @@ date       | sym  | minute | size
 `one`one`two`two`three`three
 ```
 
+[func 9.11] Creating buckets of evenly cumulative traded volume
+
+```q
+/ create function to split the trading day
+/ into even volume buckets
+/ for ex, if arg bucket = 10,
+/ how much volume would be traded in each bucket?
+/ and what would the start and end times of the bucket be?
+
+/ HINT - use xrank on the cumulative size value
+/ everything else just falls out
+
+volumebuckets1:{ [startdate; enddate; symbols numbuckets]
+		  select starttime:first time, endtime: last time,
+		  totalvol:sum size 
+		  by date,
+		  volbucket:numbuckets xrank sums size
+		  from trades
+		  where date within (startdate;enddate), 
+		  sym = symbol }
+		  
+		  
+
+
+```
+
+
 ### [func 10.0] Function Problem Set GS
 
 ```q
