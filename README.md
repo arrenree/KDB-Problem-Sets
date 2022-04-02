@@ -9,12 +9,22 @@
 6. [Keyed Tables](#key_table)
 7. [Foreign Key Restrictions](#fkey_table)
 8. [Functions](#functions)
-9. [qSQL](#qsql)
-10. [Adverbs](#adverbs)
-11. [Attributes](#attributes)
-12. [Joins](#joins)
-13. [@ & . Operator](#at)
-14. [Racking & Alignment](racking)
+	1. [Intro to Functions](#func_intro)
+	2. [Functions on Strings - AQ](#func_strings)
+	3. [Projected Functions - TS](#func_proj)
+	4. [Function Loop Problem Set - TS](#func_loop)
+	5. [Prime Numbers Problem Set - TS](#func_prime)
+	6. [Function Problem Set 1 - TS](#func_set1TS)
+	7. [Functions Problem Set 1 (easy) - AQ](#func_set1AQ)
+	8. [Functions Problem Set 2 (med) - AQ](#func_set2AQ)
+	9. [Functions Problem Set 3 (med/hard) - AQ](#func_set3AQ)
+	10. [Functions Problem Set 4 - AQ](#func_set4AQ)
+10. [qSQL](#qsql)
+11. [Adverbs](#adverbs)
+12. [Attributes](#attributes)
+13. [Joins](#joins)
+14. [@ & . Operator](#at)
+15. [Racking & Alignment](racking)
 
 <hr>
 
@@ -4331,6 +4341,9 @@ date      |  time | sym |price| size|cond|bookId | owner | name
 ### 🔴 8. Functions
 [Top](#top)
 
+### [func 1.0] Intro to Functions
+<a name="func_intro"></a>
+[Top](#top)
 
 [func 1.1] What is a lambda expression?
 
@@ -4356,7 +4369,9 @@ date      |  time | sym |price| size|cond|bookId | owner | name
 / in this case, 5 is an implicit variable
 ```
 
-### [func 2.0] Anonymous String Function Problem Set (AQ)
+### [func 2.0] Functions on Strings - AQ
+<a name="func_strings"></a>
+[Top](#top)
 
 ```q
 / create a function that uses SSR (string search replace)
@@ -4445,7 +4460,9 @@ f[ ;"me";"ME"] each `welcome`home`mermaid
 / while locking in arguments y and z as constants```
 ```
 
-### [func 3.0] Projected Function Case Study - TS
+### [func 3.0] Projected Functions - TS
+<a name="func_proj"></a>
+[Top](#top)
 
 ```q
 /1. create first function called raise
@@ -4483,7 +4500,9 @@ square 1 2 3
 / calls in 1 2 3 for x xexp 2
 ```
 
-### [func 4.0] Generate list of 100 random numbers, sum all values > 50 using loop
+### [func 4.0] Function Loop Problem Set - TS 
+<a name="func_loop"></a>
+[Top](#top)
 
 ```q
 / generate list of 100 random numbers from 0-99
@@ -4524,7 +4543,10 @@ min sum d where d>50
 avg sum d where d>50
 ```
 
-### [func 5.0] Prime Numbers Case Study - TS
+### [func 5.0] Prime Numbers Problem Set - TS
+<a name="func_prime"></a>
+[Top](#top)
+
 
 ```q
 / create function that finds primes up to argument x
@@ -4755,6 +4777,9 @@ findprimesB 10
 ```
 
 ### [func 6.0] Function Problem Set 1 - TS
+<a name="func_set1TS"></a>
+[Top](#top)
+
 
 [func 6.1] Volume of cone function
 
@@ -5151,7 +5176,10 @@ sum where {(0 = x mod 3) or (0 = x mod 5)} [til 1000]
 / (x mod 3 = 0) doesn't work for some reason
 ```
 
-### [func 7.0] Functions Problem Set 1 - AQ
+### [func 7.0] Functions Problem Set 1 (easy) - AQ
+<a name="func_set1AQ"></a>
+[Top](#top)
+
 
 [func 7.1] write function f that calculates the square of a number
 
@@ -5254,7 +5282,11 @@ k [15000]
 7173.1765
 ```
 
-### [func 8.0] Functions Problem Set 2 (med) - AquaQ
+### [func 8.0] Functions Problem Set 2 (med) - AQ
+<a name="func_set2AQ"></a>
+[Top](#top)
+
+
 
 ```q
 / load fakedb.q
@@ -5497,6 +5529,17 @@ quotechanges:{ [dates; symbols]
 ```
 
 ### [func 9.0] Functions Problem Set 3 (med/hard) - AQ
+<a name="func_set3AQ"></a>
+[Top](#top)
+
+```q
+/ load fakedb.q
+
+\l hdb
+
+\a
+`depth`quotes`trades
+```
 
 [func 9.1] Write func that calcs the avg spread between bid and ask
 
@@ -5509,8 +5552,10 @@ quotechanges:{ [dates; symbols]
 / need new col called avgspread
 
 avgspread:{ [startdate; enddate; symbols]
-            select avgspread: avg ask-bid by date, sym from quotes
-	    where date within (startdate;enddate), sym in symbols}
+            select avgspread: avg ask-bid by date, sym 
+	    from quotes
+	    where date within (startdate;enddate), 
+	    sym in symbols}
 
 avgspread[2021.11.09; 2021.11.11; `GOOG]
 
@@ -5778,7 +5823,7 @@ date       | sym  | starttime | size
 / want buckets to start at:
 / 08:00 08:15 08:32 08:50 09:27 12:00
 
-/ use bin to group instead of xbar
+/ use [BIN] to group [instead of xbar]
 
 / index [time column] into list of bucket times using BIN
 / then use index to pull out the appropriate bucket and group on that
@@ -5833,31 +5878,149 @@ date       | sym  | minute | size
 [func 9.11] Creating buckets of evenly cumulative traded volume
 
 ```q
-/ create function to split the trading day
-/ into even volume buckets
-/ for ex, if arg bucket = 10,
+/ create function called volumebuckets1
+/ to split the trading day into [even volume buckets]
+/ for ex, if arg numbuckets = 5,
 / how much volume would be traded in each bucket?
 / and what would the start and end times of the bucket be?
 
-/ HINT - use xrank on the cumulative size value
-/ everything else just falls out
+/ use [xrank] to group buckets [instead of xbar]
 
-volumebuckets1:{ [startdate; enddate; symbols numbuckets]
+/ HINT - use xrank on the cumulative size value
+/ output = date, num, startime, endtime, total vol
+
+volumebuckets1:{ [startdate; enddate; symbol; numbuckets]
 		  select starttime:first time, endtime: last time,
 		  totalvol:sum size 
 		  by date,
-		  volbucket:numbuckets xrank sums size
+		  num:numbuckets xrank sums size
 		  from trades
 		  where date within (startdate;enddate), 
 		  sym = symbol }
 		  
-		  
+volumebuckets1[2014.04.20; 2014.04.21; `AAPL; 5]
 
+date       | num | starttime  	              | endtime                    | totalvol
+--------------------------------------------------------------------------------------
+2014-04-21 |  0  | 2014-04-21T08:00:44.437000 | 2014-04-21T09:24:13.929000 | 66492
+2014-04-21 |  1  | 2014-04-21T09:43:05.829000 | 2014-04-21T11:15:35.791000 | 60324
+2014-04-21 |  2  | 2014-04-21T11:16:51.859000 | 2014-04-21T13:11:40.724000 | 45872
+2014-04-21 |  3  | 2014-04-21T13:15:06.432000 | 2014-04-21T15:28:43.900000 | 70350
+2014-04-21 |  4  | 2014-04-21T15:29:52.766000 | 2014-04-21T16:26:29.954000 | 44868
 
+/ numbuckets = how many "buckets" to split day into = 5
+/ num = taking total size grouped into 5 buckets
+/ aka num = 5 xrank sum size
+
+/ xrank reminder:
+/ xrank partitions list into [index position] buckets
+
+2 xrank 1 2 3 4 5 6
+0 0 0 1 1 1
+```
+
+[func 9.12] Calc avg start and end time for each bucket
+
+```q
+/ create volumebuckets2
+/ which calcs the avg start and end time
+/ for each vol bucket across a set of dates
+/ this will give the average volume profile
+/ should invoke volumebuckets1
+
+volumebuckets2:{ [startdate;enddate;symbol;numbuckets]
+		 select starttime:`time$avg starttime.time,
+		 endtime:`time$avg endtime.time
+		 by volbucket
+		 from volumebuckets1[startdate;enddate;symbol;numbuckets] }
+
+volbucket | starttime    | endtime
+---------------------------------------
+    0     | 08:00:44.437 | 09:24:13.929
+    1     | 09:43:05.829 | 11:15:35.791
+    2     | 11:16:51.859 | 13:11:40.724
+    3     | 13:15:06.432 | 15:28:43.900
+    4     | 15:29:52.766 | 16:26:29.954
+
+/ piggy backing off the volumebuckets1 function (embedded func)
+/ youre just amending the [starttime] + [endtime outputs]
+
+/ you can use the [avg function] on time
+/ since [all temporal datatypes] are integral counts (from 2000 midnight)
+/ however, AFTER using [average] on [time]
+/ must cast it BACK into [time datatype]
+
+/ [startime + endtime] from prev equation are [timespan datatype]
+/ first cast these to [time datatype]
+/ then [calc average]
+/ then cast back into [time datatype]
+/ output = AVG TIME per volume bucket
+/ retrieving FROM another function, so need to include [all arguments]
+```
+
+### [func 10.0] Functions Problem Set 4 - AQ
+<a name="func_set4AQ"></a>
+[Top](#top)
+
+```q
+/ load fakedb.q
+
+\l hdb
+
+\a
+`depth`quotes`trades
+```
+
+```q
+select from trades
+
+date       | sym  | time	               | src | price | size
+--------------------------------------------------------------------
+2014-04-21 | AAPL | 2014-04-21T08:00:44.437000 |  O  | 25.34 | 1785
+2014-04-21 | AAPL | 2014-04-21T08:04:41.246000 |  L  | 25.34 |  427
+2014-04-21 | AAPL | 2014-04-21T08:04:47.586000 |  L  | 25.34 | 1528
+2014-04-21 | AAPL | 2014-04-21T08:08:09.192000 |  L  | 25.35 | 8136
+2014-04-21 | AAPL | 2014-04-21T08:11:23.934000 |  L  | 25.35 | 8945
+```
+
+[func 10.0] tradeticks function
+
+```q
+/ name this func tradeticks
+/ queries a date range and sym filter
+/ taking in 3 arguments (startdate, enddate, symbols)
+
+tradeticks:{ [startdate;enddate;symbols] 
+            select date, sym, time, size, price 
+            from trades
+            where date within (startdate;enddate), sym in symbols}
+            
+tradeticks[2021.11.03;2021.11.04;`MS]
+
+date      sym time         size  price
+--------------------------------------
+2021-11-03 MS 09:30:01.423 63000 58.46
+2021-11-03 MS 09:30:01.768 95500 81.06
+2021-11-03 MS 09:30:01.928 13400 82.90
+
+/ date (from trades) within (startdate;enddate) from ARG
+/ COL WITHIN ARG
+
+/ sym (from trades) in symbols (from arg)
+/ COL in ARG
 ```
 
 
-### [func 10.0] Function Problem Set GS
+
+
+
+
+
+
+
+
+
+### [func 12.0] Function Problem Set GS
 
 ```q
 / Create a function that will return latest prices (with max timestamp within the date) for the date.
