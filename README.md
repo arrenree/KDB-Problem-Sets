@@ -5719,6 +5719,116 @@ bigdays: { [mnth;stddevs]
 / is greater than x standard deviations from trades per day
 ```
 
+[func 9.9] Forcing xbar bucket to start at specific time
+
+```q
+/ create function called bucket
+/ arguments = startdate, enddate, starttime, endtime, bucket, symbols
+/ want to xbar 25 min buckets
+/ trading day starts at 9:00
+/ but i want first bucket to be 9:25
+/ bucket value should be int or long (instead of timespan)
+/ have to move [start time] of bucket by [subtracting] start time
+/ then [adding it back] on
+
+select from trades
+
+date       | sym  | time	               | src | price | size
+--------------------------------------------------------------------
+2014-04-21 | AAPL | 2014-04-21T08:00:44.437000 |  O  | 25.34 | 1785
+2014-04-21 | AAPL | 2014-04-21T08:04:41.246000 |  L  | 25.34 |  427
+2014-04-21 | AAPL | 2014-04-21T08:04:47.586000 |  L  | 25.34 | 1528
+2014-04-21 | AAPL | 2014-04-21T08:08:09.192000 |  L  | 25.35 | 8136
+2014-04-21 | AAPL | 2014-04-21T08:11:23.934000 |  L  | 25.35 | 8945
+
+bucket: { [startdate; enddate; starttime; endtime; bucket; symbols]
+	  select sum size by date, sym,
+	  starttime + bucket xbar time.minute - starttime
+	  from trades
+	  where date within (startdate;enddate),
+	  sym in symbols,
+	  time.time within (starttime;endtime) }
+
+bucket[2014.04.20; 2014.04.21;09:25; 15:00; 25; `AAPL]
+
+date       | sym  | starttime | size
+-------------------------------------
+2014-04-21 | AAPL |   09:25   |	13918
+2014-04-21 | AAPL |   09:50   |	14205
+2014-04-21 | AAPL |   10:15   |	9036
+2014-04-21 | AAPL |   10:40   |	14062
+2014-04-21 | AAPL |   11:05   |	14000
+2014-04-21 | AAPL |   11:30   |	3361
+
+/ starttime = 9:25
+/ bucket = 25 mins
+/ grouping by date, sym, xbar bucket of 25 mins
+
+/ the [TIME column] is the main problem, as it is [timespan type]
+/ need to CAST [time column] to minutes = time.minute
+/ since your xbar bucket = 25 mins
+
+/ since your (starttime;endtime) args = [time] datatype = 09:25
+/ need to cast [time column] to from [timespan] to [time] datatype
+/ during the where filter
+```
+[func 9.10] bucketing values in variable widths (using BIN instead of XBAR)
+
+```q
+/ want buckets to start at:
+/ 08:00 08:15 08:32 08:50 09:27 12:00
+
+/ use bin to group instead of xbar
+
+/ index [time column] into list of bucket times using BIN
+/ then use index to pull out the appropriate bucket and group on that
+/ buckets arg = list of your defined start times
+
+/ b bin time.minute = returns an index into bucket list
+/ b b bin time.minute = maps the index back to the bucket value
+
+variablebucket: { [startdate; enddate; symbols; buckets]
+		  select sum size by date, sym,
+		  buckets buckets bin time.minute
+		  from trades
+		  where date within (startdate;enddate),
+		  sym in symbols,
+		  time.time >= first buckets}
+
+variablebucket[2014.04.20; 2014.04.21;`AAPL;08:00 08:15 08:32 08:50 09:27 12:00]
+
+date       | sym  | minute | size
+-----------------------------------
+2014-04-21 | AAPL |  08:00 | 27398
+2014-04-21 | AAPL |  08:15 | 11727
+2014-04-21 | AAPL |  08:32 | 8385
+2014-04-21 | AAPL |  08:50 | 18982
+2014-04-21 | AAPL |  09:27 | 73375
+2014-04-21 | AAPL |  12:00 | 148039
+
+/ for arg [buckets], you are passing in a LIST of times
+/ first cast [time column] from table from [timespan] to [minutes]
+/ aka time.minute
+
+/ then you "bin" those [list of minutes] from table
+/ into your [defined buckets] of start times
+/ this returns the index position
+/ then you map it BACK into the [bucket value]
+
+/ b bin time.minute = returns an index into bucket list
+/ b b bin time.minute = maps the index back to the bucket value
+
+/ BIN reminder
+/ BIN takes [LHS defined buckets], and returns [index position] of [RHS list]
+
+100 300 500 bin 100 200 300 400 500 600
+/ 0 0 1 1 2 2
+
+/ can map index positions into buckets
+
+`one`two`three 100 300 500 bin 100 200 300 400 500 600
+`one`one`two`two`three`three
+```
 
 ### [func 10.0] Function Problem Set GS
 
