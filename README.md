@@ -5983,22 +5983,22 @@ date       | sym  | time	               | src | price | size
 [func 10.0] tradeticks function
 
 ```q
-/ name this func tradeticks
+/ name this func tradeticks1
 / queries a date range and sym filter
 / taking in 3 arguments (startdate, enddate, symbols)
 
-tradeticks:{ [startdate;enddate;symbols] 
+tradeticks1:{ [startdate;enddate;symbols] 
             select date, sym, time, size, price 
             from trades
             where date within (startdate;enddate), sym in symbols}
             
-tradeticks[2021.11.03;2021.11.04;`MS]
+tradeticks1[2014.04.20; 2014.04.21;`AAPL]
 
-date      sym time         size  price
---------------------------------------
-2021-11-03 MS 09:30:01.423 63000 58.46
-2021-11-03 MS 09:30:01.768 95500 81.06
-2021-11-03 MS 09:30:01.928 13400 82.90
+date       | sym  | time         | size  | price
+------------------------------------------------
+2014-04-21 | AAPL | 09:30:01.423 | 63000 | 58.46
+2014-04-21 | AAPL | 09:30:01.768 | 95500 | 81.06
+2014-04-21 | AAPL | 09:30:01.928 | 13400 | 82.90
 
 / date (from trades) within (startdate;enddate) from ARG
 / COL WITHIN ARG
@@ -6007,10 +6007,83 @@ date      sym time         size  price
 / COL in ARG
 ```
 
+[func 10.1] Using a projected function to retrieve from another function
 
+```q
+/ create function called calcreturns
+/ using tradeticks1, add in column
+/ which calc return of price vs the nth previous price
+/ using xprev
 
+/ tradeticks = given a range of dates + syms,
+/ retrieve all the prices and sizes
+/ now want to add on [return] column
+/ which compares the nth prev price
+/ need all tradeticks args + new arg n
 
+return:{ [n;x] 100 * x % n xprev x}
 
+calcreturns: { [startdate; enddate; symbols; n]
+	       update ret:return[n;price]
+	       by sym
+	       from tradeticks1[startdate; enddate; symbols] }
+
+/ return [n;x]
+/ n = nth prev price
+/ x = list of prices
+
+/ return of something = (new-old)/old
+/ if you want to check price vs PREV price
+/ [1 xprev x] % x = (new - old) / old
+
+/ this uses a [projected function] of [return]
+/ n = nth prev price
+/ x = list of prices
+
+/ but also retrieves FROM another function [tradeticks1]
+```
+
+[func 10.2] Using a projected function to retrieve from another function (hard)
+
+```q
+/ (i dont really get this)
+
+/ using tradeticks1 function,
+/ create func to extract data and add in 
+/ running vwap and running twap columns
+/ running vwap = running sum of price*size / running sum of size
+/ running twap = running sum of price*active time / running sum of time
+
+/ use update to add in running columns
+/ better to calc activetime once and use it twice
+
+runningvwapandtwap:{ [startdate; enddate; symbols]
+		     update rvwap:(sums size*price) % sums size,
+		        rtwap:(sums activetime*price) % sums activetime
+		     by date, sym
+		     from 
+		     	update activetime: next deltas time
+		     by date, sym
+		     	from tradeticks1[startdate; enddate; symbols] }
+
+runningvwapandtwap[2014.04.20; 2014.04.21;`AAPL]
+
+date      |sym |time                 |price|size|activetime   |rvwap|rtwap
+---------------------------------------------------------------------------
+2014-04-21|AAPL|2014-04-21T08:00:44.4| 5.34|1785|00:03:56.8090|25.34|25.34
+2014-04-21|AAPL|2014-04-21T08:04:41.2|25.34| 427|00:00:06.3400|25.34|25.34
+2014-04-21|AAPL|2014-04-21T08:04:47.5|25.34|1528|00:03:21.6060|25.34|25.34
+2014-04-21|AAPL|2014-04-21T08:08:09.1|25.35|8136|00:03:14.7420|25.34|25.34
+2014-04-21|AAPL|2014-04-21T08:11:23.9|25.35|8945|00:01:34.9280|25.34|25.34
+2014-04-21|AAPL|2014-04-21T08:12:58.8|25.35|6577|00:03:55.4270|25.34|25.34
+
+/ TWAP = price divided by [active time]
+/ running TWAP = (sums active time * price) / (sums active time)
+/ active time = next deltas time
+
+/ want to group by date and sym
+/ FROM this activetime calculation
+```
 
 
 
