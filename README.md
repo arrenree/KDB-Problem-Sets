@@ -6085,8 +6085,64 @@ date      |sym |time                 |price|size|activetime   |rvwap|rtwap
 / FROM this activetime calculation
 ```
 
+[func 10.3] running sums by price group
 
+```q
+/ (i dont get this)
 
+/ calc running sum of vol traded in each "price group"
+/ use tradeticks1 to extract data from trade table
+/ price group = series of trades all executed at same price
+
+/ trick here is in the grouping
+/ differ price = returns 1 when price changes
+/ and 0 when no change
+/ sums differ price = calcs the running sum of the changes
+/ so those where no change will end up in same group
+
+pricegroups: { [startdate; enddate; symbols]
+		update pricegroupsize:sums size
+		by sums differ price
+		from tradeticks1[startdate;enddate;symbols]}
+
+date	  |sym | time               	   | price| size | pricegroupsize
+-------------------------------------------------------------------------
+2014-04-21|AAPL| 2014-04-21T08:00:44.437000| 25.34| 1785 |	1785
+2014-04-21|AAPL| 2014-04-21T08:04:41.246000| 25.34|  427 |	2212
+2014-04-21|AAPL| 2014-04-21T08:04:47.586000| 25.34| 1528 |	3740
+2014-04-21|AAPL| 2014-04-21T08:08:09.192000| 25.35| 8136 |	8136
+
+/ i dont understand sums differ price
+/ differ price = returns 1 or 0?
+/ so sums would just add up 1s?
+/ if grouping by sums differ price, shouldn't price = unique?
+
+```
+
+[func 10.4] 
+
+```q
+/ (i dont get this)
+
+/ extract from depth table
+/ add column VWAP, which displays all the levels on the bid
+/ ie, the VWAP you would get if you were to clear the depth
+/ for each update
+/ do the same for the ask
+
+/ assuming 3 bid/ask columns, just manually work out the vwaps
+/ wavg will vectorize across the columns
+
+sidevwaps: { [startdate;enddate;symbols]
+	     update bidvwap: (bsize1;bsize2;bsize3) wavg (bid1;bid2;bid3),
+	            askvwap: (asize1;asize2;asize3) wavg (ask1;ask2;ask3)
+	     from
+	     	select date,time,sym,bid1,bid2,bid3,bsize1,bsize2,bsize3,
+		 ask1,ask2,ask3,asize1,asize2,asize3
+	       from depth
+	       where date in (startdate;enddate),
+	       sym in symbols}
+```
 
 
 
