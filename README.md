@@ -19,6 +19,8 @@
 	8. [Functions Problem Set 2 (med) - AQ](#func_set2AQ)
 	9. [Functions Problem Set 3 (med/hard) - AQ](#func_set3AQ)
 	10. [Functions Problem Set 4 - AQ](#func_set4AQ)
+	11. [Int Problem Set 1 - GS](#func_int1)
+	12. [Int Problem Set 2 - GS](#func_int2)
 10. [qSQL](#qsql)
 11. [Adverbs](#adverbs)
 12. [Attributes](#attributes)
@@ -6050,12 +6052,12 @@ calcreturns: { [startdate; enddate; symbols; n]
 
 / using tradeticks1 function,
 / create func to extract data and add in 
-/ running vwap and running twap columns
-/ running vwap = running sum of price*size / running sum of size
-/ running twap = running sum of price*active time / running sum of time
+/ [running vwap] and [running twap] columns
+/ [running vwap] = running sum of price*size / running sum of size
+/ [running twap] = running sum of price*active time / running sum of time
 
 / use update to add in running columns
-/ better to calc activetime once and use it twice
+/ better to calc [activetime] once and use it twice
 
 runningvwapandtwap:{ [startdate; enddate; symbols]
 		     update rvwap:(sums size*price) % sums size,
@@ -6090,14 +6092,14 @@ date      |sym |time                 |price|size|activetime   |rvwap|rtwap
 ```q
 / (i dont get this)
 
-/ calc running sum of vol traded in each "price group"
+/ calc [running sum of vol] traded in each "price group"
 / use tradeticks1 to extract data from trade table
-/ price group = series of trades all executed at same price
+/ [price group] = series of [trades] all executed at [same price]
 
 / trick here is in the grouping
-/ differ price = returns 1 when price changes
+/ [differ price] = returns 1 when price changes
 / and 0 when no change
-/ sums differ price = calcs the running sum of the changes
+/ [sums differ price] = calcs the running sum of the changes
 / so those where no change will end up in same group
 
 pricegroups: { [startdate; enddate; symbols]
@@ -6112,25 +6114,24 @@ date	  |sym | time               	   | price| size | pricegroupsize
 2014-04-21|AAPL| 2014-04-21T08:04:47.586000| 25.34| 1528 |	3740
 2014-04-21|AAPL| 2014-04-21T08:08:09.192000| 25.35| 8136 |	8136
 
-/ i dont understand sums differ price
+/ i dont understand [sums differ price]
 / differ price = returns 1 or 0?
 / so sums would just add up 1s?
 / if grouping by sums differ price, shouldn't price = unique?
-
 ```
 
-[func 10.4] 
+[func 10.4] VWAP if all bids or asks taken out
 
 ```q
-/ (i dont get this)
-
 / extract from depth table
-/ add column VWAP, which displays all the levels on the bid
+/ add column [BIDVWAP], which displays all the levels on the bid
 / ie, the VWAP you would get if you were to clear the depth
-/ for each update
-/ do the same for the ask
+/ and do the same for [ASKVWAP]
 
-/ assuming 3 bid/ask columns, just manually work out the vwaps
+/ so depth table has 3 bids, 3 bid sizes, 3 ask, and 3 ask sizes
+/ VWAP = price weighted by volume
+/ so take [all the bids] [wavg] by [all the bid sizes]
+/ and [all the asks] [wavg] by [all the ask sizes]
 / wavg will vectorize across the columns
 
 sidevwaps: { [startdate;enddate;symbols]
@@ -6142,11 +6143,65 @@ sidevwaps: { [startdate;enddate;symbols]
 	       from depth
 	       where date in (startdate;enddate),
 	       sym in symbols}
+	       
+sidevwaps[2014.04.20;2014.04.21;`AAPL]
+
+/ table returned shows all the bids (bid1, bid2, bid3)
+/ all the bid sizes (bsize1, bsize2, bsize3)
+/ as well as the asks
+/ and lastly, the bidvwap and ask vwap
+
+/ don't understand why need from all those col names
+/ why can't just from quote?
 ```
 
+[func 10.5] 
 
+```q
+/ (i dont get this)
 
-### [func 12.0] Function Problem Set GS
+/ extract 30 mins worth of depth ticks
+/ for any date and sym
+/ assume i sell 1,000 shares
+/ calc for each tick how many levels down the book
+/ i will have to go to fill my order
+
+/ use bin
+1.2 3.4 6.9 11.2 bin 3.7 12.0
+1 3
+
+/ accumulate up depth sizes, find how far down the book 
+/ we have to go
+
+/ use sums to accumulate all the columns together
+/ then flip to transpose the bid size columns
+/ into a list of lists
+
+/ args: d = date
+/ s = sym
+/ st = start time
+/ et = end time
+/ 0 = ? (order book?)
+
+findfilllevel: { [d;s;st;et;o]
+ t: select date, time sym, 
+ 	bsizes:flip sums(bsize1;bsize2;bsize3;bsize4;bsize5)
+  from depth
+  where date in d, sym in s, time within (st;et);
+  
+ / use [bin] operator and [\: adverb] to apply each element
+ / of the bsizes column in turn
+ / need to add 2 as bin starts counting from -1
+ / (if order fills at the very start)
+ 
+ update filllevel:2 + bsizes bin \:o from t}
+ 
+ ```
+
+### [func 11.0] Int Problem Set 1 - GS
+<a name="func_int1"></a>
+[Top](#top)
+
 
 ```q
 / Create a function that will return latest prices (with max timestamp within the date) for the date.
@@ -6195,9 +6250,12 @@ f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, tim
 / the ORDER of the fby also matters a lot. 
 ```
 
-### [func 11.0] Int Case Study - GS
+### [func 12.0] Int Problem Set 2 - GS
+<a name="func_int2"></a>
+[Top](#top)
 
-[func 11.1] create table called price
+
+[func 12.1] create table called price
 
 ```q
 / with columns date, ticker, ex, and price
@@ -6212,7 +6270,7 @@ date       | ticker | ex | price
 2021-09-21 |  MSFT  | US | 30
 ```
 
-[func 11.2] create function called f
+[func 12.2] create function called f
 
 ```q
 / takes in 3 args: [sym, startdate, enddate]
@@ -6231,7 +6289,7 @@ date       | ticker | ex | price
 / COL_NAME (ticker) in (arg1)
 ```
 
-[func 11.3] create 2nd table called input
+[func 12.3] create 2nd table called input
 
 ```q
 / with 3 columns: ticker, start date, end date
@@ -6245,7 +6303,7 @@ AAPL   | 2021-03-01 | 2021-06-30
 MSFT   | 2021-06-01 | 2021-08-01
 ```
 
-[func 11.4] from input table, query the price table
+[func 12.4] from input table, query the price table
 
 ```q
 / from the [input table], retrieve the [syms] from original [price table]
@@ -6306,7 +6364,7 @@ AAPL   | 2021-03-01 | 2021-06-30
 / raze = (,/)
 ```
 
-[func 11.5] Method 2
+[func 12.5] Method 2
 
 ```q
 / Method 2: Alternative Syntax
@@ -6346,7 +6404,7 @@ raze f1 each input
 / you return a list of tables, so need RAZE to level it 
 ```
 
-[func 11.6] Method 3
+[func 12.6] Method 3
 
 ```q
 / 2. create new function querying the [input table]
