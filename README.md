@@ -7642,22 +7642,21 @@ x / y / over
 
 ### [adverb] What is the difference between over and scan?
 ```q
-/ takes a function (like addition) and iterates through list
+/ [over] takes a function (like addition) and iterates through list
+/ [over] is an accumulating iterator
 / begin with initial value, sequentially add each item into prev item
-/ upon completion, the accumulator holds the desired result
+/ upon completion, the accumulator holds the final result
 
 0 +/ 1 2 3 4 5
 15
 
-/ scan returns all intermediate values
+/ [scan] returns all intermediate values
 
 (+\) 1 + til 10
 1 3 6 10 15 21 28 36 45 55
 
 / scan converts a binary function to a unary uniform function (one that returns list of same length as input)
-
 ```
-
 
 ### [adverb] Each Both
 
@@ -7953,7 +7952,6 @@ minute| avgmid | avgprice
 09:45 |	 79.4  |  79.7
 09:50 |	 80.4  |  80.4
 ```
-
 
 ### [joins-TS] QSQL Joins Problem Set
 
