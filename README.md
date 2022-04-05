@@ -22,11 +22,26 @@
 	11. [Int Problem Set 1 - GS](#func_int1)
 	12. [Int Problem Set 2 - GS](#func_int2)
 10. [qSQL](#qsql)
-11. [Adverbs](#adverbs)
-12. [Attributes](#attributes)
-13. [Joins](#joins)
-14. [@ & . Operator](#at)
-15. [Racking & Alignment](racking)
+	1. [QSQL Problem Set 1 - TS](#sql_1)
+	2. [QSQL Problem Set 2 - TS](#sql_2)
+	3. [xbar Problem Set - TS](#sql_3)
+	4. [fby Problem Set](#sql_4)
+	5. [QSQL Problem Set 3 - TS](#sql_5)
+	6. [Table Query Problem Set 1](#sql_6)
+	7. [Table Query Problem Set 2](#sql_7)
+	8. [Table Query Problem Set 3](#sql_8)
+	9. [BIN Problem Set](#sql_9)
+	10. [Signum Deltas Problem Set](#sql_10)
+	11. [Select vs Exec Example](#sql_11)
+	12. [Deltas/Differ Problem Set](#sql_12)
+	13. [QSQL Problem Set 1 - AQ](#sql_13)
+	14. [QSQL Problem Set 2 - AQ](#sql_14)
+	15. [Nested Tables Problem Set](#sql_15)
+12. [Adverbs](#adverbs)
+13. [Attributes](#attributes)
+14. [Joins](#joins)
+15. [@ & . Operator](#at)
+16. [Racking & Alignment](racking)
 
 <hr>
 
@@ -6473,6 +6488,7 @@ AAPL   | 2021-03-01 | 2021-06-30
 [Top](#top)
 
 ### 🔵 [QSQL 1.0] QSQL Problem Set 1 - TS
+<a name="sql_1"></a>
 
 ```q
 / load the trades.q script
@@ -6608,6 +6624,8 @@ date      | time          |sym   | price  | size | cond
 ```
 
 ### 🔵 [QSQL 2.0] Problem Set 2 - TS
+<a name="sql_2"></a>
+[Top](#top)
 
 ```q
 \l trades.q
@@ -6797,6 +6815,8 @@ date       |   time  | sym |price|size|cond|maxprice
 ```
 
 ### 🔵 [QSQL 3.0] xbar Problem Set - TS
+<a name="sql_3"></a>
+[Top](#top)
 
 ```q
 \l trades.q
@@ -6871,6 +6891,9 @@ sym|minute |price
 ```
 
 ### 🔵 [QSQL 4.0] fby Problem Set
+<a name="sql_4"></a>
+[Top](#top)
+
 
 [QSQL 4.1] Calc the min temp by city (fby on 2 lists)
 
@@ -6990,6 +7013,8 @@ date       | time         |sym | price | size  | cond
 ```
 
 ### 🔵 [QSQL 5.0] Problem Set 3 - TS
+<a name="sql_5"></a>
+[Top](#top)
 
 ```q
 \l trades.q
@@ -7132,6 +7157,9 @@ date       | time         | sym | price | size  | cond
 ```
 
 ### 🔵 [QSQL 6.0] Retrieve from 2 tables using TABLE SEARCH - Problem 1
+<a name="sql_6"></a>
+[Top](#top)
+
 
 [QSQL 6.1] retrieve GOOG and FB from t2 where date = 2021.10.21
 
@@ -7166,6 +7194,9 @@ date       | sym  | exch
 ```
 
 ### 🔵 [QSQL 7.0] Retrieve from 2 tables using TABLE SEARCH - Problem 2
+<a name="sql_7"></a>
+[Top](#top)
+
 
 [QSQL 7.1] Retrieve IBM from cond A, CSCO from cond A or B, and MSFT from cond C with date = 2021.11.17
 
@@ -7204,6 +7235,8 @@ date       sym  price size cond
 ```
 
 ### 🔵 [QSQL 8.0] Retrieve from 2 tables using table search filter - Problem 3
+<a name="sql_8"></a>
+[Top](#top)
 
 ```q
 /1 extract all the following results:
@@ -7273,6 +7306,9 @@ Jane  |   F  |	A
 ```
 
 ### 🔵 [QSQL 9.0] Bucket trade sizes into small, med, large using bin
+<a name="sql_9"></a>
+[Top](#top)
+
 
 ```q
 /1 write it all out using multiple select queries
@@ -7304,6 +7340,9 @@ select count i by sym, sizebucket:(tradesize;size) fby sym from trade
 ```
 
 ### 🔵 [QSQL 10.0] Check whether the latest value was an uptick, downtick, or unch
+<a name="sql_10"></a>
+[Top](#top)
+
 
 ```q
 / can make use of the deltas + signum function
@@ -7404,6 +7443,8 @@ sym|dir|size
 ```
 
 ### 🔵 [QSQL 11.0] Select vs Exec Example
+<a name="sql_11"></a>
+[Top](#top)
 
 [QSQL 11.1] Retrieve the distinct cities and countries from the table
 
@@ -7434,6 +7475,8 @@ select city, distinct country from cnc
 ```
 
 ### 🔵 [QSQL 12.0] Deltas/Differ Problem Set
+<a name="sql_12"></a>
+[Top](#top)
 
 [QSQL 12.1] Return all trades where the trade price has changed
 
@@ -7476,6 +7519,9 @@ date       time         sym    price    size  cond
 ```
 
 ### 🔵 [QSQL 13.0] Problem Set 1 - AQ
+<a name="sql_13"></a>
+[Top](#top)
+
 
 ```q
 \l salestable.q
@@ -7544,6 +7590,9 @@ Paul   pencil	105
 ```
 
 ### 🔵 [QSQL 14.0] Problem Set 2 - AQ
+<a name="sql_14"></a>
+[Top](#top)
+
 
 ```q
 f:{([]subject:(4*x)#`maths`english`french`ict;class:raze 4#/:x?"ABCDE";gender:raze 4#/:x?"MF";mark:35+(4*x)?60;id:raze 4#/:til x)}
@@ -7596,6 +7645,9 @@ update average:avg mark by class, subject from marks
 ```
 
 ### 🔵 [QSQL 15.0] Retrieving values from Nested Table Problem Set
+<a name="sql_15"></a>
+[Top](#top)
+
 
 ```q
 /1 create new column bidIndex, which shows the index position in descending values (large to small)
