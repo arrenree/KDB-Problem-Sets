@@ -7327,7 +7327,16 @@ Jane  |   F  |	A
 
 
 ```q
-/1 write it all out using multiple select queries
+\l trades.q
+```
+[QSQL 9.0] Group trades into small, medium, big buckets
+
+```q
+/ small = size < 999
+/ medium = size 1000 - 8999
+/ big = size > 8999
+
+/ Solution 1: write it all out using multiple select queries
 
 (select count i by sym, sizegroup:`small from trade where size within 0 999),
 (select count i by sym, sizegroup:`medium from trade where size within 1000 8999),
@@ -7344,9 +7353,12 @@ AA  | large      | 45425
 ```
 
 ```q
-/ 2 alternatively, you can create a function that sorts sizes into bins
+/ Solution 2: Create a function that accepts list of sizes and sorts into BINS
 
 tradesize:{`small`med`large 0 1000 9000 bin x}
+
+/ function tradesize accepts x as a list of sizes
+/ notice the bin ranges are pegged to the LOW end
 
 select count i by sym, sizebucket:(tradesize;size) fby sym from trade
 
