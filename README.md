@@ -6472,7 +6472,7 @@ AAPL   | 2021-03-01 | 2021-06-30
 ### 🔴 9. qSQL
 [Top](#top)
 
-### [QSQL 1.0] QSQL Problem Set 1 - TS
+### 🔵 [QSQL 1.0] QSQL Problem Set 1 - TS
 
 ```q
 / load the trades.q script
@@ -6607,7 +6607,7 @@ date      | time          |sym   | price  | size | cond
 2021-05-30| 11:44:03.025 | AAPL  | 98.66  | 19000 | A
 ```
 
-### [QSQL 2.0] Problem Set 2 - TS
+### 🔵 [QSQL 2.0] Problem Set 2 - TS
 
 ```q
 \l trades.q
@@ -6631,22 +6631,15 @@ date       time         sym  price    size
 [QSQL 2.2] Delete the entire row that has A for cond
 
 ```q
-trade
-
-date       |  time   | sym |price|size| cond| maxprice
-------------------------------------------------------
-2021.01.01 | 15:10:01| BAC |  70 |42.2|  A  | 104
-2021.03.01 | 15:09:01| JPM |  74 |41.2|  B  | 102
-2021.03.01 | 15:09:01| UBS |  41 |31.2|  C  | 91
-
-delete from tt where cond="A"
+delete from trade where cond="A"
 
 date       |  time   | sym |price|size| cond| maxprice
 ------------------------------------------------------
 2021.03.01 | 15:09:01| JPM |  74 |41.2|  B  | 102
 2021.03.01 | 15:09:01| UBS |  41 |31.2|  C  | 91
 
-/ since you added a WHERE clause, delete will remove entire row
+/ DELETE without WHERE clause = deletes entire column
+/ DELETE with WHERE clause = deletes rows where conditions met
 ```
 
 [QSQL 2.3] update all prices to 10 in trade table
@@ -6660,9 +6653,12 @@ date       time         sym  price size  cond
 2021.11.18 09:30:02.701 MSFT 10    1700  B   
 2021.11.18 09:30:02.743 RBS  10    80700 C   
 2021.11.18 09:30:02.758 A    10    50300 B  
+
+/ notice no semi-colon after update
+/ need 10.0 float datatype (since price = float)
 ```
 
-[QSQL 2.4] update the price of C to 10.0
+[QSQL 2.4] update all prices of sym C to 10.0
 
 ```q
 update price:10.0 from trade where sym=`C
@@ -6719,7 +6715,7 @@ date       | time         | sym  | price| size  | cond
 2021.10.30 | 09:30:02.743 | GOOG | 34.32| 80700 | C 
 ```
 
-[QSQL 2.8] randomly select 100 rows from trade
+[QSQL 2.8] randomly select 100 rows from trade, name this table tt
 
 ```q
 tt:100?trade
@@ -6733,7 +6729,7 @@ date       |  time   | sym |price|size| cond
 [QSQL 2.9] update all cond to "D"
 
 ```q
-update cond: "D" from tt
+update cond: "D" from trade
 
 date       |  time   | sym |price|size| cond
 ---------------------------------------------
@@ -6744,7 +6740,7 @@ date       |  time   | sym |price|size| cond
 [QSQL 2.10] divide all size values by 100
 
 ```q
-update size%100 from tt
+update size % 100 from trade
 
 date       |  time   | sym |price|size| cond
 ---------------------------------------------
@@ -6758,7 +6754,7 @@ date       |  time   | sym |price|size| cond
 [QSQL 2.11] add a new column called advice and populate with sell
 
 ```q
-update advice:`sell from tt
+update advice:`sell from trade
 
 date       |  time   | sym |price|size|cond|advice
 ---------------------------------------------------
@@ -6774,7 +6770,7 @@ date       |  time   | sym |price|size|cond|advice
 [QSQL 2.12] update advice to buy if price less than 70
 
 ```q
-update advice: `buy from tt where price < 70
+update advice: `buy from trade where price < 70
 
 date       |  time   | sym |price|size|cond|advice
 ---------------------------------------------------
@@ -6789,7 +6785,7 @@ date       |  time   | sym |price|size|cond|advice
 [QSQL 2.13] add new column maxprice populated with max prices by sym
 
 ```q
-update maxprice: max price by sym from tt
+update maxprice: max price by sym from trade
 
 date       |   time  | sym |price|size|cond|maxprice
 ----------------------------------------------------
@@ -6800,27 +6796,33 @@ date       |   time  | sym |price|size|cond|maxprice
 / since maxprice doesnt exist, adds new column to end
 ```
 
-### [QSQL 3.0] xbar Problem Set - TS
+### 🔵 [QSQL 3.0] xbar Problem Set - TS
+
+```q
+\l trades.q
+
+```
 
 [QSQL 3.1] Calculate the number and total size traded by sym for each $1 price 
 
 ```q
-select sum size, cnt: count i by sym, 1 xbar price from trades
+select num: count i, totalsize: sum size sym, 1 xbar price from trade
 
-sym|price|  size  |cnt
-----------------------
- A |50.0 |44191500|838
- A |51.0 |42318700|842
- A |52.0 |41432200|832
+sym | price | num | totalsize
+-----------------------------
+A   |  50.0 | 810 | 40531900
+A   |  51.0 | 821 | 42688700
+A   |  52.0 | 787 | 38549900
+A   |  53.0 | 834 | 41615700
 
 / groups the data by sym and 1 dollar price buckets
-/ cnt = tallies virtual column i; how many trades were executed by sym for that price bucket
+/ count i = tallies virtual column i
+/ aka how many trades were executed by sym for that price bucket
 ```
 
-[QSQL 3.2] Find the max price and total size of trades during 5 min buckets
+[QSQL 3.2] Find the max price and total size of trades by ticker during 5 min buckets
 
 ```q
-
 select max price, sum size by sym, 5 xbar time.minute from trades
 
 sym  |minute | price|size
@@ -6857,7 +6859,9 @@ sym|minute |price
  A | 10:15 |109.99
  A | 10:45 |109.96
 
-/ by adding 9:30 and subtracting 9:30 from xbar, you can shift the time bucket
+/ note! time format has to be 09:30 (not 9:30)
+/ by adding 09:30 and subtracting 09:30 from xbar
+/ you shift the time bucket
 / to include your desired time
 
 / logic here:
@@ -6866,9 +6870,9 @@ sym|minute |price
 / adding 9:30 = reset to center around your desired time
 ```
 
-### [QSQL 4.0] fby Problem Set
+### 🔵 [QSQL 4.0] fby Problem Set
 
-[QSQL 4.1] Calc the min temp by city
+[QSQL 4.1] Calc the min temp by city (fby on 2 lists)
 
 ```q
 city:`NY`NY`LA`SF`LA`SF`NY
@@ -6881,29 +6885,42 @@ temp:32 31 75 69 70 68 12
 / calculates the min temp for every city (12 for NYC)
 ```
 
-[QSQL 4.2] find the max price per symbol
+[QSQL 4.2a] find the max price per symbol
 
 ```q
 \l trades.q
 ```
 
 ```q
-time       |sym  |src|price | size
------------------------------------
-2019-03-11 |GOOG | L |36.01 | 1427
-2019-03-11 |GOOG | O |36.01 | 708
-2019-03-11 |MSFT | N |35.5  | 7810
-2019-03-11 |MSFT | O |31.1  | 1100
+/ this is the solution i used, but doesnt involve fby
 
-select from t where price=(max;price) fby sym
+select max price by sym from trade
+
+sym | price
+-------------
+A   | 109.99
+AA  | 109.99
+AAPL| 109.99
+B   | 109.99
+BAC | 109.99
+```
+
+[QSQL 4.2b] find the max price per symbol (use fby)
+
+```q
+select from trade where price=(max;price) fby sym
 
 time       |sym  |src| price | size
 -----------------------------------
 2019-03-11 |GOOG | L | 36.01 | 1427
 2019-03-11 |GOOG | O | 36.01 | 708
 2019-03-11 |MSFT | N | 35.5  | 7810
+```
 
-/ this is not correct, since there are still 2 GOOG (since both same "max" price)
+[QSQL 4.2c] find the max price and latest time per symbol (use fby)
+
+```q
+/ assume there are 2 syms with same max price 
 / you can add another fby filter for time
 
 select from t where price=(max;price) fby sym, time=(max;time) fby sym
@@ -6928,10 +6945,10 @@ date       | time         | sym | price | size | cond
 / filter by date, then the max price from this date
 ```
 
-[QSQL 4.4] find max price by sym on this date
+[QSQL 4.4] find max price by sym, today's date (use fby)
 
 ```q
-select from trade where date=2021.10.31, price=(max;price) fby sym
+select from trade where date=.z.d, price=(max;price) fby sym
 
 date       | time         | sym | price | size | cond
 ------------------------------------------------------
@@ -6956,16 +6973,23 @@ AAPL | 339.1
 / this will ONLY return the max price column
 ```
 
-[QSQL 4.5] find max price by sym AND cond on this date
+[QSQL 4.5] find max price using an [fby] for both [sym and cond] for today
 
 ```q
-select from trade where date=2021.10.31, price=(max;price) fby ([]sym;cond)
+select from trade where date=.z.d, price=(max;price) fby ([] sym; cond)
+
+date       | time         |sym | price | size  | cond
+------------------------------------------------------
+2022-04-05 | 09:30:31.122 | F  | 109.5 | 27300 | C
+2022-04-05 | 09:30:49.628 | KX | 109.9 | 37300 | C
+2022-04-05 | 09:35:00.553 | MS | 109.8 | 12700 | A
+2022-04-05 | 09:36:37.757 | A  | 109.3 | 24000 | A
 
 / aggregate by more than one field using a table
 / filter by date, then max price by sym and cond
 ```
 
-### [QSQL 5.0] Problem Set 3 - TS
+### 🔵 [QSQL 5.0] Problem Set 3 - TS
 
 ```q
 \l trades.q
@@ -7107,7 +7131,7 @@ date       | time         | sym | price | size  | cond
 2021-11-27 | 09:30:23.570 |  A  |  60.8 | 8200	|
 ```
 
-### [QSQL 6.0] Retrieve from 2 tables using TABLE SEARCH - Problem 1
+### 🔵 [QSQL 6.0] Retrieve from 2 tables using TABLE SEARCH - Problem 1
 
 [QSQL 6.1] retrieve GOOG and FB from t2 where date = 2021.10.21
 
@@ -7141,7 +7165,7 @@ date       | sym  | exch
 / this where filter will first filter by date in t1, then by the sym, exch found in t2
 ```
 
-### [QSQL 7.0] Retrieve from 2 tables using TABLE SEARCH - Problem 2
+### 🔵 [QSQL 7.0] Retrieve from 2 tables using TABLE SEARCH - Problem 2
 
 [QSQL 7.1] Retrieve IBM from cond A, CSCO from cond A or B, and MSFT from cond C with date = 2021.11.17
 
@@ -7179,7 +7203,7 @@ date       sym  price size cond
 2021-10-30 IBM	84.13 46600 A
 ```
 
-### [QSQL 8.0] Retrieve from 2 tables using table search filter - Problem 3
+### 🔵 [QSQL 8.0] Retrieve from 2 tables using table search filter - Problem 3
 
 ```q
 /1 extract all the following results:
@@ -7248,7 +7272,7 @@ Rachel|   F  |	B
 Jane  |   F  |	A
 ```
 
-### [QSQL 9.0] Bucket trade sizes into small, med, large using bin
+### 🔵 [QSQL 9.0] Bucket trade sizes into small, med, large using bin
 
 ```q
 /1 write it all out using multiple select queries
@@ -7279,7 +7303,7 @@ select count i by sym, sizebucket:(tradesize;size) fby sym from trade
 / size = col name from original trade table
 ```
 
-### [QSQL 10.0] Check whether the latest value was an uptick, downtick, or unch
+### 🔵 [QSQL 10.0] Check whether the latest value was an uptick, downtick, or unch
 
 ```q
 / can make use of the deltas + signum function
@@ -7379,7 +7403,7 @@ sym|dir|size
 / the fby aggregates the tickdir from price column by sym
 ```
 
-### [QSQL 11.0] Select vs Exec Example
+### 🔵 [QSQL 11.0] Select vs Exec Example
 
 [QSQL 11.1] Retrieve the distinct cities and countries from the table
 
@@ -7409,7 +7433,7 @@ select city, distinct country from cnc
 / error because select expects the columns to have the same length
 ```
 
-### [QSQL 12.0] Deltas/Differ Problem Set
+### 🔵 [QSQL 12.0] Deltas/Differ Problem Set
 
 [QSQL 12.1] Return all trades where the trade price has changed
 
@@ -7451,7 +7475,7 @@ date       time         sym    price    size  cond
 2021-10-19 09:30:02.758	A      100.3    50300  B
 ```
 
-### [QSQL 13.0] Problem Set 1 - AQ
+### 🔵 [QSQL 13.0] Problem Set 1 - AQ
 
 ```q
 \l salestable.q
@@ -7519,7 +7543,7 @@ Paul   pencil	105
 
 ```
 
-### [QSQL 14.0] Problem Set 2 - AQ
+### 🔵 [QSQL 14.0] Problem Set 2 - AQ
 
 ```q
 f:{([]subject:(4*x)#`maths`english`french`ict;class:raze 4#/:x?"ABCDE";gender:raze 4#/:x?"MF";mark:35+(4*x)?60;id:raze 4#/:til x)}
@@ -7571,7 +7595,7 @@ update mark:5+mark from `marks where class="A",subject=`french
 update average:avg mark by class, subject from marks 
 ```
 
-### [QSQL 15.0] Retrieving values from Nested Table Problem Set
+### 🔵 [QSQL 15.0] Retrieving values from Nested Table Problem Set
 
 ```q
 /1 create new column bidIndex, which shows the index position in descending values (large to small)
