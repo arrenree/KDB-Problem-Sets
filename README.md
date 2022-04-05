@@ -7045,7 +7045,7 @@ B   | -1802424996 | 79.84
 BAC | -1790778496 | 79.78
 ```
 
-[QSQL 5.3] Find the trade that was largest size for each sym
+[QSQL 5.3] Find the trade that was largest size for each sym (use fby)
 
 ```q
 select from trade where size=(max;size) fby sym
@@ -7069,7 +7069,7 @@ AAPL| 99900
 B   | 99900
 ```
 
-[QSQL 5.4] Select the latest trade for each sym, and include all details
+[QSQL 5.4a] Select the latest trade for each sym, and include all details (non-fby)
 
 ```q
 select last date, last price, last time by sym from trade
@@ -7080,6 +7080,19 @@ A   | 2021-12-01 | 87.5  | 17:29:57.306
 AA  | 2021-12-01 | 68.0	 | 17:29:58.789
 AAPL| 2021-12-01 | 76.1	 | 17:29:58.262
 B   | 2021-12-01 | 95.5	 | 17:29:56.912
+```
+
+[QSQL 5.4b] Select the latest trade for each sym, and include all details (fby)
+
+```q
+select from trade where time=(max;time) fby sym
+
+date       | time         | sym  | price | size  | cond
+-------------------------------------------------------
+2022-04-01 | 17:29:58.861 |   AA |  60.0 | 20900 |  C
+2022-04-01 | 17:29:58.878 | MSFT |  83.5 |  7700 |  B
+2022-04-01 | 17:29:58.907 | AAPL |  68.0 | 58000 |  B
+2022-04-01 | 17:29:58.968 |    D |  82.9 | 76800 |  A
 ```
 
 [QSQL 5.5] Find all trades that have sym GOOG
@@ -7156,7 +7169,7 @@ date       | time         | sym | price | size  | cond
 2021-11-27 | 09:30:23.570 |  A  |  60.8 | 8200	|
 ```
 
-### 🔵 [QSQL 6.0] Retrieve from 2 tables using TABLE SEARCH - Problem 1
+### 🔵 [QSQL 6.0] Table Query Problem Set 1
 <a name="sql_6"></a>
 [Top](#top)
 
@@ -7193,7 +7206,7 @@ date       | sym  | exch
 / this where filter will first filter by date in t1, then by the sym, exch found in t2
 ```
 
-### 🔵 [QSQL 7.0] Retrieve from 2 tables using TABLE SEARCH - Problem 2
+### 🔵 [QSQL 7.0] Table Query Problem Set 2
 <a name="sql_7"></a>
 [Top](#top)
 
@@ -7234,7 +7247,7 @@ date       sym  price size cond
 2021-10-30 IBM	84.13 46600 A
 ```
 
-### 🔵 [QSQL 8.0] Retrieve from 2 tables using table search filter - Problem 3
+### 🔵 [QSQL 8.0] Table Query Problem Set 3
 <a name="sql_8"></a>
 [Top](#top)
 
@@ -7305,7 +7318,7 @@ Rachel|   F  |	B
 Jane  |   F  |	A
 ```
 
-### 🔵 [QSQL 9.0] Bucket trade sizes into small, med, large using bin
+### 🔵 [QSQL 9.0] BIN Problem Set
 <a name="sql_9"></a>
 [Top](#top)
 
@@ -7339,7 +7352,7 @@ select count i by sym, sizebucket:(tradesize;size) fby sym from trade
 / size = col name from original trade table
 ```
 
-### 🔵 [QSQL 10.0] Check whether the latest value was an uptick, downtick, or unch
+### 🔵 [QSQL 10.0] Signum Deltas Problem Set
 <a name="sql_10"></a>
 [Top](#top)
 
