@@ -7174,9 +7174,12 @@ date       | time         | sym | price | size  | cond
 [Top](#top)
 
 
-[QSQL 6.1] retrieve GOOG and FB from t2 where date = 2021.10.21
+[QSQL 6.1] retrieve values from t1 given date filter + column from t1 matches t2 
 
 ```q
+/ date filter = 2021.10.21
+/ column filter = match on columns sym and exch
+
 t1: ([] date: 2021.10.21 2021.10.21 2021.10.21 2021.10.21; sym: `GOOG`MSFT`FB`AMZN; exch: `nyse`nyse`nasdaq`nasdaq)
 
 t2: ([] sym: `GOOG`FB; exch: `nyse`nasdaq)
@@ -7195,7 +7198,7 @@ sym  | ex
 GOOG | nyse
 FB   | nasdaq
 
-select from t1 where date=2021.10.21,([]sym;exch) in t2
+select from t1 where date=2021.10.21,( [] sym; exch) in t2
 
 date       | sym  | exch
 ----------------------------
@@ -7211,19 +7214,15 @@ date       | sym  | exch
 [Top](#top)
 
 
-[QSQL 7.1] Retrieve IBM from cond A, CSCO from cond A or B, and MSFT from cond C with date = 2021.11.17
+[QSQL 7.1] Retrieve IBM from cond A, CSCO from cond A or B, and MSFT from cond C with date = today
 
 ```q
-trade
-date       time         sym  price    size  cond
-------------------------------------------------
-2021.11.17 09:30:01.663 MS   92.84566 31500 A   
-2021.11.17 09:30:01.788 D    73.02565 17500 A   
-2021.11.17 09:30:01.819 RBS  90.76262 29100 B   
-2021.11.17 09:30:01.961 RBS  97.44952 70200 B   
-2021.11.17 09:30:02.007 RBS  60.16924 88100 B   
+\l trades.q
 
-/2 create table, toget, as table for filter
+```
+
+```q
+/ first, create table [toget], with all possible conditional outcomes
 
 toget: ([] sym:`IBM`CSCO`CSCO`MSFT, cond:"AABC")
 
@@ -7233,10 +7232,10 @@ IBM    A
 CSCO   A
 CSCO   B
 MSFT   C
+```
 
-/3 run query using selct + where clause to filter
-
-select from trade where date = 2021.11.17, ([]sym;cond) in toget
+```q
+select from trade where date = 2022.04.01, ( [] sym; cond) in toget
 
 date       sym  price size cond
 -------------------------------
@@ -7245,6 +7244,10 @@ date       sym  price size cond
 2021-10-30 MSFT	54.57 23700 C
 2021-10-30 IBM	89.19 86600 A
 2021-10-30 IBM	84.13 46600 A
+
+/ create table of all possible outcomes
+/ then filter using matching columns from original table
+/ and your outcome table
 ```
 
 ### 🔵 [QSQL 8.0] Table Query Problem Set 3
