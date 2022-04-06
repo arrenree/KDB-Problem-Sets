@@ -7325,46 +7325,82 @@ Jane  |   F  |	A
 <a name="sql_9"></a>
 [Top](#top)
 
-
 ```q
 \l trades.q
 ```
-[QSQL 9.0] Group trades into small, medium, big buckets
+
+[QSQL 9.1] For list of sizes, group into buckets of 0, 1000 or 9000
 
 ```q
-/ small = size < 999
-/ medium = size 1000 - 8999
-/ big = size > 8999
+sizes: 2000 100 6000 11000
 
-/ Solution 1: write it all out using multiple select queries
+0 1000 9000 bin sizes
+1 0 1 2
 
-(select count i by sym, sizegroup:`small from trade where size within 0 999),
-(select count i by sym, sizegroup:`medium from trade where size within 1000 8999),
-(select count i by sym, sizegroup:`big from trade where size > 8999)
+/ bin takes its LEFT hand buckets, and sorts index position of RIGHT argument
+/ so sizes = 4 elements, will return index position of bin
+/ 2000 = index position 1 bin
+/ 100 = index position 0 bin
+/ 6000 = index position 1 bin
+/ 11000 = index position 2 bin
+```
 
-sym | sizegroup  | x
+[QSQL 9.2] rename buckets as small, med, or large
+
+```q
+/ 2. name the buckets as small, med, or big
+/ based on the buckets of 0, 1000, and 9000
+
+`small`med`big 0 1000 9000 bin sizes
+`med`small`med`big
+
+/ syntax: 
+/ `name1`name2`name3 size1 size2 size 3 bin LIST
+/ still returns the index position based on the sizes
+/ but now has a "name" associated to it (small, med, big)
+```
+
+[QSQL 9.3] Create function called tradesize
+
+```q
+/ 3. create function called tradesize
+/ that accepts a list of trade sizes as argument x
+/ and bucket those sizes into bins of small, med, big
+
+tradesize:{`small`med`big 0 1000 9000 bin x}
+
+/ test out the function with sizes (from above)
+
+sizes: sizes: 2000 100 6000 11000
+
+tradesize sizes
+`med`small`med`big
+
+/ it works!
+```
+
+[QSQL 9.4] use tradesize function to retrieve total num of trades grouped by size bucket
+
+```q
+/ 4. use this tradesize function to retrieve total number of trades grouped by size bucket
+
+select num:count i by sym, sizebucket:(tradesize;size) fby sym from trade
+
+sym | sizebucket | num
 -------------------------
 A   | large      | 45645
 A   | med        | 4009
 A   | small      | 480
 AA  | large      | 45425
 
-/ sizegroup = new col name, and you assign a sym (`small`med`large) based on a where filter for size
-```
+/ NOTE! since you are creating a NEW COLUMN called [sizebucket]
+/ you have to [select] the new column you are fby with
+/ [from trade] goes all the way at the END
 
-```q
-/ Solution 2: Create a function that accepts list of sizes and sorts into BINS
-
-tradesize:{`small`med`large 0 1000 9000 bin x}
-
-/ function tradesize accepts x as a list of sizes
-/ notice the bin ranges are pegged to the LOW end
-
-select count i by sym, sizebucket:(tradesize;size) fby sym from trade
-
-/ fby sytax = (agg;col_name)
-/ func tradesize = aggregate function
-/ size = col name from original trade table
+/ [sizebucket column] -> insert [tradesize function] you created
+/ [size column] from [trade table] becomes argument x for [tradesize function]
+/ [tradesize function] becomes an AGGREGATOR for fby
+/ returns the number of trades (count i), sorted by sym and its size bucket
 ```
 
 ### 🔵 [QSQL 10.0] Signum Deltas Problem Set
@@ -7373,10 +7409,10 @@ select count i by sym, sizebucket:(tradesize;size) fby sym from trade
 
 
 ```q
-/ can make use of the deltas + signum function
+/ can make use of the [deltas + signum] function
 
-/ deltas will calculate the change between subsequence elements
-/ signum will tell you if the element is positive, negative, or 0
+/ [deltas] will calculate the change between subsequence elements
+/ [signum] will tell you if the element is [positive], [negative], or [0]
 
 deltas 3 2 2 1 5
 3 -1 0 -1 4
@@ -7385,9 +7421,9 @@ signum deltas prices
 1 -1 0 -1 1
 ```
 
-```q
-/1 add in new col called direction which calcs the signum deltas of price
+[QSQL 10.1] add in new col called direction which calcs the signum deltas of price
 
+```q
 select from trade
 
 sym | price | size  | cond
@@ -7406,12 +7442,13 @@ F   |  104  | 62600 |      | 1
 IBM |  73   | 77500 | B    |-1 
 A   |  63   | 73000 | B    |-1 
 
-/ this will add a new column, dir, which will be +1, 0, or -1
+/ this will add a new column, [dir], which will be [+1, 0, or -1]
+/ tells you if its positive, negative or unch
 ```
 
-```q
-/2 you can also create a function for signum deltas
+[QSQL 10.2] create a function for signum deltas
 
+```q
 tickdir:{signum deltas [first x;x] }
 
 / x = argument for price
@@ -7429,9 +7466,9 @@ A   |  63   | 73000 | B    |-1
 / tickdir takes price as its argument for x
 ```
 
-```q
-/3 Group this data by sym, and see total sie traded by direction (uptick, downtick, etc)
+[QSQL 10.3] Group this data by sym, and calc total size traded by direction (uptick, downtick, etc)
 
+```q
 select sum size by sym, dir from update dir:tickdir price by sym from trade
 
 sym  | dir | size
