@@ -7052,13 +7052,57 @@ sym|minute |price
 <a name="sql_5"></a>
 [Top](#top)
 
+```q
+/ another powerful to aggregate data into buckets
+/ is by first filtering your parameter using WITHIN
+/ then "naming" that "bucket" 
+/ load trades.q script
+```
 
+```q
+/ 1. retrieve the number of small trades for each sym
+/ small trades = size less than 999
+/ add column called tradesize = small for each sym
 
+select num:count i by sym, sizegroup:`small from trade where size within 0 999
 
+`sym` | `sizegroup` | num
+--------------------------
+`A`   |   `small`   | 454
+`AA`  |   `small`   | 521
+`AAPL`|   `small`   | 493
+`B`   |   `small`   | 499
 
+/ num = number of trades which sizes are less than 999
+/ use COUNT to return NUMBER of trades
+/ since you're aggregating BY sym, the sym + sizegroup cols are keyed
+/ use WHERE within x y = range of values to be selected
+```
 
+```q
+/2. now retrieve the number of med and large trades for each sym
+/ med = 1000 to 8999
+/ large = greater than 8999
 
-### 🔵 [QSQL 6.0] BIN Problem Set
+/ consolidate into same table
+
+(select count i by sym, sizegroup:`small from trade where size within 0 999),
+(select count i by sym, sizegroup:`medium from trade where size within 1000 8999),
+(select count i by sym, sizegroup:`big from trade where size > 8999)
+
+`sym | `sizegroup` | num
+---------------------------
+`A`   | `large`    | 45645
+`A`   | `med`      | 4009
+`A`   | `small`    | 480
+
+/ we have successfully grouped each sym into "buckets"
+/ of either small, med, or large
+/ depending on the number of trades (from size)
+/ there is a better way retrieve this, by writing function called BIN
+```
+
+### 🔵 [QSQL 6.0] Creating Buckets using BIN
 <a name="sql_6"></a>
 [Top](#top)
 
