@@ -7048,6 +7048,84 @@ sym|minute |price
 / adding 9:30 = reset to center around your desired time
 ```
 
+[QSQL 4.4] Count the number of trades and total size of trades per hour for sym RBS
+
+```q
+select num_trades:count i, total_size: sum size by sym, 1 xbar time.hh from trade where sym=`RBS
+
+`sym` | `hh` | num_trades | total_size
+--------------------------------------
+`RBS` |  `9` |    3186    | 159063500
+`RBS` | `10` |    6544    | 321195100
+`RBS` | `11` |    6280    | 315284200
+`RBS` | `12` |    6141    | 306898200
+`RBS` | `13` |    6086    | 305154900
+
+/ you need to group BY SYM, since you're aggregating
+/ the total num trades + total size
+/ use count i = count virtual column
+/ notice xbar comes AFTER the by sym, but BEFORE the where
+/ both sym + xbar are aggregators
+/ so both columns are keyed
+```
+
+```q
+/ notice what happens if instead of group BY SYM
+/ you group BY XBAR
+
+select num_trades:count i, total_size: sum size by 1 xbar time.hh from trade where sym=`RBS
+
+`hh` | num_trades | total_size
+----------------------------
+`9`  |    3186   | 159063500
+`10` |    6544   | 321195100
+`11` |    6280   | 315284200
+`12` |    6141   | 306898200
+`13` |    6086   | 305154900
+
+/ the sym column is removed
+/ but the underlying answer is still correct
+```
+
+[QSQL 4.5] Select the number of trades and total size of trades every 30 mins for the sym RBS
+
+```q
+select num_trades: count i, tot_size:sum size by sym, 30 xbar time.minute from trade where sym=`RBS
+
+`sym` | `minute` | num_trades | tot_size
+---------------------------------------
+`RBS` |  `09:30` |    3186    | 159063500
+`RBS` |  `10:00` |    3271    | 162197000
+`RBS` |  `10:30` |    3273    | 158998100
+`RBS` |  `11:00` |    3110    | 157994800
+`RBS` |  `11:30` |    3170    | 157289400
+`RBS` |  `12:00` |    3120    | 156311100
+
+/ 30 xbar time.minute = groups minutes by 30
+```
+
+[QSQL 4.6] Calc the avgmid price from quotes for GOOG grouped by 5 min buckets
+
+```q
+/ need to retrieve from quotes table
+/ avg mid quote = (bid + ask) /2
+/ since you're grouping into 5 xbar, avg will calc avg over 5 min bucket
+```
+
+```q
+select avgmid:avg .5*bid+ask by 5 xbar time.minute from quote where sym =`GOOG
+
+minute| avgmid
+--------------
+09:30 | 79.7
+09:35 |	80.4
+09:40 |	79.5
+09:45 |	79.4
+09:50 |	80.4
+
+/ by = group, so this becomes keyed by 5 xbar time
+```
+
 ### 🔵 [QSQL 5.0] Creating Buckets using within
 <a name="sql_5"></a>
 [Top](#top)
