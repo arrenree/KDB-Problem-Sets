@@ -24,19 +24,20 @@
 10. [qSQL](#qsql)
 	1. [QSQL Problem Set 1 - TS](#sql_1)
 	2. [QSQL Problem Set 2 - TS](#sql_2)
-	3. [xbar Problem Set - TS](#sql_3)
-	4. [fby Problem Set](#sql_4)
-	5. [QSQL Problem Set 3 - TS](#sql_5)
-	6. [Table Query Problem Set 1](#sql_6)
-	7. [Table Query Problem Set 2](#sql_7)
-	8. [Table Query Problem Set 3](#sql_8)
-	9. [BIN Problem Set](#sql_9)
-	10. [Signum Deltas Problem Set](#sql_10)
-	11. [Select vs Exec Example](#sql_11)
-	12. [Deltas/Differ Problem Set](#sql_12)
-	13. [QSQL Problem Set 1 - AQ](#sql_13)
-	14. [QSQL Problem Set 2 - AQ](#sql_14)
-	15. [Nested Tables Problem Set](#sql_15)
+	3. [QSQL Problem Set 3 - TS](#sql_3)
+	4. [Creating Buckets using xbar](#sql_4)
+	5. [Creating Buckets using within](#sql_5)
+	6. [Creating Buckets using BIN](#sql_6)
+	7. [fby Problem Set](#sql_7)
+	8. [Table Query Problem Set 1](#sql_8)
+	9. [Table Query Problem Set 2](#sql_9)
+	10. [Table Query Problem Set 3](#sql_10)
+	11. [Signum Deltas Problem Set](#sql_11)
+	12. [Select vs Exec Example](#sql_12)
+	13. [Deltas/Differ Problem Set](#sql_13)
+	14. [QSQL Problem Set 1 - AQ](#sql_14)
+	15. [QSQL Problem Set 2 - AQ](#sql_15)
+	16. [Nested Tables Problem Set](#sql_16)
 12. [Adverbs](#adverbs)
 13. [Attributes](#attributes)
 14. [Joins](#joins)
@@ -6814,8 +6815,165 @@ date       |   time  | sym |price|size|cond|maxprice
 / since maxprice doesnt exist, adds new column to end
 ```
 
-### 🔵 [QSQL 3.0] xbar Problem Set - TS
+### 🔵 [QSQL 3.0] Problem Set 3 - TS
 <a name="sql_3"></a>
+[Top](#top)
+
+```q
+\l trades.q
+```
+
+[QSQL 3.1] Extract trades for MS greater than 1,000 in size
+
+```q
+select from trade where sym=`MS, size >1000
+
+dt         |sym |price|size
+----------------------------
+2021.01.01 | MS | 225 | 200
+2021.01.01 | MS | 234 | 400
+```
+
+[QSQL 3.2] Find the total size of all trades and the average price paid per sym
+
+```q
+select totalsize:sum size, avgprice:avg price by sym from trade
+
+sym | totalsize   | avgprice
+-----------------------------
+A   | -1796963996 | 79.96
+AA  | -1792025796 | 80.02
+AAPL|  1789783596 | 79.98
+B   | -1802424996 | 79.84
+BAC | -1790778496 | 79.78
+```
+
+[QSQL 3.3] Find the trade that was largest size for each sym (use fby)
+
+```q
+select from trade where size=(max;size) fby sym
+
+date       | time         | sym  | price | size  | cond
+--------------------------------------------------------
+2021-11-27 | 09:30:21.256 | B	 | 100.0 | 99900 |	 
+2021-11-27 | 09:31:20.975 | AA	 | 67.3  | 99900 | C
+2021-11-27 | 09:43:47.816 | GOOG | 72.4  | 99900 | A
+2021-11-27 | 09:46:44.690 | F    | 73.2  | 99900 | B
+
+/ alternatively, if you did this:
+
+select max size by sym from trade
+
+sym | size
+-------------
+A   | 99900
+AA  | 99900
+AAPL| 99900
+B   | 99900
+```
+
+[QSQL 3.4a] Select the latest trade for each sym, and include all details (non-fby)
+
+```q
+select last date, last price, last time by sym from trade
+
+sym | date       | price | time
+----------------------------------------
+A   | 2021-12-01 | 87.5  | 17:29:57.306
+AA  | 2021-12-01 | 68.0	 | 17:29:58.789
+AAPL| 2021-12-01 | 76.1	 | 17:29:58.262
+B   | 2021-12-01 | 95.5	 | 17:29:56.912
+```
+
+[QSQL 3.4b] Select the latest trade for each sym, and include all details (fby)
+
+```q
+select from trade where time=(max;time) fby sym
+
+date       | time         | sym  | price | size  | cond
+-------------------------------------------------------
+2022-04-01 | 17:29:58.861 |   AA |  60.0 | 20900 |  C
+2022-04-01 | 17:29:58.878 | MSFT |  83.5 |  7700 |  B
+2022-04-01 | 17:29:58.907 | AAPL |  68.0 | 58000 |  B
+2022-04-01 | 17:29:58.968 |    D |  82.9 | 76800 |  A
+```
+
+[QSQL 3.5] Find all trades that have sym GOOG
+
+```q
+select from trade where sym=`GOOG
+
+date       | time         | sym  | price | size  | cond
+--------------------------------------------------------
+2021-11-27 | 09:30:17.541 | GOOG | 86.1  | 83500 | C
+2021-11-27 | 09:30:17.895 | GOOG | 80.5  | 91700 | B
+2021-11-27 | 09:30:18.011 | GOOG | 81.0  | 49300 | B
+```
+
+[QSQL 3.6] Find all trades that have sym GOOG or RBS or A
+
+```q
+select from trade where sym in `GOOG`RBS`A
+
+date       | time         | sym  | price | size  | cond
+-------------------------------------------------------
+2021-11-27 | 09:30:17.541 | GOOG | 86.1  | 83500 | C
+2021-11-27 | 09:30:17.895 |  RBS | 80.5  | 91700 | B
+2021-11-27 | 09:30:18.011 |    A | 81.0  | 49300 | B
+```
+
+[QSQL 3.7] Find all trades for google that had a price between 70 and 80
+
+```q
+select from trade where sym=`GOOG, price within 70 80
+
+date       | time         | sym  | price | size  | cond
+-------------------------------------------------------
+2021-11-27 | 09:30:17.541 | GOOG | 73.1  | 83500 | C
+2021-11-27 | 09:30:17.895 | GOOG | 75.5  | 91700 | B
+2021-11-27 | 09:30:18.011 | GOOG | 77.0  | 49300 | B
+```
+
+[QSQL 3.8] Count the number of trades and total size of trades per hour for sym RBS
+
+```q
+select numtrades:count i, totalsize: sum size by time.hh from trade where sym=`RBS
+
+hh | numtrades | totalsize
+--------------------------
+9  |	3186   | 159063500
+10 |	6544   | 321195100
+11 |	6280   | 315284200
+12 |	6141   | 306898200
+13 |	6086   | 305154900
+```
+
+[QSQL 3.9] Select the number of trades and total size of trades every 30 mins for sym RBS
+
+```q
+select numbertrades: count i, totalsize: sum size by 30 xbar time.minute from trade where sym=`RBS
+
+minute|numbertrades|totalsize
+-------------------------------
+09:30 |    3186    | 159063500
+10:00 |	   3271    |  62197000
+10:30 |	   3273    | 158998100
+```
+
+[QSQL 3.10] Find all trades for A where the price was cheaper than the average for that day
+
+```q
+select from trade where sym=`A, price < avg price
+
+date       | time         | sym | price | size  | cond
+-------------------------------------------------------
+2021-11-27 | 09:30:17.997 |  A	|  57.8 | 65600 | C
+2021-11-27 | 09:30:23.144 |  A	|  54.5 | 31200	|
+2021-11-27 | 09:30:23.570 |  A  |  60.8 | 8200	|
+```
+
+### 🔵 [QSQL 4.0] Creating Buckets using xbar
+<a name="sql_4"></a>
 [Top](#top)
 
 ```q
@@ -6823,7 +6981,7 @@ date       |   time  | sym |price|size|cond|maxprice
 
 ```
 
-[QSQL 3.1] Calculate the number and total size traded by sym for each $1 price 
+[QSQL 4.1] Calculate the number and total size traded by sym for each $1 price 
 
 ```q
 select num: count i, totalsize: sum size sym, 1 xbar price from trade
@@ -6840,7 +6998,7 @@ A   |  53.0 | 834 | 41615700
 / aka how many trades were executed by sym for that price bucket
 ```
 
-[QSQL 3.2] Find the max price and total size of trades by ticker during 5 min buckets
+[QSQL 4.2] Find the max price and total size of trades by ticker during 5 min buckets
 
 ```q
 select max price, sum size by sym, 5 xbar time.minute from trades
@@ -6856,7 +7014,7 @@ AAPL | 08:10 | 28.2 | 300
 / sym + minute are keyed (since by)
 ```
 
-[QSQL 3.3] Find the max price by sym in 45 min time buckets, specifically including 9:30 time bucket
+[QSQL 4.3] Find the max price by sym in 45 min time buckets, specifically including 9:30 time bucket
 
 ```q
 / original query (incorrect as it doesn't include 9:30)
@@ -6890,12 +7048,106 @@ sym|minute |price
 / adding 9:30 = reset to center around your desired time
 ```
 
-### 🔵 [QSQL 4.0] fby Problem Set
-<a name="sql_4"></a>
+### 🔵 [QSQL 5.0] Creating Buckets using within
+<a name="sql_5"></a>
 [Top](#top)
 
 
-[QSQL 4.1] Calc the min temp by city (fby on 2 lists)
+
+
+
+
+
+### 🔵 [QSQL 6.0] BIN Problem Set
+<a name="sql_6"></a>
+[Top](#top)
+
+```q
+\l trades.q
+```
+
+[QSQL 6.1] For list of sizes, group into buckets of 0, 1000 or 9000
+
+```q
+sizes: 2000 100 6000 11000
+
+0 1000 9000 bin sizes
+1 0 1 2
+
+/ bin takes its LEFT hand buckets, and sorts index position of RIGHT argument
+/ so sizes = 4 elements, will return index position of bin
+/ 2000 = index position 1 bin
+/ 100 = index position 0 bin
+/ 6000 = index position 1 bin
+/ 11000 = index position 2 bin
+```
+
+[QSQL 6.2] rename buckets as small, med, or large
+
+```q
+/ 2. name the buckets as small, med, or big
+/ based on the buckets of 0, 1000, and 9000
+
+`small`med`big 0 1000 9000 bin sizes
+`med`small`med`big
+
+/ syntax: 
+/ `name1`name2`name3 size1 size2 size 3 bin LIST
+/ still returns the index position based on the sizes
+/ but now has a "name" associated to it (small, med, big)
+```
+
+[QSQL 6.3] Create function called tradesize
+
+```q
+/ 3. create function called tradesize
+/ that accepts a list of trade sizes as argument x
+/ and bucket those sizes into bins of small, med, big
+
+tradesize:{`small`med`big 0 1000 9000 bin x}
+
+/ test out the function with sizes (from above)
+
+sizes: sizes: 2000 100 6000 11000
+
+tradesize sizes
+`med`small`med`big
+
+/ it works!
+```
+
+[QSQL 6.4] use tradesize function to retrieve total num of trades grouped by size bucket
+
+```q
+/ 4. use this tradesize function to retrieve total number of trades grouped by size bucket
+
+select num:count i by sym, sizebucket:(tradesize;size) fby sym from trade
+
+sym | sizebucket | num
+-------------------------
+A   | large      | 45645
+A   | med        | 4009
+A   | small      | 480
+AA  | large      | 45425
+
+/ NOTE! since you are creating a NEW COLUMN called [sizebucket]
+/ you have to [select] the new column you are fby with
+/ [from trade] goes all the way at the END
+
+/ [sizebucket column] -> insert [tradesize function] you created
+/ [size column] from [trade table] becomes argument x for [tradesize function]
+/ [tradesize function] becomes an AGGREGATOR for fby
+/ returns the number of trades (count i), sorted by sym and its size bucket
+```
+
+
+
+### 🔵 [QSQL 7.0] fby Problem Set
+<a name="sql_7"></a>
+[Top](#top)
+
+
+[QSQL 7.1] Calc the min temp by city (fby on 2 lists)
 
 ```q
 city:`NY`NY`LA`SF`LA`SF`NY
@@ -6908,7 +7160,7 @@ temp:32 31 75 69 70 68 12
 / calculates the min temp for every city (12 for NYC)
 ```
 
-[QSQL 4.2a] find the max price per symbol
+[QSQL 7.2a] find the max price per symbol
 
 ```q
 \l trades.q
@@ -6928,7 +7180,7 @@ B   | 109.99
 BAC | 109.99
 ```
 
-[QSQL 4.2b] find the max price per symbol (use fby)
+[QSQL 7.2b] find the max price per symbol (use fby)
 
 ```q
 select from trade where price=(max;price) fby sym
@@ -6940,7 +7192,7 @@ time       |sym  |src| price | size
 2019-03-11 |MSFT | N | 35.5  | 7810
 ```
 
-[QSQL 4.2c] find the max price and latest time per symbol (use fby)
+[QSQL 7.2c] find the max price and latest time per symbol (use fby)
 
 ```q
 / assume there are 2 syms with same max price 
@@ -6956,7 +7208,7 @@ time      |sym  |src| price | size
 / in this case, you filtered max price by sym, and max time by sym
 ```
 
-[QSQL 4.3] find the max price on today's date
+[QSQL 7.3] find the max price on today's date
 
 ```q
 select from trade where date=2021.10.31, price=max price
@@ -6968,7 +7220,7 @@ date       | time         | sym | price | size | cond
 / filter by date, then the max price from this date
 ```
 
-[QSQL 4.4] find max price by sym, today's date (use fby)
+[QSQL 7.4] find max price by sym, today's date (use fby)
 
 ```q
 select from trade where date=.z.d, price=(max;price) fby sym
@@ -6996,7 +7248,7 @@ AAPL | 339.1
 / this will ONLY return the max price column
 ```
 
-[QSQL 4.5] find max price using an [fby] for both [sym and cond] for today
+[QSQL 7.5] find max price using an [fby] for both [sym and cond] for today
 
 ```q
 select from trade where date=.z.d, price=(max;price) fby ([] sym; cond)
@@ -7012,169 +7264,14 @@ date       | time         |sym | price | size  | cond
 / filter by date, then max price by sym and cond
 ```
 
-### 🔵 [QSQL 5.0] Problem Set 3 - TS
-<a name="sql_5"></a>
-[Top](#top)
 
-```q
-\l trades.q
-```
 
-[QSQL 5.1] Extract trades for MS greater than 1,000 in size
-
-```q
-select from trade where sym=`MS, size >1000
-
-dt         |sym |price|size
-----------------------------
-2021.01.01 | MS | 225 | 200
-2021.01.01 | MS | 234 | 400
-```
-
-[QSQL 5.2] Find the total size of all trades and the average price paid per sym
-
-```q
-select totalsize:sum size, avgprice:avg price by sym from trade
-
-sym | totalsize   | avgprice
------------------------------
-A   | -1796963996 | 79.96
-AA  | -1792025796 | 80.02
-AAPL|  1789783596 | 79.98
-B   | -1802424996 | 79.84
-BAC | -1790778496 | 79.78
-```
-
-[QSQL 5.3] Find the trade that was largest size for each sym (use fby)
-
-```q
-select from trade where size=(max;size) fby sym
-
-date       | time         | sym  | price | size  | cond
---------------------------------------------------------
-2021-11-27 | 09:30:21.256 | B	 | 100.0 | 99900 |	 
-2021-11-27 | 09:31:20.975 | AA	 | 67.3  | 99900 | C
-2021-11-27 | 09:43:47.816 | GOOG | 72.4  | 99900 | A
-2021-11-27 | 09:46:44.690 | F    | 73.2  | 99900 | B
-
-/ alternatively, if you did this:
-
-select max size by sym from trade
-
-sym | size
--------------
-A   | 99900
-AA  | 99900
-AAPL| 99900
-B   | 99900
-```
-
-[QSQL 5.4a] Select the latest trade for each sym, and include all details (non-fby)
-
-```q
-select last date, last price, last time by sym from trade
-
-sym | date       | price | time
-----------------------------------------
-A   | 2021-12-01 | 87.5  | 17:29:57.306
-AA  | 2021-12-01 | 68.0	 | 17:29:58.789
-AAPL| 2021-12-01 | 76.1	 | 17:29:58.262
-B   | 2021-12-01 | 95.5	 | 17:29:56.912
-```
-
-[QSQL 5.4b] Select the latest trade for each sym, and include all details (fby)
-
-```q
-select from trade where time=(max;time) fby sym
-
-date       | time         | sym  | price | size  | cond
--------------------------------------------------------
-2022-04-01 | 17:29:58.861 |   AA |  60.0 | 20900 |  C
-2022-04-01 | 17:29:58.878 | MSFT |  83.5 |  7700 |  B
-2022-04-01 | 17:29:58.907 | AAPL |  68.0 | 58000 |  B
-2022-04-01 | 17:29:58.968 |    D |  82.9 | 76800 |  A
-```
-
-[QSQL 5.5] Find all trades that have sym GOOG
-
-```q
-select from trade where sym=`GOOG
-
-date       | time         | sym  | price | size  | cond
---------------------------------------------------------
-2021-11-27 | 09:30:17.541 | GOOG | 86.1  | 83500 | C
-2021-11-27 | 09:30:17.895 | GOOG | 80.5  | 91700 | B
-2021-11-27 | 09:30:18.011 | GOOG | 81.0  | 49300 | B
-```
-
-[QSQL 5.6] Find all trades that have sym GOOG or RBS or A
-
-```q
-select from trade where sym in `GOOG`RBS`A
-
-date       | time         | sym  | price | size  | cond
--------------------------------------------------------
-2021-11-27 | 09:30:17.541 | GOOG | 86.1  | 83500 | C
-2021-11-27 | 09:30:17.895 |  RBS | 80.5  | 91700 | B
-2021-11-27 | 09:30:18.011 |    A | 81.0  | 49300 | B
-```
-
-[QSQL 5.7] Find all trades for google that had a price between 70 and 80
-
-```q
-select from trade where sym=`GOOG, price within 70 80
-
-date       | time         | sym  | price | size  | cond
--------------------------------------------------------
-2021-11-27 | 09:30:17.541 | GOOG | 73.1  | 83500 | C
-2021-11-27 | 09:30:17.895 | GOOG | 75.5  | 91700 | B
-2021-11-27 | 09:30:18.011 | GOOG | 77.0  | 49300 | B
-```
-
-[QSQL 5.8] Count the number of trades and total size of trades per hour for sym RBS
-
-```q
-select numtrades:count i, totalsize: sum size by time.hh from trade where sym=`RBS
-
-hh | numtrades | totalsize
---------------------------
-9  |	3186   | 159063500
-10 |	6544   | 321195100
-11 |	6280   | 315284200
-12 |	6141   | 306898200
-13 |	6086   | 305154900
-```
-
-[QSQL 5.9] Select the number of trades and total size of trades every 30 mins for sym RBS
-
-```q
-select numbertrades: count i, totalsize: sum size by 30 xbar time.minute from trade where sym=`RBS
-
-minute|numbertrades|totalsize
--------------------------------
-09:30 |    3186    | 159063500
-10:00 |	   3271    |  62197000
-10:30 |	   3273    | 158998100
-```
-
-[QSQL 5.10] Find all trades for A where the price was cheaper than the average for that day
-
-```q
-select from trade where sym=`A, price < avg price
-
-date       | time         | sym | price | size  | cond
--------------------------------------------------------
-2021-11-27 | 09:30:17.997 |  A	|  57.8 | 65600 | C
-2021-11-27 | 09:30:23.144 |  A	|  54.5 | 31200	|
-2021-11-27 | 09:30:23.570 |  A  |  60.8 | 8200	|
-```
-
-### 🔵 [QSQL 6.0] Table Query Problem Set 1
-<a name="sql_6"></a>
+### 🔵 [QSQL 8.0] Table Query Problem Set 1
+<a name="sql_8"></a>
 [Top](#top)
 
 
-[QSQL 6.1] retrieve values from t1 given date filter + column from t1 matches t2 
+[QSQL 8.1] retrieve values from t1 given date filter + column from t1 matches t2 
 
 ```q
 / date filter = 2021.10.21
@@ -7209,12 +7306,12 @@ date       | sym  | exch
 / this where filter will first filter by date in t1, then by the sym, exch found in t2
 ```
 
-### 🔵 [QSQL 7.0] Table Query Problem Set 2
-<a name="sql_7"></a>
+### 🔵 [QSQL 9.0] Table Query Problem Set 2
+<a name="sql_9"></a>
 [Top](#top)
 
 
-[QSQL 7.1] Retrieve IBM from cond A, CSCO from cond A or B, and MSFT from cond C with date = today
+[QSQL 9.1] Retrieve IBM from cond A, CSCO from cond A or B, and MSFT from cond C with date = today
 
 ```q
 \l trades.q
@@ -7250,8 +7347,8 @@ date       sym  price size cond
 / and your outcome table
 ```
 
-### 🔵 [QSQL 8.0] Table Query Problem Set 3
-<a name="sql_8"></a>
+### 🔵 [QSQL 10.0] Table Query Problem Set 3
+<a name="sql_10"></a>
 [Top](#top)
 
 ```q
@@ -7321,90 +7418,8 @@ Rachel|   F  |	B
 Jane  |   F  |	A
 ```
 
-### 🔵 [QSQL 9.0] BIN Problem Set
-<a name="sql_9"></a>
-[Top](#top)
-
-```q
-\l trades.q
-```
-
-[QSQL 9.1] For list of sizes, group into buckets of 0, 1000 or 9000
-
-```q
-sizes: 2000 100 6000 11000
-
-0 1000 9000 bin sizes
-1 0 1 2
-
-/ bin takes its LEFT hand buckets, and sorts index position of RIGHT argument
-/ so sizes = 4 elements, will return index position of bin
-/ 2000 = index position 1 bin
-/ 100 = index position 0 bin
-/ 6000 = index position 1 bin
-/ 11000 = index position 2 bin
-```
-
-[QSQL 9.2] rename buckets as small, med, or large
-
-```q
-/ 2. name the buckets as small, med, or big
-/ based on the buckets of 0, 1000, and 9000
-
-`small`med`big 0 1000 9000 bin sizes
-`med`small`med`big
-
-/ syntax: 
-/ `name1`name2`name3 size1 size2 size 3 bin LIST
-/ still returns the index position based on the sizes
-/ but now has a "name" associated to it (small, med, big)
-```
-
-[QSQL 9.3] Create function called tradesize
-
-```q
-/ 3. create function called tradesize
-/ that accepts a list of trade sizes as argument x
-/ and bucket those sizes into bins of small, med, big
-
-tradesize:{`small`med`big 0 1000 9000 bin x}
-
-/ test out the function with sizes (from above)
-
-sizes: sizes: 2000 100 6000 11000
-
-tradesize sizes
-`med`small`med`big
-
-/ it works!
-```
-
-[QSQL 9.4] use tradesize function to retrieve total num of trades grouped by size bucket
-
-```q
-/ 4. use this tradesize function to retrieve total number of trades grouped by size bucket
-
-select num:count i by sym, sizebucket:(tradesize;size) fby sym from trade
-
-sym | sizebucket | num
--------------------------
-A   | large      | 45645
-A   | med        | 4009
-A   | small      | 480
-AA  | large      | 45425
-
-/ NOTE! since you are creating a NEW COLUMN called [sizebucket]
-/ you have to [select] the new column you are fby with
-/ [from trade] goes all the way at the END
-
-/ [sizebucket column] -> insert [tradesize function] you created
-/ [size column] from [trade table] becomes argument x for [tradesize function]
-/ [tradesize function] becomes an AGGREGATOR for fby
-/ returns the number of trades (count i), sorted by sym and its size bucket
-```
-
-### 🔵 [QSQL 10.0] Signum Deltas Problem Set
-<a name="sql_10"></a>
+### 🔵 [QSQL 11.0] Signum Deltas Problem Set
+<a name="sql_11"></a>
 [Top](#top)
 
 
@@ -7421,7 +7436,7 @@ signum deltas prices
 1 -1 0 -1 1
 ```
 
-[QSQL 10.1] add in new col called direction which calcs the signum deltas of price
+[QSQL 11.1] add in new col called direction which calcs the signum deltas of price
 
 ```q
 select from trade
@@ -7446,7 +7461,7 @@ A   |  63   | 73000 | B    |-1
 / tells you if its positive, negative or unch
 ```
 
-[QSQL 10.2] create a function for signum deltas
+[QSQL 11.2] create a function for signum deltas
 
 ```q
 tickdir:{signum deltas [first x;x] }
@@ -7466,7 +7481,7 @@ A   |  63   | 73000 | B    |-1
 / tickdir takes price as its argument for x
 ```
 
-[QSQL 10.3] Group this data by sym, and calc total size traded by direction (uptick, downtick, etc)
+[QSQL 11.3] Group this data by sym, and calc total size traded by direction (uptick, downtick, etc)
 
 ```q
 select sum size by sym, dir from update dir:tickdir price by sym from trade
@@ -7507,11 +7522,11 @@ sym|dir|size
 / the fby aggregates the tickdir from price column by sym
 ```
 
-### 🔵 [QSQL 11.0] Select vs Exec Example
-<a name="sql_11"></a>
+### 🔵 [QSQL 12.0] Select vs Exec Example
+<a name="sql_12"></a>
 [Top](#top)
 
-[QSQL 11.1] Retrieve the distinct cities and countries from the table
+[QSQL 12.1] Retrieve the distinct cities and countries from the table
 
 ```q
 cnc: ([] city:`toronto`london`ny`vancouver; country:`canada`england`usa`canada)
@@ -7539,11 +7554,11 @@ select city, distinct country from cnc
 / error because select expects the columns to have the same length
 ```
 
-### 🔵 [QSQL 12.0] Deltas/Differ Problem Set
-<a name="sql_12"></a>
+### 🔵 [QSQL 13.0] Deltas/Differ Problem Set
+<a name="sql_13"></a>
 [Top](#top)
 
-[QSQL 12.1] Return all trades where the trade price has changed
+[QSQL 13.1] Return all trades where the trade price has changed
 
 ```q
 select from trade where differ price
@@ -7557,7 +7572,7 @@ date       time         sym  price    size  cond
 / so differ will return all prices that are DIFFERENT then last
 ```
 
-[QSQL 12.2] Add new column called change that calculates price changes between trades
+[QSQL 13.2] Add new column called change that calculates price changes between trades
 
 ```q
 update change:deltas price from trade
@@ -7571,7 +7586,7 @@ date       time         sym  price    size  cond change
 / so change = deltas from previous price
 ```
 
-[QSQL 12.3] Select trades where trade prices have increased
+[QSQL 13.3] Select trades where trade prices have increased
 
 ```q
 select from trade where (deltas price)> 0
@@ -7583,8 +7598,8 @@ date       time         sym    price    size  cond
 2021-10-19 09:30:02.758	A      100.3    50300  B
 ```
 
-### 🔵 [QSQL 13.0] Problem Set 1 - AQ
-<a name="sql_13"></a>
+### 🔵 [QSQL 14.0] Problem Set 1 - AQ
+<a name="sql_14"></a>
 [Top](#top)
 
 
@@ -7654,8 +7669,8 @@ Paul   pencil	105
 
 ```
 
-### 🔵 [QSQL 14.0] Problem Set 2 - AQ
-<a name="sql_14"></a>
+### 🔵 [QSQL 15.0] Problem Set 2 - AQ
+<a name="sql_15"></a>
 [Top](#top)
 
 
@@ -7709,8 +7724,8 @@ update mark:5+mark from `marks where class="A",subject=`french
 update average:avg mark by class, subject from marks 
 ```
 
-### 🔵 [QSQL 15.0] Retrieving values from Nested Table Problem Set
-<a name="sql_15"></a>
+### 🔵 [QSQL 16.0] Retrieving values from Nested Table Problem Set
+<a name="sql_16"></a>
 [Top](#top)
 
 
