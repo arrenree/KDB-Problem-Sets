@@ -4581,6 +4581,8 @@ square 1 2 3
 ```
 
 ```q
+/ solution
+
 d: 100?100
 i: 0
 r1: 0
@@ -4605,15 +4607,19 @@ while [i < count d; if [d[i]>50; r1+:d[i] ]; i+:1] r1
 / IF STATEMENT = tests IF condition true, add to list
 ```
 
-### [func 4.1] Vector Operation Solution
+[func 4.1] Re-write the above function as a Vector Solution (NO LOOPS)
 
 ```
-HOWEVER, much faster using vector operations:
+d: 100?100
 
-r2: sum d where d > 50
+sum d where d > 50
 
+/ look at how easy that is!
 / so use vector operations whenever possible
-/ also a lot more flexible:
+```
+
+```q
+/ vector operations also a lot more flexible:
 
 max sum d where d>50
 min sum d where d>50
@@ -4624,10 +4630,86 @@ avg sum d where d>50
 <a name="func_prime"></a>
 [Top](#top)
 
+[func 5.1] create func that checks if argument x is prime or not
 
 ```q
-/ create function that finds primes up to argument x
-/ since you are returning list of numbers
+/ call this func: [isPrime]
+/ accepts 1 argument input
+/ and checks whether argument is Prime (True) or not (False)
+
+/ prime = any num can only % by itself and 1
+/ prime numbers begin on 2
+/ will need 3 components:
+/ 1. number < 2 (not prime)
+/ 2. number = 2 (prime)
+/ 3. number > 2 (could be prime)
+
+/ the outcomes for component 1 and 2 are quite binary. 
+/ component 3 -> requires you to check if [arg x] has any factors
+/ which means dividing by every number up to [arg x]
+
+/ general reminder:
+/ IF brackets [contain condition + statement to execute if true]
+/ WHILE brackets [contain condition + statement to execute if true]
+```
+
+```q
+/ solution:
+
+/ x = arg input number
+/ a = iterator (check every number up to x number)
+
+isprime:{if[x<2; :0b]; a:2; while[a<x; if[(x mod a)=0; :0b]; a+:1]; 1b}
+
+Component 1 (number < 2)
+/ if argument less than 2, return FALSE 0b (not prime)
+/ since primes cannot be less than 2
+/ if[x<2; :0b]
+/ single colon : means return. nothing after gets executed
+/ if x = 1
+/ x(1) < (2) (TRUE) so returns 0b (not prime)
+/ if FALSE, then moves onto NEXT statement
+
+Component 2 (number = 2)
+/ Create variable a, which begins on 2
+/ a is your iterator (will check every number up to x number)
+/ if while condition [a < x] is FALSE
+/ skip ENTIRE while loop
+/ and go straight to the end, return TRUE 1B (prime)
+/ if x = 2
+/ x(2) < a(2) = FALSE. Skip entire while loop
+/ goes to end, returns 1b (True)
+
+Component 3 (number > 3)
+/ if while condition [a < x] is TRUE (iterator < x number)
+/ check if [a] is a [factor] of x number
+/ this check is done by x mod a = 0
+/ if TRUE, return false :0b (since even number/factor exists = NOT PRIME)
+/ otherwise, iterate through until WHILE condition (a<i) until no longer true
+
+/ if x = 5
+/ a(2) < x(5) = TRUE
+/ x(5) mod a(2) = 0 = FALSE = skips :0b
+/ a:a+1 so 2 + 1 = 3
+
+/ a(3) < x(5) = TRUE
+/ x(5) mod a(3) = 0 = FALSE = skips :0b
+/ a:a+1 so 3+1 = 4
+
+/ a(4) < x(5) = TRUE
+/ x(5) mod a(4) = 0 = FALSE = skips :0b
+/ a:a+1 so 4+1 = 5
+
+/ a(5) < x(5) = FALSE, SKIPS entire while loop
+/ goes to end, returns 1b (True) 
+```
+
+[func 5.2] Using your [isprime] func, create another func that returns every prime number up to argument x 
+
+```q
+/ call this func [findprime]
+
+/ since you are returning a [LIST] of numbers
 / will require an 1) empty list
 / and 2) an iterator to check every number up to x
 
@@ -4636,26 +4718,30 @@ avg sum d where d>50
 / then go onto next number
 / keep checking until WHILE condition is no longer true (a<n)
 / then return list r
+```
+
+```q
+/ solution
+
+/ n = input arg number
+/ r() = empty list thats gonna contain our result
+/ a = iterator that checks every num up to arg n
 
 findprime: {[n] r:(); a:1; while [a<n; if[isprime[a];r,:a]; a:a+1];r}
 findprime 10 
 2 3 5 7
 
-/ n = single argument
-/ r() = empty list thats gonna contain our result
 / a starts from 1 (iterator)
-/ while a(1) < n = TRUE
-/ if a = prime number,
-/ append a to list r (r,:a = append a to list r)
-/ go through every value of a (a+:1)
-/ finally, return our list r
+/ while your iterator (a) is less than input number (n),
+/ feed iterator (a) into func [isprime]
+/ and if (a) is prime, append to list r (r,:a = append a to list r)
+/ then move onto next iterative cout (a+:1)
+/ keep going until you check every number 
+/ then return list r
+```
 
-/ in other words..
-/ starting from 1, look up to our argument
-/ checking if each number is a prime number
-/ and if it is, append it to our list (r)
-/ finally, return the list of primes
-/ still need to write the isPrime function
+```q
+/ detailed logic for input
 
 / a:1, n:5
 / while a(1) < n(5) = TRUE
@@ -4683,132 +4769,81 @@ findprime 10
 / returns r (2, 3)
 ```
 
+[func 5.3] re-write [isprime] function using vector based solution (no loops!)
+
 ```q
-/ isPrime function
-
-/ create function with 1 argument input
-/ and checks whether argument is Prime (True) or not (False)
-
-/ prime = any num can only % by itself and 1
-/ prime numbers begin on 2
-/ will need 3 components:
-/ 1. number < 2 (not prime)
-/ 2. number = 2 (prime)
-/ 3. number > 2 (could be prime)
-
-/ the outcomes for component 1 and 2 are quite binary. 
-/ component 3 -> requires you to check if number has any factors
-/ which means dividing by every number up to x number
-
-/ general reminder:
-/ IF brackets [contain condition + statement to execute if true]
-/ WHILE brackets [contain condition + statement to execute if true]
+/ original [isprime] function
+/ func check is arg x is prime or not
+/ simply outputs true or false
 
 isprime:{if[x<2; :0b]; a:2; while[a<x; if[(x mod a)=0; :0b]; a+:1]; 1b}
-
-Component 1 (number < 2)
-/ if argument less than 2, return FALSE 0b (not prime)
-/ since primes cannot be less than 2
-/ if[x<2; :0b]
-/ single colon : means return. nothing after gets executed
-/ if x = 1
-/ x(1) < (2) (TRUE) so returns 0b (not prime)
-/ if FALSE, then moves onto NEXT statement
-
-Component 2 (number = 2)
-/ Create variable a, which begins on 2
-/ a is your iterator (will check every number up to x number)
-/ while[a<x; if_false_skip_this_entire_while_loop]; 1b
-/ while condition a < x is FALSE
-/ skip ENTIRE while loop
-/ and go straight to the end, return TRUE 1B (prime)
-/ if x = 2
-/ x(2) < a(2) = FALSE. Skip while loop
-/ goes to end, returns 1b (True)
-
-Component 3 (number > 3)
-/ while condition a < x is TRUE (iterator < x number)
-/ check if a is a factor of x number
-/ this check is done by x mod a = 0 (even number/factor exists = NOT PRIME)
-/ if TRUE, return false :0b
-/ otherwise, iterate through until WHILE condition (a<i) is no longer true
-
-/ if x = 5
-/ a(2) < x(5) = TRUE
-/ x(5) mod a(2) = 0 = FALSE = skips :0b
-/ a:a+1 so 2 + 1 = 3
-/ a(3) < x(5) = TRUE
-/ x(5) mod a(3) = 0 = FALSE = skips :0b
-/ a:a+1 so 3+1 = 4
-/ a(4) < x(5) = TRUE
-/ x(5) mod a(4) = 0 = FALSE = skips :0b
-/ a(5) < x(5) = FALSE, SKIPS entire while loop
-/ goes to end, returns 1b (True) 
 ```
 
-[func 5.1] Vector Based Solution
-
 ```q
-/ the above function uses control statements and loops
-/ but this is very slow
-/ instead, can re-write without do or while loops 
-/ using a vector based solution
-```
-
-[func 5.2] isprime Vector Solution
-
-```q
-/ re-write isprime function using vector based solution
-
-/ original function
-
-isprime:{if[x<2; :0b]; a:2; while[a<x; if[(x mod a)=0; :0b]; a+:1]; 1b}
-
-/ we can rewrite the while loop portion
-
+/ we can rewrite the [while loop] portion
 / instead of looping through every iteration of argument x 
-/ we can simply use til to generate a list
+```
+
+```q
+/ 1. start by using til to generate a list
 
 {til x} 10
 0 1 2 3 4 5 6 7 8 9
+```
 
-/ removes first 2 elements (since not prime)
+```q
+/ 2. remove first 2 elements (since not prime)
 
-{2_til x} 10
+{2_ til x} 10
 2 3 4 5 6 7 8 9
+
 / drops 0, 1 since not prime
+```
 
-/ check each number if it is a factor of argument x(10)
+```q
+/ 3. check each number if it is a factor of argument x (10)
 
-{x mod 2_til x} 10
-0 1 2 0 4 3 2 1
+{x mod 2_ til x} 10
+0 1 2 0 4 3 2 1 0
 
 / 10 mod 2 = 0
 / 10 mod 3 = 1
 / 10 mod 4 = 2
 / 0 means no remainder = factor of x = NOT PRIME
+```
 
-/ show us factors of argument x
+```q
+/ 4. show us factors of argument x
 
-{0=x mod 2_til x} 10
-10010000b
+{0 = x mod 2_ til x} 10
+100100001b
+
 / shows us factors of argument 10
 / 1 = true
 / 0 = false
+```
 
-/ are there ANY factors of 10? (mod = 0)
+```q
+/ 5. check if there are ANY factors of 10? (mod = 0)
 
-{any 0=x mod 2_til x} 10
+{any 0 = x mod 2_ til x} 10
 1b
+
 / TRUE, because list contains SOME factors of 10
+```
 
-/ does the list NOT contain any factors of 10?
+```q
+/ 6. does the list NOT contain any factors of 10?
 
-{not any 0=x mod 2_til x} 10
+{not any 0 = x mod 2_ til x} 10
 0b
+
 / FALSE, because list DOES contain factors of 10
 / hence, NOT prime
+```
 
+```q
+/ 7. plug this back into your original function 
 / still need component for numbers less than 2
 / so re-use the x<2 IF/Else clause
 
@@ -4821,11 +4856,9 @@ isprimeB 10
 / FALSE, 10 is NOT prime
 ```
 
-[func 5.3] findprimes Vector Solution
+[func 5.4] re-write [findprimes] function using vector based solution
 
 ```q
-/ re-write findprimes function using vector based solution
-
 / original findprime function:
 
 findprime: {[n] r:(); a:1; while [a<n; if[isprime[a];r,:a]; a:a+1];r}
