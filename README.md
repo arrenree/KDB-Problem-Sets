@@ -4390,9 +4390,10 @@ date      |  time | sym |price| size|cond|bookId | owner | name
 <a name="func_strings"></a>
 [Top](#top)
 
+[func 2.0] convert string [welcome] to [welcoME]
+
 ```q
 / create a function that uses SSR (string search replace)
-/ to convert sym `welcome to string "welcoME"
 
 / quick reminder on SSR
 
@@ -4400,22 +4401,50 @@ ssr["hello ryan where is ryan";"ryan";"john"]
 hello johhn where is john
 ```
 
-[func 2.1] Pass single sym through function
+```q
+ssr["welcome";"me";"ME"]
+"welcoME"
+```
+
+[func 2.1] Create a function to perform SSR on the above
 
 ```q
+/ func accepts strings "welcome"
+/ and outputs "welcoME"
+
+f:{ssr[x;y;z]}
+f["welcome";"me";"ME"]
+"welcoME"
+
+/ just wrap SSR into a function
+/ x = original string
+/ y = target
+/ z = replacement 
+
+/ note - inputs have to be strings!
+```
+
+[func 2.2] Create an SSR function that accepts syms and outputs strings 
+
+```q
+/ func accepts syms
+/ and outputs strings
+/ using same example above
+
 f: {ssr[(string x);y;z] }
 f[`welcome;"me";"ME"]
 "welcoME"
 
-/ so x gets converted from `sym to string
+/ x = input is a sym 
+/ first x gets cast from `sym to string
 / then SSR is run on string "welcome"
 / and replaces "me" with "ME"
 ```
 
-[func 2.2] re-written as lambda function
+[func 2.3] re-write above function as lambda function
 
 ```q
-/ alternative syntax (lambda function)
+/ and call the func on the same line
 
 {ssr[string x;y;z]} [`welcome; "me";"ME"]
 "welcoME"
@@ -4426,7 +4455,7 @@ f[`welcome;"me";"ME"]
 / string x = ONLY applies to argument x
 ```
 
-[func 2.3] Alternative method to call arguments 
+[func 2.4] Alternative method to call arguments on lambda function
 
 ```q
 / alternative syntax (lambda + alt method to call argument)
@@ -4439,11 +4468,12 @@ f[`welcome;"me";"ME"]
 / this is useful when iterating through a LIST of syms
 ```
 
-[func 2.4] re-write function to pass a LIST of syms
+[func 2.5] re-write function to pass a LIST of syms as its arg
 
 ```q
 / instead of converting one sym
-/ need to iterate function through list of syms
+/ need to iterate function through LIST of syms
+/ `welcome`home`mermaid
 
 f:{ssr [string x;y;z]} 
 f[ ;"me";"ME"] each `welcome`home`mermaid
@@ -4452,14 +4482,13 @@ f[ ;"me";"ME"] each `welcome`home`mermaid
 "MErmaid"
 
 / function remains the same
-/ but when you CALL the function, need adverb EACH
-/ this iterates through each sym
-/ the list of syms `welcome`home`mermaid gets passed through x
-/ REQUIRES x to be left blank inside [ ] 
+/ but to iterate through a LIST, need adverb [EACH]
+/ the LIST of syms [`welcome`home`mermaid] gets passed through x
+/ this REQUIRES x to be left blank inside [ ] 
 / while locking in arguments y and z as constants
 ```
 
-[func 2.5] re-written as lambda function
+[func 2.6] re-write above as lambda function + call list of syms
 
 ```q
 / lambda notation
@@ -7137,8 +7166,11 @@ minute| avgmid
 / load trades.q script
 ```
 
+[QSQL 5.1] retrieve the number of [small] trades for each sym
+
 ```q
-/ 1. retrieve the number of small trades for each sym
+\l trades.q
+
 / small trades = size less than 999
 / add column called tradesize = small for each sym
 
@@ -7157,8 +7189,10 @@ select num:count i by sym, sizegroup:`small from trade where size within 0 999
 / use WHERE within x y = range of values to be selected
 ```
 
+[QSQL 5.2] retrieve the number of [small], [med] and [large] trades for each sym
+
 ```q
-/2. now retrieve the number of med and large trades for each sym
+/ small = 0 to 999
 / med = 1000 to 8999
 / large = greater than 8999
 
@@ -7204,7 +7238,7 @@ sizes: 2000 100 6000 11000
 / 11000 = index position 2 bin
 ```
 
-[QSQL 6.2] rename buckets as small, med, or large
+[QSQL 6.2] rename BIN buckets as small, med, or large
 
 ```q
 / 2. name the buckets as small, med, or big
@@ -7219,11 +7253,10 @@ sizes: 2000 100 6000 11000
 / but now has a "name" associated to it (small, med, big)
 ```
 
-[QSQL 6.3] Create function called tradesize
+[QSQL 6.3] Create function called tradesize that accepts x and outputs into BIN buckets
 
 ```q
-/ 3. create function called tradesize
-/ that accepts a list of trade sizes as argument x
+/ func accepts a list of trade sizes as argument x
 / and bucket those sizes into bins of small, med, big
 
 tradesize:{`small`med`big 0 1000 9000 bin x}
@@ -7238,10 +7271,14 @@ tradesize sizes
 / it works!
 ```
 
-[QSQL 6.4] use tradesize function to retrieve total num of trades grouped by size bucket
+[QSQL 6.4] use tradesize func to retrieve total num of trades grouped by size bucket
 
 ```q
-/ 4. use this tradesize function to retrieve total number of trades grouped by size bucket
+/ from trade, group trade size by sym into bins using your tradesize function
+/ so there should be a column called sizebucket with either small, med, or large
+/ and the number of trades per bucket
+
+\l trades.q
 
 select num:count i by sym, sizebucket:(tradesize;size) fby sym from trade
 
@@ -7261,8 +7298,6 @@ AA  | large      | 45425
 / [tradesize function] becomes an AGGREGATOR for fby
 / returns the number of trades (count i), sorted by sym and its size bucket
 ```
-
-
 
 ### 🔵 [QSQL 7.0] fby Problem Set
 <a name="sql_7"></a>
@@ -7385,8 +7420,6 @@ date       | time         |sym | price | size  | cond
 / aggregate by more than one field using a table
 / filter by date, then max price by sym and cond
 ```
-
-
 
 ### 🔵 [QSQL 8.0] Table Query Problem Set 1
 <a name="sql_8"></a>
