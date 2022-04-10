@@ -4510,64 +4510,95 @@ f[ ;"me";"ME"] each `welcome`home`mermaid
 <a name="func_proj"></a>
 [Top](#top)
 
+[func 3.1] Create function [raise], that takes x to the y
+
 ```q
-/1. create first function called raise
+/ and raise 10 to the 2, 3 and 4
 
 raise: {x xexp y}
 raise [10; 2 3 4]
 100 1000 1000f
  
-/ calls x = 10 and y = 2 3 4
+/ x = 10 
+/ y = 2 3 4
 ```
 
+[func 3.2] Create func called [g], which projects func [raise]
+
 ```q
-/2. create second function called g, which projects function raise
-/ keeps x constant @ 10
+/ func g keeps x constant @ 10
+/ but accepts args to raise power to 1 2 3
+
+/ from earlier:
+raise:{x xexp y}
 
 g: raise [10; ]
 g 1 2 3
 10 100 1000
 
-/ you've already created function raise previously
+/ you've already created function [raise] previously
 / so g is a PROJECTION of the original function RAISE
-/ so x = constant 10
+/ g calls function raise, but keeps x constant @ 10
 / y becomes arguments you call in (1 2 3)
+/ notice g is simply an ASSIGNMENT 
+/ not a function, so dont need { }
 ```
 
+[func 3.3] create func [square], which projects func [raise]
+
 ```q
-/3.  create another function square, which projects function raise
+/ new func will square arguments passed through x
+
+/ from earlier:
+raise:{x xexp y}
 
 square: raise[ ;2]
 square 1 2 3
 1 4 9
 
-/ in this case, leaves first argument blank (x)
-/ and keeps second argument constant at 2
-/ calls in 1 2 3 for x xexp 2
+/ func [square] leaves first argument blank (x)
+/ and keeps second argument constant @ 2
+/ calls in 1 2 3 as argument x
 ```
 
 ### 🔵 [func 4.0] Function Loop Problem Set - TS 
 <a name="func_loop"></a>
 [Top](#top)
 
-```q
-/ generate list of 100 random numbers from 0-99
-/ sum all values in list > 50 using while loop
 
+[func 4.1] using a LOOP, create a func that generates a list of 100 random numbers from 0-99, and sums all values from list thats greater than 50
+
+```q
+/ reminder:
+/ WHILE LOOPS -> if [first cond] is TRUE, execute all arguments that follow
+/ IF STATEMENT -> if [first cond] TRUE, execute [FIRST ARG]. Else, execute [LAST ARG].
+
+/ thought process:
+/ first, generate list of 100 random numbers
+/ then, iterate through each num, if > 50, add to placeholder list
+/ for WHILE loops, you always need some form of [ITERATIVE COUNTER]
+/ also need an empty [PLACEHOLDER LIST] for your results
+```
+
+```q
 d: 100?100
 i: 0
 r1: 0
 
-while [i < count d; if [d[i]>50; r1+:d[i] ]; i+:1]
+while [i < count d; if [d[i]>50; r1+:d[i] ]; i+:1] r1
+3356
 
 / d = list of 100 random numbers from 0-99
 / i = iterative counter (goes from 0-99). Counts through every element of list d
 / r1 = result of while loop
 
-/ while i is less than total number of items in list d (99)
-/ if value of list d at index position i is less than 50
-/ add this value to results list (r1)
+/ while i is less than total number of items in list d (100)
+/ if value of [list d] at [index position i] is greater than 50
+/ add this value, d[i], to results list [r1]
 / then go onto next iteration (i+1)
+
+/ if d[i] is NOT greater than 50, then do nothing, and move onto next iteration
+/ keep going until counter [i] goes through entire list of 100
 
 / remember, WHILE LOOPS -> if first argument is TRUE, execute all arguments that follow
 / WHILE LOOP = used as iterative counter through all elements of list d (0-99)
