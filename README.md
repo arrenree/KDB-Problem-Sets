@@ -8030,11 +8030,12 @@ t         bidPrices            bidSizes     bidIndex   bestBid  bestBidSize
 ### 🔴 10. Adverbs
 [Top](#top)
 
-### [adverb] What is an ADVERB?
+🔵 [adverb 1.0] What is an ADVERB?
 
 ```q
-An adverb modifies an existing verb or function to alter how its applied to its arguments
+An adverb modifies an existing verb or function to alter how it's applied to its arguments
 
+x'y / each
 x,'y / each both
 x,\: y / each left
 x,/: y / each right	
@@ -8042,7 +8043,87 @@ x \ y / scan
 x / y / over
 ```
 
-### [adverb] What is the difference between over and scan?
+🔵 [adverb 2.0] Each Both
+
+```q
+x,'y
+
+/ Joins corresponding elements from two vectors of the same length
+```
+
+```q
+x,'y
+
+1 2 3 ,' 10 20 30
+1 10
+2 20
+3 30
+```
+
+```q
+("car"; "far"; "mar") ,' "e"
+"care"
+"fare"
+"mare"
+```
+
+🔵 [adverb 3.0] Each Left
+
+```q
+x,\:y 
+
+The top of the \ points LEFT
+Adds EACH element of LEFT (x) to ENTIRE y 
+```
+
+```q
+1 2 3 ,\: `a`b`c
+
+1`a`b`c
+2`a`b`c
+3`a`b`c
+```
+
+🔵 [adverb 4.0] Each Right
+
+```q
+x,/:y 
+
+The top of the / points RIGHT
+Adds EACH element of y to ENTIRE x
+```
+
+```q
+1 2 3 ,/: `a`b`c
+
+1 2 3`a
+1 2 3`b
+1 2 3`c
+```
+
+🔵 [adverb 5.0] Scan
+
+```q
+1 +\ 0 1 2 3
+
+1 2 4 7
+
+/ scan is an accumulating iterator
+/ returns the result of each result
+```
+
+🔵 [adverb 6.0] Over
+
+```q
+1 +/ 0 1 2 3
+
+7
+/ over is an accumulating iterator
+/ returns the final result
+```
+
+🔵 [adverb 7.0] What is the difference between over and scan?
+
 ```q
 / [over] takes a function (like addition) and iterates through list
 / [over] is an accumulating iterator
@@ -8060,79 +8141,7 @@ x / y / over
 / scan converts a binary function to a unary uniform function (one that returns list of same length as input)
 ```
 
-### [adverb] Each Both
-
-```q
-x,'y
-Joins corresponding elements from two vectors of the same length
-```
-```q
-1 2 3 ,' 10 20 30
-1 10
-2 20
-3 30
-```
-```q
-("car"; "far"; "mar") ,' "e"
-"care"
-"fare"
-"mare"
-```
-
-### [adverb] Each Left
-```q
-x,\:y 
-
-The top of the \ points LEFT
-Adds EACH element of LEFT (x) to ENTIRE y 
-```
-
-```q
-1 2 3 ,\: `a`b`c
-
-1`a`b`c
-2`a`b`c
-3`a`b`c
-```
-
-### [adverb] Each Right
-```q
-x,/:y 
-
-The top of the / points RIGHT
-Adds each element of y to the entirety of x
-```
-
-```q
-1 2 3 ,/: `a`b`c
-
-1 2 3`a
-1 2 3`b
-1 2 3`c
-```
-
-### [adverb] Scan
-
-```q
-1 +\ 0 1 2 3
-
-1 2 4 7
-
-/ scan is an accumulating iterator.
-/ returns the result of each result
-```
-
-### [adverb] Over
-
-```q
-1 +/ 0 1 2 3
-
-7
-/ over is an accumulating iterator
-/ returns the final result
-```
-
-### [adverb] Create a function that calculates the moving sum with window size of 2
+🔵 [adverb 8.0] Create a function that calculates the moving sum with window size of 2
 
 ```q
 / each prior = perform action on each element with its prior element
@@ -8151,7 +8160,7 @@ L: 20 30 4 6 1 2
  
 ```
 
-### [adverb] Join the 2 lists together to form a nested list
+🔵 [adverb 9.0] Join the 2 lists together to form a nested list
 
 ```q
 / use each both to join 2 lists together
@@ -8163,14 +8172,14 @@ numbers, 'powers
 (5 8;7 3;9 4)
 ```
 
-### [adverb] Raise the first element of list1 to first element of list2 and so on. 
+🔵 [adverb 9.1] Raise the first element of [numbers] to first element of [powers] and so on. 
 
 ```q
 numbers xexp' powers
 390625 343 6561f
 ```
 
-### [adverb] A bank account pays 5% interest a year. Write a function that takes the current balance and returns the new balance after one year. Then use scan\ with that function to display the interest every year, up to 7 years in the future
+🔵 [adverb 10.0] A bank account pays 5% interest a year. Write a function that takes the current balance and returns the new balance after one year. Then use scan\ with that function to display the interest every year, up to 7 years in the future
 
 ```q
 / assume starting balance of 100
@@ -8191,29 +8200,38 @@ numbers xexp' powers
 / second argument = starting value for function
 ```
 
-### [adverb] Create a function, fib, that takes a fibonnaci sequence as its argument and returns the sequence complete with the next entry
+🔵 [adverb 11.0] Create a function, fib, that takes a fibonnaci sequence as its argument and returns the next entry
 
 ```q
-/ the fib seq = 1 + prior 
+/ the fib seq = sum of prior 2 numbers
 / 1 1 2 3 5 8 ...
+/ func will take a fib sequence as its arg
+/ and return the NEXT sequential value
+/ aka = sum of last 2 numbers
 
 fib: {sum -2#x}
-fib 1 1
+fib 1 1 2 3
+5
 
-1 1 2
-
-/ take last 2 elements of argument and sum it
+/ take last 2 elements of argument x (list of numbers)
+/ and sums it
 ```
 
-### [adverb] Use the over function to create a function, fibn, to generate a fib sequence n numbers long where n is the functions argument
+[adverb 11.1] Use the [over function] to create a function, fibn, to generate a fib sequence x numbers long
 
 ```q
+/ i dont get this
+
+/ using your fib function from above
+/ accepts arg as singular number
+/ and returns a sequence x numbers long
+
 fibn: {x fib/ 1 1}
 fibn 5
 1 1 2 3 5 8 13
 ```
 
-### [adverb] Use the scan to calculate the depreciation of cars 
+🔵 [adverb 13.0] Use [scan] to calculate the depreciation of cars 
 
 ```q
 / c = initial car value
@@ -8222,9 +8240,11 @@ fibn 5
 depr:{[c;r] c*1-r%100}
 depr[100;8]
 92
+```
 
-/ What is the value after 5 years?
+[adverb 13.1] What is the value after 5 years?
 
+```q
 depr[;8]\[5;100]
 100
 92
@@ -8235,7 +8255,6 @@ depr[;8]\[5;100]
 
 / use scan to iterate the function 5x
 ```
-
 
 <a name="attributes"></a>
 ### 🔴 11. Attributes
