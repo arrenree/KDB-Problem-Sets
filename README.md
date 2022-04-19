@@ -5524,32 +5524,36 @@ time
 ```q
 / this func will only extract the trades that fall within time range
 / original equation's parameters = sym, startdate, enddate
-/ hint - need to extract the time portion from timestamp e.g time.time or `time$time
+/ hint - need to extract the TIME portion from timestamp 
+/ for whatever reason, only [time.time] works
+/ if you try casting as [`time$time], it oddly doesnt work
 
-tradeticks2:{ [startdate; enddate; symbols; starttime; endtime] 
+tradeticks2:{ [symbols; startdate; enddate; starttime; endtime] 
               select from trades where 
 	      date within (startdate;enddate), 
 	      sym in symbols,
-              `time$time within (starttime;endtime) }
+              time.time within (starttime;endtime) }
 
-tradeticks2[2021.11.03;2021.11.04;`MS; 09:30:00;09:31:00]
+tradeticks2[`AAPL; 2014.04.20; 2014.04.21; 08:00:00; 08:31:00]
 
-date      sym time         size  price
---------------------------------------
-2021-11-03 MS 09:30:17.569 11400 79.89
-2021-11-03 MS 09:30:17.573 18400 96.09
-2021-11-03 MS 09:30:21.264 8500 101.73
+date	   | sym  | time
+-----------------------------------------------
+2014-04-21 | AAPL | 2014-04-21T08:00:39.491000
+2014-04-21 | AAPL | 2014-04-21T08:14:36.412000
+2014-04-21 | AAPL | 2014-04-21T08:20:09.827000
+2014-04-21 | AAPL | 2014-04-21T08:20:16.896000
+2014-04-21 | AAPL | 2014-04-21T08:20:45.539000
 
-/ [time column] from trades is in the timestamp temporal format of 2021.01.01D09:00:00
+/ [time column] from trades is in the timestamp format of 2021.01.01D09:00:00
 / need to extract only the time portion by CASTING as time
 / such that it matches your arguments for starttime and endtime
 ```
 
-[func 8.7] create function3, but uses a start timestamp and end timestamp as parameters
+[func 8.7] create tradeticks3, but uses a start timestamp and end timestamp as parameters
 
 ```q
-/ arguments = symbols, starttimestamp, endtimestamp
-/ timestamp args = TIMESTAMP format
+/ arguments = ticker, starttimestamp, endtimestamp
+/ timestamp args = TIMESTAMP format (date + time)
 
 / break up the query such that DATE and TIME
 / are extracted from the TIMESTAMP argument
@@ -5558,26 +5562,32 @@ date      sym time         size  price
 tradeticks3:{ [ticker;starttimestamp;endtimestamp]
               select from trades where
               sym in ticker,
-              `date$time within `date$(starttimestamp;endtimestamp),
-              `time$time within `time$(starttimestamp;endtimestamp) }
+              date within `date$(starttimestamp;endtimestamp),
+              time within (starttimestamp;endtimestamp) }
 
-/ arguments are TIMESTAMPS datatype = DATE + TIME
+tradeticks3[`AAPL; 2014.04.21D09:00; 2014.04.21D09:31]
 
-/ need to extract [DATE] from [timestamp value] from [time column]
-/ and query [DATE] from your [timestamp argument]
-/ cast both as `date$
+date       |	sym	| time
+----------------------------------------------------
+2014-04-21 |	AAPL	| 2014-04-21T09:05:55.985000
+2014-04-21 |	AAPL	| 2014-04-21T09:07:51.570000
+2014-04-21 |	AAPL	| 2014-04-21T09:09:23.909000
+2014-04-21 |	AAPL	| 2014-04-21T09:10:23.391000
+2014-04-21 |	AAPL	| 2014-04-21T09:21:25.636000
+2014-04-21 |	AAPL	| 2014-04-21T09:22:44.347000
+2014-04-21 |	AAPL	| 2014-04-21T09:24:52.662000
+2014-04-21 |	AAPL	| 2014-04-21T09:28:40.306000
 
-/ need to extract [TIME] from [timestamp value] from [time column]
-/ and query [TIME] from your [timestamp argument]
-/ cast both as `time$
+/ [date column] from trades table = [date format]
+/ your args [starttimestamp;endtimestamp] are in the [timestamp format]
+/ need to first convert your args from [timestamp format] to [date format]
+/ so original [date column] stays the same
+/ and you cast your args to query in the same format as [date column]
 
-tradeticks3[2021.11.07D09:00;2021.11.07D10:00;`AAPL]
+/ [time column] from trades table = [timestamp format]
+/ since your args are already in the [timestamp format]
+/ you can simply query in the same format
 
-date       sym  time         size  price
-----------------------------------------
-2021-11-07 AAPL 09:30:21.088 20600 62.30
-2021-11-07 AAPL 09:30:21.490 900   59.15
-2021-11-07 AAPL 09:30:22.052 1500  95.94
 ```
 
 ```q
