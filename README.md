@@ -8126,11 +8126,67 @@ Adds EACH element of y to ENTIRE x
 
 ```q
 1 +/ 0 1 2 3
-
 7
+
 / over is an accumulating iterator
 / returns the final result
 ```
+
+[adverb 6.1] Calculate the factorial of 6 using [over]
+
+```q
+/ 6! = 6*5*4*3*2*1
+
+(*/) 1 + til 6
+720
+
+/ need the 1 + because til 6 starts on 0
+/ need ( ) surrounding */
+```
+
+[adverb 6.2] Calculate the sum of every integer leading up to 5
+
+```q
+(+/) til 5
+10
+```
+
+[adverb 6.3] Retrieve the max value in a list from 1 to 5
+
+```q
+(|/) 1 2 3 4 5
+5
+
+/ | means find the greater of x and y
+```
+
+```q
+/alternative syntax
+
+max 1 2 3 4 5
+5
+
+/ the word "max" also works the same
+```
+
+[adverb 6.4] Retrieve the min value in a list from 1 to 5
+
+```q
+(&/) 1 2 3 4 5
+1
+
+/ & amper means the smallest value
+```
+
+```q
+min 1 2 3 4 5
+1
+
+/ keyword "min" also works the same
+```
+
+
+
 
 🔵 [adverb 7.0] What is the difference between over and scan?
 
