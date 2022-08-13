@@ -302,18 +302,58 @@ read0 `:hi.txt
 / hclose fh = closes file hand so you can no longer edit it
 ```
 
-### [system] How do you load a file with column headers?
+### [system] How do you load a csv file (headers vs no headers)?
+
+```q
+/ 1. read file first to see what datatypes are contained in file
+/ 2. extract what datatypes are in file
+/ 3. headers or no headers?
+/ 4. open the file
+```
 
 ```q
 / With Column Headers
 
-/ if a delimiter is enlisted, the first row of the csv file is read as a column header
+/ if you want to load file with column headers, you'll need a delimiter
+/ a delimiter = character (comma) that marks beg and end of a unit of data
+/ by enlisting a delimiter (comma), the first row of csv file read as a column header
 
-("SSJ"; enlist",")0: `sample.csv
+/ first, create a sample csv file called book1 and save to your directory
 
-/ 0: function prepares, saves, and loads text files
-/ "SSJ" = sym, sym, long
-/ enlist "," = delimiter = what separates each column
+book1
+city population temp
+---------------------
+LA      100     10
+NY      200     20
+SEA     300     30
+
+/ step 1: read the csv file using read0
+
+read0 `:book1.csv
+("city,population,temp";"LA,100,10";"NY,200,20";"SEA,300,30")
+
+/ read0 function will returns the contents of a text file as a list of strings
+/ this gives you an idea of what datatypes are contained in the file
+/ in this case, sym, int int
+
+/ step 2: load the file enlisting a comma as a delimiter using 0:
+
+t2:("SII";enlist",") 0: `:book1.csv
+t2
+
+city	population  temp
+-------------------------
+LA	100	    10
+NY	200    	    20
+SEA	300	    30
+
+/ the 0: function helps you load files
+/ t2 names your table
+/ "SII" = sym, int, int for datatypes
+/ since the csv file has headers, you'll need to enlist a comma
+/ this is known as a delimiter
+/ delimiter = is a character (comma) that marks the beginning or end of a unit of data
+/ what separates each column
 ```
 
 ```q
@@ -321,7 +361,12 @@ read0 `:hi.txt
 
 / if the CSV file contains data but no column names, dont need to enlist a delimiter
 
-("SSJ";",") 0: `:sample.csv
+t3:("SSJ";",") 0: `:book1.csv
+
+t3
+LA	100	    10
+NY	200    	    20
+SEA	300	    30
 ```
 
 ### [system] How would you comparing current orders against potential crosses
