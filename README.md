@@ -205,6 +205,7 @@ Tables
 ```q
 -1 0 1 1
 
+/ signum will tell you if something is positive, 0, or negative
 / neg, 0, pos pos
 ```
 ### [gen] What is 1 cross 3 4?
@@ -226,14 +227,15 @@ v: 1 2
 s cross v
 ((`ibm;1);(`ibm;2);(`apple;1);(`apple;2))
 
-/ returns a list of tuples
+/ you are crossing 2 lists
+/ returns a list of tuples of every possible combo
 ```
 
 ```q
 s:`IBM`MSFT
 v: 1 2
 
-([] s) cross ([] v)
+( [] s) cross ( [] v)
 
 s     | v
 ----------
@@ -241,6 +243,11 @@ ibm   | 1
 ibm   | 2
 apple | 1
 apple | 2
+
+/ if you did s cross v, this would return a list of tuples
+/ you can "convert" list s and list v into tables
+/ by adding ( [] )
+/ therefore you are crossing 2 tables
 ```
 
 ```q
@@ -249,7 +256,7 @@ apple | 2
 time: 09:00 09:15
 sym: `GOOG`IBM
 
-([]sym) cross ([]time)
+( [] sym) cross ( [] time)
 
 sym  | time
 -----------
@@ -257,12 +264,18 @@ GOOG | 09:00
 GOOG | 09:15
  IBM | 09:00
  IBM | 09:15
+
+/ time is a list of times
+/ sym is a list of syms
+/ "convert" the 2 lists into tables
+/ and when you cross them, it returns a table
 ```
 
 ### [system] How do you read a txt file?
 
 ```q
 / assume txt file named test.txt
+/ this file needs to be in the same directory/folder where your q is
 
 hopen `:test.txt
 read0 `:test.txt
