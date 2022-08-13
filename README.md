@@ -369,77 +369,141 @@ NY	200    	    20
 SEA	300	    30
 ```
 
-### [system] How would you comparing current orders against potential crosses
+### [case study] How would you comparing current orders against potential crosses
 
 ```q
 Objectives:
-1. Pull in CSV file of current orders (trade)
-2. Pull in CSV file of proposed crosses (cross)
+1. Load CSV file of current orders (tradepad)
+2. Load CSV file of proposed crosses (cross)
 3. For each symbol, check opposing direction, and pull in quantity to cross
 4. Create new column displaying shares that can cross
 5. Retrieve columns in clean format to export back into csv
 
-/ load csv file of current orders
+/ create tradepad and cross csv files
 
-t:("SSJ";enlist",") 0: `:trade.csv
+tradepad
+ric	side	qty
+-------------------
+1810.HK	Buy	500
+0700.HK	Buy	500
+9988.HK	Buy	500
+0001.HK	Buy	500
+0016.HK	Buy	500
 
-ric    |side | qty
-------------------
-1810.HK| Buy |	500
-0700.HK| Buy |	500
-9988.HK| Buy |	500
-0001.HK| Buy |	500
-0016.HK| Buy |	500
-0151.HK| Buy |	500
-0005.HK| Buy |	500
+cross
+ric	  brokerside brokerqty
+--------------------------------
+1810.HK   Sell	     500
+0700.HK   Sell	     300
+9988.HK   Buy	     200
+0003.HK   Sell	     500
+0016.HK	  Sell	     800
+```
 
-/ load csv file of proposed crosses
+```q
+1. Pull in CSV file of current orders (tradepad)
+
+/ 1a. first read file to see what datatypes it contains
+
+read0 `:tradepad.csv
+
+("ric,side,qty";"1810.HK,Buy,500";"0700.HK,Buy,500";"9988.HK,Buy,500";"0001.HK,Buy,500";"0016.HK,Buy,500")
+
+/ file contains sym, sym, int
+
+/ 1b. load the file with headers (need delimiter)
+
+t:("SSI";enlist",") 0: `:tradepad.csv
+
+ric	side	qty
+-------------------
+1810.HK	Buy	500
+0700.HK	Buy	500
+9988.HK	Buy	500
+0001.HK	Buy	500
+0016.HK	Buy	500
+```
+
+```q
+/ 2. Load csv file of proposed crosses (cross)
+
+/ 2a. first read file to see what datatypes it contains
+
+read0 `:cross.csv
+
+("ric,brokerside,brokerqty";"1810.HK,Sell,500";"0700.HK,Sell,300";"9988.HK,Buy,200";"0003.HK,Sell,500";"0016.HK,Sell,800")
+
+/ file contains sym, sym, int
+
+/ 2b. load the file with headers (need delimiter)
 
 c:("SSJ";enlist",") 0: `:cross.csv
 
-ric    |brokerside | brokerquantity
----------------------------------
-1810.HK|    Sell   |	100
-0700.HK|    Sell   |	100
-9988.HK|    Sell   |	100
-8888.HK|    Sell   |	100
-0016.HK|    Buy    |	100
-1234.HK|    Buy    |	100
-3033.HK|    Buy    |	100
-
-/ first set the RIC as a key column in cross file
-1!`c
-
-/ add column crossableqty, check opposing side, calc difference
-A: update crossableqty:?[side=brokerside;0N; qty - brokerquantity] from t lj 1!c
-
-ric    |side|qty|brokerside|brokerquantity|crossableqty
--------------------------------------------------------
-1810.HK|Buy |500|   Sell   |      100     |	400
-0700.HK|Buy |500|   Sell   |	  100     |	400
-9988.HK|Buy |500|   Sell   |	  100     |	400
-0001.HK|Buy |500|   Sell   |	  100     |	400
-
-A2: select from A where crossableqty > 0
-
-ric    |side|qty|brokerside|brokerquantity|crossableqty
--------------------------------------------------------
-1810.HK|Buy |500|   Sell   |    100     |	400
-0700.HK|Buy |500|   Sell   |    100     |	400
-9988.HK|Buy |500|   Sell   |    100     |	400
-0001.HK|Buy |500|   Sell   |    100     |	400
-
-select ric, side, crossableqty from A2
-
-ric    |brokerside | brokerquantity
----------------------------------
-1810.HK|    Buy    |	400
-0700.HK|    Buy    |	400
-9988.HK|    Buy    |	400
-0001.HK|    Buy    |	400
-
-/ this is the end result. these are the lines where you can cross 
+ric	  brokerside brokerqty
+--------------------------------
+1810.HK   Sell	     500
+0700.HK   Sell	     300
+9988.HK   Buy	     200
+0003.HK   Sell	     500
+0016.HK	  Sell	     800
 ```
+
+```q
+/ 3. Combine the 2 tables (using left join)
+
+t lj 1!c
+
+ric	 side qty brokerside brokerqty
+---------------------------------------
+1810.HK	 Buy  500 Sell	     500
+0700.HK	 Buy  500 Sell	     300
+9988.HK	 Buy  500 Buy	     200
+0001.HK	 Buy  500		
+0016.HK	 Buy  500 Sell	     800
+
+/ need to key table c in order for lj to work
+```
+
+```q
+/ 4. check if opposing sides (same side = no cross)
+/ add new column called "crossqty"
+/ where applicable, update crossqty column with crossable qty
+
+/ need to use an IF/ELSE statement update the crossqty column
+/ logic: IF sides are same, do nothing
+/ ELSE, update column with brokerqty -qty (crossable qty)
+
+/ syntax
+$[condition; true_do_this; else_do_this]
+
+a: update crossqty: ?[side=brokerside;0N;?[qty<brokerqty;qty;brokerqty]] from t lj 1!c
+a
+ric	 side qty  brokerside brokerqty crossqty
+--------------------------------------------
+1810.HK	 Buy  500  Sell	     500        500
+0700.HK	 Buy  500  Sell	     300        300
+9988.HK	 Buy  500  Buy	     200	
+0001.HK	 Buy  500			
+0016.HK	 Buy  500  Sell	     800        500
+
+/ there is an embedded if/else statement, since you need to account
+/ for when the cross qty is larger than your order qty
+```
+
+```q
+/ 5. Retrieve only the RICs, side, and crossable qty
+
+select ric, side, crossqty from a where crossqty > 0
+
+ric	 side  crossqty
+-----------------------
+1810.HK	 Buy   500
+0700.HK	 Buy   300
+0016.HK	 Buy   500
+
+/ here you have it. this is the final result
+```
+
 ### [system] Netting off buys and sells from same Stock
 
 ```q
