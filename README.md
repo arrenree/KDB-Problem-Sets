@@ -504,10 +504,9 @@ ric	 side  crossqty
 / here you have it. this is the final result
 ```
 
-### [system] Netting off buys and sells from same Stock
+### [case study] Netting off buys and sells from same Stock
 
 ```q
-
 / same stock, multiple lines of buys and sells in the same stock
 / determine what is the net quantity
 
@@ -521,17 +520,28 @@ AAPL| sell | 50
 AAPL| buy  | 100
 AAPL| buy  | 90
 
+/ 1. update the size column to include pos or neg signs
+
+update size: ?[side=`buy;size;neg size] from t
+
+ric	side	size
+--------------------
+AAPL	buy	  10
+AAPL	sell	 -30
+AAPL	sell	 -50
+AAPL	buy	 100
+AAPL	buy	  90
+
+/ 2. retrieve the aggregate net position by summing column
+
 select ?[side=`buy;size;neg size] by ric from t
-
-ric  | size
--------------------------
-AAPL | 10 -30 -50 100 90
-
-select sum ?[side=`buy;size;neg size] by ric from t
 
 ric  | size
 -----------
 AAPL | 120
+
+/ thoughts - a computer wont understand 'buy' or 'sell'
+/ but if qty are pos or neg, it can be "collapsed"
 ```
 
 <hr>
