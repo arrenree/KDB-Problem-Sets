@@ -2,7 +2,7 @@
 <a name="top"></a>
 
 1. [General Knowledge / System](#gen)
-2. [Casting / Datatypes / Temporal/ Enumeration](#cast)
+2. [Datatypes & Casting](#cast)
 3. [Lists](#list)
 4. [Dictionary](#dictionary)
 5. [Tables](#tables)
@@ -50,37 +50,6 @@
 ### 🔴 1. General Knowledge / System
 [Top](#top)
 
-### [gen] What is an Atom vs a List?
-
-```q
-atom 
-/ is an irreducible value of a specific data type
-
-"a" / char atom
-`sym / sym atom
-
-list
-/ is an ordered sequence of items
-```
-
-### [gen] What is the difference between a sym and a string?
-
-```q
-sym
-/ is an atomic entity holding text 
-/ represented with a back tick ` 
-/ smaller in size than a char
-
-`sym / sym atom
-`one`two`three / sym vector
-
-String 
-/ list of chars
-/ represented by " " double parathesis
-
-"the quick brown fox" / string aka char vector
-
-```
 
 ### [gen] Order of Operations
 
@@ -547,8 +516,41 @@ AAPL | 120
 <hr>
 
 <a name="cast"></a>
-### 🔴 2. Casting / Datatypes / Temporal
+### 🔴 2. Datatypes & Casting
 [Top](#top)
+
+:point_right: ### What is an Atom vs a List?
+
+```q
+atom 
+/ is an irreducible value of a specific data type
+
+"a" / char atom
+`sym / sym atom
+
+list
+/ is an ordered sequence of items
+```
+
+### [gen] What is the difference between a sym and a string?
+
+```q
+sym
+/ is an atomic entity holding text 
+/ represented with a back tick ` 
+/ smaller in size than a char
+
+`sym / sym atom
+`one`two`three / sym vector
+
+String 
+/ list of chars
+/ represented by " " double parathesis
+
+"the quick brown fox" / string aka char vector
+
+```
+
 
 ### [datatype] What is a negative datatype?
 
