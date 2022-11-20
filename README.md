@@ -519,40 +519,90 @@ AAPL | 120
 ### 🔴 2. Datatypes & Casting
 [Top](#top)
 
-:point_right: ### What is an Atom vs a List?
+### :point_right: [datatype] What is an Atom?
 
 ```q
-atom 
-/ is an irreducible value of a specific data type
+Atom 
+/ an atom is an irreducible value of a specific data type
+/ has a negative datatype (ex, -7h)
+/ atoms can be chars or syms
 
 "a" / char atom
 `sym / sym atom
-
-list
-/ is an ordered sequence of items
 ```
+### :point_right: [datatype] What is a List?
 
-### [gen] What is the difference between a sym and a string?
+```q
+List
+/ a list is an ordered sequence of items (members are called items)
+/ encased by parathesis, separated by semi-colon
+/ has a positive datatype (ex, 7h)
+
+Simple Lists
+
+(1;2;3)
+("a";"b";"c")
+(`life;`is;`great)
+
+/ simple lists all / same datatype (also called vectors)
+/ list of ints, chars, syms
+
+General Lists
+
+(1;1.1;`1)
+(-10.0; 3.1415e; 1b)
+
+/ general lists are lists NOT containing homogenous atoms
+/ first list is an int, a float, and a sym
+/ second list is a float, a real number, and a boolean
+
+A list of chars is called a String
+
+"this is a string"
+
+/ a string is NOT a datatype
+/ a string is a list of chars
+/ also called a char vector
+```
+### :point_right: [datatype] What is a sym?
 
 ```q
 sym
-/ is an atomic entity holding text 
+/ sym is an atomic entity holding text 
 / represented with a back tick ` 
 / smaller in size than a char
 
 `sym / sym atom
 `one`two`three / sym vector
-
-String 
-/ list of chars
-/ represented by " " double parathesis
-
-"the quick brown fox" / string aka char vector
-
 ```
 
+### :point_right: [datatype] How is a sym different than a char and a string?
 
-### [datatype] What is a negative datatype?
+```q
+1. Syms start with a backtick`, while chars are encased with parathensis " "
+
+2. Syms are smaller in size than chars
+
+3. A string is simply a vector of chars
+
+4. Syms (generally) cannot contain spaces while char vectors can
+
+`thisisasym
+"this is a char vector"
+
+5. Syms are always atomic, while chars can be vectors
+
+type `atomic
+-11h
+
+/ atomic (neg) datatype sym
+
+type "apple"
+10h
+/ vector (positive) datatype char
+```
+
+### :point_right: [datatype] What is a negative datatype?
 
 ```q
 / a negative type is an atom
@@ -569,19 +619,20 @@ type 2 3 4
 / integer vector
 ```
 
-### [cast] What is casting?
+### :point_right: [cast] What is casting?
+
 ```q
 casting converts one datatype to another
 ```
 
-### [cast] Show 3 ways to conver FLOAT 4.5 to an INT
+### :point_right: [cast] Show 3 ways to conver FLOAT 4.5 to an INT
 ```q
 `int$4.5
 "i"$4.5
 6h$4.5
 ```
 
-### [cast] What happens when you cast a DATE to an INT?
+### :point_right: [cast] What happens when you cast a DATE to an INT?
 
 ```q
 `int$2000.10.04
@@ -590,7 +641,7 @@ casting converts one datatype to another
 / casts as dates from 2000.01.01
 ```
 
-### [cast] Convert SYMS a b c to a STRING
+### :point_right: [cast] Convert SYMS a b c to a STRING
 
 ```q
 string `a`b`c
@@ -599,7 +650,7 @@ string `a`b`c
 / simply use the string function
 ```
 
-### [cast] How do you cast CHARS "a","b","c" to a SYM?
+### :point_right: [cast] How do you cast CHARS "a","b","c" to a SYM?
 
 ```q
 
@@ -610,7 +661,7 @@ string `a`b`c
 `abc
 ```
 
-### [cast] Cast the Following
+### :point_right: [cast] Cast the Following
 
 ```q
 /1. Cast STRING "2014.01.01" to a DATE
@@ -649,13 +700,13 @@ string `a`b`c
 / can simply use backtick to cast to sym
 ```
 
-### [cast] What is parsing?
+### :point_right: [cast] What is parsing?
 
 ```q
 / parsing is converting a string to another datatype.
 ```
 
-### [cast] Given mixed list L: ("100.1";"hello";"10"), convert elements to float, char, and int
+### :point_right: [cast] Given mixed list L: ("100.1";"hello";"10"), convert elements to float, char, and int
 ```q
 l:("1.00001"; "200"; "3.1417")
 "FIF"$l
@@ -665,7 +716,7 @@ l:("1.00001"; "200"; "3.1417")
 3.1417 / float
 ```
 
-### [cast] Given strings "2001.02.02" and "2003.08.09", parse the strings into KDB dates
+### :point_right: [cast] Given strings "2001.02.02" and "2003.08.09", parse the strings into KDB dates
 ```q
 "D"$("2001.02.02";"2003.08.09")
 
@@ -673,20 +724,20 @@ l:("1.00001"; "200"; "3.1417")
 / have to use upper case when parsing
 ```
 
-### [cast] why do you get dates when casting int to date?
+### :point_right: [cast] why do you get dates when casting int to date?
 
 ```q
 / dates are stored as integers (days) from 2000.01.01
 ```
 
-### [temporal] Get today's date store it as variable d
+### :point_right: [temporal] Get today's date store it as variable d
 
 ```q
 d: .z.d
 2021-11-01d
 ```
 
-### [temporal] Calculate the number of days since last christmas
+### :point_right: [temporal] Calculate the number of days since last christmas
 
 ```q
 d - 2020.12.25
@@ -695,7 +746,7 @@ d - 2020.12.25
 / can use algebra with dates (ints underneath)
 ```
 
-### [temporal] What day of the week was Jan 10, 2011?
+### :point_right: [temporal] What day of the week was Jan 10, 2011?
 
 ```q
 2011.01.10 mod 7
@@ -710,14 +761,14 @@ d - 2020.12.25
 / 2 days from sunday = Monday
 ```
 
-### [temporal] How many days were there in 2004?
+### :point_right: [temporal] How many days were there in 2004?
 
 ```
 2005.01.01 - 2004.01.01
 366
 ```
 
-### [string] Define strings s1: "Hello" and s2: "World"
+### :point_right: [string] Define strings s1: "Hello" and s2: "World"
 
 ```q
 s1: "hello"
@@ -794,8 +845,7 @@ hello johhn where is john
 / third arg = what to replace with
 ```
 
-
-### [enumeration] Create an enumeration t2 containing values p q r that is restricted to domain t1
+### :point_right: [enumeration] Create an enumeration t2 containing values p q r that is restricted to domain t1
 
 ```q
 t1: `symbol$()
@@ -804,7 +854,7 @@ t2: `t1$`p`q`r
 / t2 is now an enumeration which only contain domain t1 (syms)
 ```
 
-### [enumeration] Insert new value `u into t2
+### :point_right: [enumeration] Insert new value `u into t2
 
 ```q
 t2,:`u
@@ -819,7 +869,7 @@ t2,:`u
 / now it works
 ```
 
-## [datatypes] Turn 2 lists of symbols into one longer list. 
+### :point_right: [datatypes] Turn 2 lists of symbols into one longer list. 
 
 ```q
 `AAPL`IBM`VOD and `O`N`L
@@ -853,14 +903,14 @@ S1,'S2 / using EACH BOTH joins each element of s1 to each element of s2
  `AAPL.O`IBM.N`VOD.L
 ```
 
-### [datatype] How do you convert a list of syms to strings?
+### :point_right: [datatype] How do you convert a list of syms to strings?
 
 ```q
 string `a`b`c
 "a","b","c"
 ```
 
-### [cast] How do you convert a list of syms to a list of chars?
+### :point_right: [cast] How do you convert a list of syms to a list of chars?
 
 ```q
 raze string `a`b`c
