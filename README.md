@@ -50,6 +50,38 @@
 ### 🔴 1. General Knowledge / System
 [Top](#top)
 
+### [gen] Find and Random Operator ?
+
+```q
+/ atom ? atom
+
+3 ? 3
+2 0 1
+
+/ x ? y
+/ retrieve x random elements from y 
+/ retrieve 3 random elements from 0-2
+/ so even though y is an atom, it's really a list
+```
+
+```q
+/ list ? atom
+
+1 2 3 ? 3
+2
+
+/ from list x, find index position of element y
+/ element 3 is in index position 2 of list 1 2 3
+```
+
+```q
+/ atom ? list
+
+3 ? 1 2 3 
+1 1 3
+
+/ return x number of random elements from list y
+```
 
 ### [gen] Order of Operations
 
