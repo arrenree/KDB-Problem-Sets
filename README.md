@@ -1070,7 +1070,9 @@ l: 20 ? 3_til 31
 l[19]
 
 / use indexing to retrieve 19th index position = 20th number
-/ since starts on 0
+/ index position 0 1 2 3 4 5
+/ number         1 2 3 4 5 6
+/ so number 3 is actually at index position 2
 ```
 
 ```q
