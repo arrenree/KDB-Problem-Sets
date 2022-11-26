@@ -1198,6 +1198,9 @@ userlevel: avg each level
 6 < avg each level
 1000010000b
 
+/ note - if you put 6 at the end, you get something different
+/ so the order of syntax matters!
+
 / or
 
 userlevel > 6
@@ -1209,6 +1212,9 @@ userlevel > 6
 
 games where 6 < avg each level
 `crash`micro
+
+/ note - order of syntax matters!
+/ if you did: games where avg each level > 6 -> ERROR
 ```
 
 ```q
@@ -1312,6 +1318,7 @@ p where p < avg p
 
 ```q
 /7. Given list L and K, find the common numbers in both lists
+
 l: 7 5 13 20 19 17 30 
 k: 7 17 200 300 400 1000 
 
@@ -1381,19 +1388,26 @@ max k - avg l
 Find all values in p that are square numbers
 
 p: 1000?100
+
+/ this generates a list of 1000 random numbers from 0-100
+
 a: sqrt p
 
-/ a = list containing square roots of every number in p
+/ a = square root of every number in p
 / a will contain both ints and floats
+/ ints = square numbers, while floats = not square numbers
 
 a = `int$a
 
-/ cast a as an integer (whole number)
+/ use a comparison operator = to return a list of booleans
+/ you are comparing if each element in list a is = a whole number
+/ cast every element in list a to an int (whole number)
 / since a is made up ints and floats
 
 p where a=`int$a
 
-/ return value in p where a = whole number (square numbers)
+/ return value in p WHERE boolean is true from your comparison operator
+/ boolean true = whole number = square number
 
 count p where a=`int$a
 
