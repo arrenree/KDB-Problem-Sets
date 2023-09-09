@@ -7472,7 +7472,7 @@ minute| avgmid
 / load trades.q script
 ```
 
-[QSQL 5.1] retrieve the number of [small] trades for each sym
+[QSQL 5.1] Add a new column called Sizegroup, and returns "small" when you retrieve the number of small trades (less than 999) for each sym, using WITHIN
 
 ```q
 \l trades.q
@@ -7544,7 +7544,7 @@ sizes: 2000 100 6000 11000
 / 11000 = index position 2 bin
 ```
 
-[QSQL 6.2] rename BIN buckets as small, med, or large
+[QSQL 6.2] Rename BIN buckets as small, med, or large
 
 ```q
 / 2. name the buckets as small, med, or big
@@ -7559,25 +7559,26 @@ sizes: 2000 100 6000 11000
 / but now has a "name" associated to it (small, med, big)
 ```
 
-[QSQL 6.3] Create function called tradesize that accepts x and outputs into BIN buckets
+[QSQL 6.3] Create function called tradesize that accepts a list of numbers and outputs them into buckets of either small (less 100), med (100-200), or big (> 200) using BIN
 
 ```q
-/ func accepts a list of trade sizes as argument x
+/ function accepts a list of sizes as inputs
 / and bucket those sizes into bins of small, med, big
+/ you have to pre-define your bucket parameters (small = less 100) etc
 
-tradesize:{`small`med`big 0 1000 9000 bin x}
+tradesize:{[x]`small`med`big 0 1000 9000 bin x}
 
-/ test out the function with sizes (from above)
+/ test out the function with sizes (list of sizes from above)
 
-sizes: sizes: 2000 100 6000 11000
+sizes: 2000 100 6000 11000
 
-tradesize sizes
+tradesize [sizes]
 `med`small`med`big
 
 / it works!
 ```
 
-[QSQL 6.4] use tradesize func to retrieve total num of trades grouped by size bucket
+[QSQL 6.4] Use your tradesize function to retrieve total num of trades grouped by sym and size bucket
 
 ```q
 / from trade, group trade size by sym into bins using your tradesize function
@@ -7585,6 +7586,31 @@ tradesize sizes
 / and the number of trades per bucket
 
 \l trades.q
+```
+
+Soltuion 1
+
+```q
+select num:count i by sym, sizebucket:tradesize[size] from trade
+
+sym | sizebucket | num
+-------------------------
+A   | large      | 50032
+A   | med	 | 56
+A   | small	 | 46
+AA  | large	 | 49820
+AA  | med	 | 44
+AA  | small	 | 49
+
+/ add new column called sizebucket
+/ which retrieves output from your tradesize function
+/ which takes size column from trade table as input
+/ count i = virtual column
+```
+
+Solution 2
+
+```q
 
 select num:count i by sym, sizebucket:(tradesize;size) fby sym from trade
 
