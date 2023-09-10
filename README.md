@@ -6618,6 +6618,8 @@ date       | ticker | exch | price
 2021-09-21 |  MSFT  | US   | 30
 ```
 
+### [func 12.2] Creating a Function
+
 ```q
 / 2. Create a function called f
 / takes in 3 args: [sym, start, end]
@@ -6643,6 +6645,8 @@ date       | ticker | exch | price
 / and iterates through every row
 ```
 
+### [func 12.2] Syntax that don't work using WITHIN
+
 ```q
 /2b. Notice these variations of the WITHIN syntax DONT work
 
@@ -6654,6 +6658,8 @@ f:{ [sym;start;end] select from price where date within start end, ticker in sym
 
 f:{ [sym;start;end] select from price where date within (start;end), ticker in sym}
 ```
+
+### [func 12.3] Creating 2nd Table called Input
 
 ```q
 / 3. Create 2nd table called input with 3 columns: ticker, start and end date
@@ -6667,6 +6673,8 @@ AAPL   | 2021-01-01 | 2021-03-01
 AAPL   | 2021-03-01 | 2021-06-30
 MSFT   | 2021-06-01 | 2021-08-01
 ```
+
+### [func 12.4] Querying the input vs price tables
 
 ```q
 / 4. From the [input table], retrieve the [syms] from original [price table]
@@ -6685,6 +6693,8 @@ MSFT   | 2021-06-01 | 2021-08-01
 / since you have 3 arguments (sym, start, end) from the original function
 / you can query these args as a LIST of values corresponding from [input table]
 ```
+
+### [func 12.4a] Solution 1 (manual - no good)
 
 ```q
 / 4a. Solution 1: Manually run query through each row
@@ -6720,6 +6730,8 @@ AAPL   | 2021-01-01 | 2021-03-01
 / however this is super manual and inefficient
 ```
 
+### [func 12.4b] Solution 2 (using EACH + List of values)
+
 ```q
 / 4b. Solution 2: use EACH to iterate through list of values
 
@@ -6751,7 +6763,7 @@ input`end
 
 / using same function as earlier
 / when you CALL your function, use list of values for each argument
-/ and use f' to iterate through each row
+/ and use f' to iterate through EACH row
 / also need to use RAZE to collapse one level of nesting
 
 f:{ [sym;start;end] select from price where date within (start;end), ticker in sym}
@@ -6763,25 +6775,20 @@ AAPL   | 2021-01-01 | 2021-03-01
 AAPL   | 2021-03-01 | 2021-06-30
 
 / original function doesnt change
-/ function queries [price table] and retrieves syms [input] where date column
-/ falls within (start;end) [input]
+/ function queries [price table] and retrieves syms [arg1] where date column
+/ falls within (start;end) [arg2;arg3]
 
-/ your inputs = [LIST OF VALUES] from EACH column from input table
+/ this time around, your inputs = [LIST OF VALUES] for EACH column from [input table]
 / f' = run the function through EACH row (doesnt work if you do f each)
 / the output is a list of 3 tables, so to collapse 1 layer, use RAZE
 / raze = (,/)
 ```
 
-[func 12.5] Method 2
+### [func 12.5] Solution 3 (re-write function)
 
 ```q
-/ Method 2: Alternative Syntax
-
-/ instead of querying original function
-/ with lists of values by column as the 3 arguments
-/ you can re-write the function
-/ and use x to query the corresponding columns in the input table
-/ iterating through each row using EACH
+/ 5. Create new function f2, using x to query corresponding columns
+/ in the input table and iterating through EACH row
 
 price:
 date       | ticker | ex | price
@@ -6797,83 +6804,26 @@ AAPL   | 2021-01-01 | 2021-03-01
 AAPL   | 2021-03-01 | 2021-06-30
 MSFT   | 2021-06-01 | 2021-08-01
 
-f1:{select from price where date within x`start`end, ticker in x`ticker}
-raze f1 each input
+f2:{select from price where date within x`start`end, ticker in x`ticker}
+raze f2 each input
 
-/ so you create function f1, which takes implicit argument x
-/ as the [input table]
-/ from [price table], find where [date from price] is within [start, end from x]
-/ and where [ticker from price] is = [ticker in x]
+/ the function:
+/ f2 takes implicit argument x as the [input table]
+/ remember, logic = column from table 1 vs input
+/ so find where [date] from [price table] is within (start,end) from x (your input)
+/ AND where [ticker] from [price table] matches [ticker] from x (your input)
 
-/ if you think about it, its the same syntax as table_name`col_name
-/ only x is now the table name
+/ calling your function:
+/ so instead of 3 arguments, you only have one x
+/ x is your entire input table
+/ to iterate through EACH row of [input table], you have use [EACH]
+/ you return a list of tables, so need RAZE to level it
 
-/ to iterate through [EACH ROW] of [input table], you have use [EACH]
-/ you return a list of tables, so need RAZE to level it 
-```
+/ oddly, these all work when calling your function
 
-[func 12.6] Method 3
-
-```q
-/ 2. create new function querying the [input table]
-/ and use [sym] and [date] from [price table] as arguments
-
-price:
-date       | ticker | ex | price
---------------------------------
-2021-01-21 |  AAPL  | US | 10
-2021-03-21 |  AAPL  | UW | 20
-2021-09-21 |  MSFT  | US | 30
-
-input:
-ticker |   start    |    end
---------------------------------
-AAPL   | 2021-01-01 | 2021-03-01
-AAPL   | 2021-03-01 | 2021-06-30
-MSFT   | 2021-06-01 | 2021-08-01
-
-f2:{ [sym;date] select from input where date within (start;end), sym in ticker}
-
-/ you can query one by one (each row)
-
-f2 [`AAPL;2021.01.21]
-
-ticker |   start    |    end
---------------------------------
-AAPL   | 2021-01-01 | 2021-03-01
-
-f2[`MSFT;2021.09.21]
-
-ticker |   start    |    end
---------------------------------
-/ null since no match
-
-/ but its probably more efficient to use adverb EACH
-/ and query through entire table 
-
-/ retrieve list of VALUES per COLUMN
-
-price`ticker
-`AAPL`AAPL`MSFT
-
-/ values for column [ticker] from [price table]
-
-price`date
-(2021-01-21d; 2021-03-21d; 2021-09-21d)
-
-/ values for column [date] from [price table]
-
-raze f2'[price`ticker; price`date]
-
-ticker |   start    |    end
---------------------------------
-AAPL   | 2021-01-01 | 2021-03-01
-AAPL   | 2021-03-01 | 2021-06-30
-
-/ you are calling function with a LIST of 3 values
-/ so you get a LIST of 3 tables
-/ must use raze to flatten 1 level
-/ also must use ' = each to iterate through each row
+raze f2 each input
+raze f2'[input]
+f2[input]
 ```
 
 <a name="qsql"></a>
