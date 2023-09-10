@@ -6605,48 +6605,62 @@ f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, tim
 <a name="func_int2"></a>
 [Top](#top)
 
-
-[func 12.1] create table called price
-
 ```q
-/ with columns date, ticker, ex, and price
+/ 1. Create a table called price with columns date, ticker, exch, and price
 
-price: ([] date: 2021.01.21 2021.03.21 2021.09.21; ticker:`AAPL`AAPL`MSFT; ex: `US`UW`US; price: 10 20 30)
+price: ([] date: 2021.01.21 2021.03.21 2021.09.21; ticker:`AAPL`AAPL`MSFT; exch: `US`UW`US; price: 10 20 30)
 
 price:
-date       | ticker | ex | price
+date       | ticker | exch | price
 --------------------------------
-2021-01-21 |  AAPL  | US | 10
-2021-03-21 |  AAPL  | UW | 20
-2021-09-21 |  MSFT  | US | 30
+2021-01-21 |  AAPL  | US   | 10
+2021-03-21 |  AAPL  | UW   | 20
+2021-09-21 |  MSFT  | US   | 30
 ```
 
-[func 12.2] create function called f
-
 ```q
-/ takes in 3 args: [sym, startdate, enddate]
-/ queries the price table 
-/ and returns the syms that falls within the [startdate] and [enddate]
+/ 2. Create a function called f
+/ takes in 3 args: [sym, start, end]
+/ this function queries the price table 
+/ checks the sym (input) against the ticker column (price table)
+/ and returns the tickers (from price table) that fall within the start and end date (inputs)
+/ return all columns
 
 f:{ [sym;start;end] select from price where date within (start;end), ticker in sym}
 f[`AAPL;2021.01.21; 2021.12.21]
 
-date       | ticker | ex | price
+date       | ticker | exch | price
 ---------------------------------
-2021-01-21 | AAPL   | US | 10
-2021-03-21 | AAPL   | UW | 20
+2021-01-21 | AAPL   | US   | 10
+2021-03-21 | AAPL   | UW   | 20
 
-/ syntax is where COL_NAME (date) within (arg2;arg3)
-/ COL_NAME (ticker) in (arg1)
+/ since you want to return all columns, the filters come AFTER where clause
+/ anytime you want to query between 2 dates (or times), use WITHIN
+/ note the syntax = within (lowerband;upperband)
+/ checks if [date column] from [price table] is within the 2 arguments you input
+/ and if [ticker column] from [price table] matches the sym argument you input
+/ checks COLUMN from [price table] against your inputs/arguments
+/ and iterates through every row
 ```
 
-[func 12.3] create 2nd table called input
+```q
+/2b. Notice these variations of the WITHIN syntax DONT work
+
+f:{ [sym;start;end] select from price where date within (start end), ticker in sym}
+f:{[sym;start;end] select from price where date within [start;end], ticker in sym}
+f:{ [sym;start;end] select from price where date within start end, ticker in sym}
+
+/ within HAS to be (lowerbound;upperbound)
+
+f:{ [sym;start;end] select from price where date within (start;end), ticker in sym}
+```
 
 ```q
-/ with 3 columns: ticker, start date, end date
+/ 3. Create 2nd table called input with 3 columns: ticker, start and end date
 
 input: ([] ticker: `AAPL`AAPL`MSFT; start: 2021.01.01 2021.03.01 2021.06.01; end: 2021.03.01 2021.06.30 2021.08.01)
 
+input:
 ticker |   start    |    end
 --------------------------------
 AAPL   | 2021-01-01 | 2021-03-01
@@ -6654,16 +6668,16 @@ AAPL   | 2021-03-01 | 2021-06-30
 MSFT   | 2021-06-01 | 2021-08-01
 ```
 
-[func 12.4] from input table, query the price table
-
 ```q
-/ from the [input table], retrieve the [syms] from original [price table]
+/ 4. From the [input table], retrieve the [syms] from original [price table]
 / that match the [start] and [end dates] from [input]
 
 / thought process:
 
-/ check if [ticker] from [price] = [ticker] from [input],
-/ WHERE [date] from [price] falls within [start/end] from [input]
+/ you have 2 tables: price (table 1) and input (table 2)
+/ you want to check if data from table 1 fall within specific parameters in table 2
+/ first checks if [ticker] from [price table 1] = [ticker] from [input table 2]
+/ then checks if [date] from [price table 1] falls within [start/end] from [input table 2] 
 / you need to query ENTIRE row from input table [sym + start + end]
 / then iterate through EACH row
 
@@ -6673,13 +6687,49 @@ MSFT   | 2021-06-01 | 2021-08-01
 ```
 
 ```q
-/ Method 1:
+/ 4a. Solution 1: Manually run query through each row
 
-/ since each row in table = dictionary
-/ you can first retrieve a list of values from each column
-/ for ex, ticker values would be `AAPL`AAPL`MSFT
-/ then INPUT these [list of values] for each argument
-/ then use EACH to iterate the function through each row
+price:
+date       | ticker | exch | price
+--------------------------------
+2021-01-21 |  AAPL  | US   | 10
+2021-03-21 |  AAPL  | UW   | 20
+2021-09-21 |  MSFT  | US   | 30
+
+input:
+ticker |   start    |    end
+--------------------------------
+AAPL   | 2021-01-01 | 2021-03-01
+AAPL   | 2021-03-01 | 2021-06-30
+MSFT   | 2021-06-01 | 2021-08-01
+
+/ earlier you created a function to check the price table
+/ based on 3 arguments (sym, start, end)
+/ your input table have the same 3 arguments (ticker,start,end)
+/ so you could just manually check each row
+
+f:{ [sym;start;end] select from price where date within (start;end), ticker in sym}
+f[`AAPL;2021.01.21; 2021.03.01]
+
+ticker |   start    |    end
+--------------------------------
+AAPL   | 2021-01-01 | 2021-03-01
+
+/ so yes, the inputs you supplied matches the query
+/ then you can do this for every row
+/ however this is super manual and inefficient
+```
+
+```q
+/ 4b. Solution 2: use EACH to iterate through list of values
+
+/ you can retrieve a LIST of values from each COLUMN
+/ syntax = table_name`column_name
+/ for example, input`ticker = `AAPL`AAPL`MSFT
+
+/ so instead of supply single arguments, you can supply a LIST of values
+/ for each argument
+/ then use EACH (f') to iterate through each row
 
 input table
 ticker |   start    |    end
@@ -6687,6 +6737,8 @@ ticker |   start    |    end
 AAPL   | 2021-01-01 | 2021-03-01
 AAPL   | 2021-03-01 | 2021-06-30
 MSFT   | 2021-06-01 | 2021-08-01
+
+/ test out the 3 lists of values for each column first
 
 input`ticker
 `AAPL`AAPL`MSFT
@@ -6697,7 +6749,10 @@ input`start
 input`end
 (2021-03-01d; 2021-06-30d; 2021-08-01d)
 
-/ using same function as earlier:
+/ using same function as earlier
+/ when you CALL your function, use list of values for each argument
+/ and use f' to iterate through each row
+/ also need to use RAZE to collapse one level of nesting
 
 f:{ [sym;start;end] select from price where date within (start;end), ticker in sym}
 raze f'[input`ticker;input`start;input`end]
@@ -6708,7 +6763,9 @@ AAPL   | 2021-01-01 | 2021-03-01
 AAPL   | 2021-03-01 | 2021-06-30
 
 / original function doesnt change
-/ orig func = from price table, retrieve syms where date within (start;end) 
+/ function queries [price table] and retrieves syms [input] where date column
+/ falls within (start;end) [input]
+
 / your inputs = [LIST OF VALUES] from EACH column from input table
 / f' = run the function through EACH row (doesnt work if you do f each)
 / the output is a list of 3 tables, so to collapse 1 layer, use RAZE
