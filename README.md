@@ -9,7 +9,7 @@
 6. [Keyed Tables](#key_table)
 7. [Foreign Key Restrictions](#fkey_table)
 8. [Functions](#functions)
-	8.1 [Intro to Functions](#func_intro)
+8.1 [Intro to Functions](#func_intro)
 	8.2 [Functions on Strings - AQ](#func_strings)
 	8.3 [Projected Functions - TS](#func_proj)
 	8.4 [Function Loop Problem Set - TS](#func_loop)
