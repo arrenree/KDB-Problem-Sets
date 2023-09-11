@@ -7642,7 +7642,7 @@ AA  | large      | 45425
 [Top](#top)
 
 
-[QSQL 9.71] Problem Set 1: Retrieve the lowest temperature by city (fby on 2 lists)
+[QSQL 9.71]  From the two lists below, find the lowest temperature by city (fby on 2 lists)
 
 ```q
 city:`NY`NY`LA`SF`LA`SF`NY
@@ -7657,7 +7657,7 @@ temp:32 31 75 69 70 68 12
 / city = what you are filtering by
 ```
 
-[QSQL 9.72] Problem Set 2: From trade table, find the max price per symbol (without using fby)
+[QSQL 9.72] From trade table, find the max price per symbol, only return the sym and price columns (without using fby)
 
 ```q
 \l trades.q
@@ -7678,7 +7678,7 @@ B   | 109.9992
 / need to use fby
 ```
 
-[QSQL 9.73] Problem Set 2: Find the max price per symbol (using fby)
+[QSQL 9.73] From trade table, find the max price per symbol, return all columns (using fby)
 
 ```q
 select from trade where price=(max;price) fby sym
@@ -7691,19 +7691,22 @@ date	   | time         | sym  | price    | size  | cond
 2023-09-05 | 13:20:30.544 | GOOG | 109.9999 | 12700 | C
 2023-09-05 | 13:57:07.069 | AA	 | 109.9987 | 86100 | C
 
-/ notice fby returns the entire table
+/ since you want ALL columns, need to filter AFTER the where clause
+/ fby returns the ENTIRE table
 / fby goes at the END after where
-/ finds the max price filtering by sym
-/ max = aggr
-/ price = col 1
-/ sym = sym 2
+/ syntax = col1 = (aggr;col1) fby col2
+/ col 1 = price
+/ aggr = max
+/ col 2= sym
 ```
 
-[QSQL 9.74] Problem Set 2: Find the LATEST max price by sym (using 2 fby)
+[QSQL 9.74] From trade, find the LATEST max price by sym (using 2 fby)
 
 ```q
-/ assume there are 2 syms with same max price 
-/ you can add another fby filter for time
+/ notice there are 2 conditions you want to filter for now:
+/ latest time + max price
+/ assume there are 2 syms with same max price, and you want 
+/ the latest one
 
 select from trade where price=(max;price) fby sym, time=(max;time) fby sym
 
@@ -7712,13 +7715,14 @@ time      |sym  |src| price | size
 2019-03-11|GOOG	| O | 36.01 | 708
 2019-03-11|MSFT | N | 35.01 | 7810
 
+/ since there are 2 conditions you want to filter by
+/ can use 2 fby filters
 / fby goes AFTER the where clause
 / first fby max price by sym
 / then fby last time fby sym
-/ can have multiple fby filters
 ```
 
-[QSQL 9.75] Problem Set 2: From the trade table, find the sym with the single highest price on 2023.09.05, and return all columns
+[QSQL 9.75] From the trade table, find the ONE sym with the single highest price on 2023.09.05, and return all columns
 
 ```q
 select from trade where date=2023.09.05, price=max price
@@ -7733,9 +7737,9 @@ date       | time         | sym  | price    | size  | cond
 / there's no aggregation invovled, hence no need for fby
 ```
 
-```q
-/ 1b. Notice what happens when you do this:
+[QSQL 9.75b] Notice what happens when you do this:
 
+```q
 select max price from trade where date = 2023.09.05
 
 price
@@ -7745,10 +7749,9 @@ price
 / only returns the single highest price
 / and nothing else
 ```
+[QSQL 9.75c] Or what happens when you do this:
 
 ```q
-/ 1c. Alternatively, notice what happens when you do this:
-
 select max price by sym from trade where date = 2023.09.05
 
 sym  | price
@@ -7762,7 +7765,8 @@ B    | 109.9953
 / for ALL syms on that date
 / and doesn't return any other columns
 ```
-[QSQL 9.76] Problem Set 2: From trade table, find the max price by sym on 2023.09.05, return all columns (using fby)
+
+[QSQL 9.76] From trade table, find the max price by sym on 2023.09.05, return all columns (using fby)
 
 ```q
 select from trade where date=2023.09.05, price=(max;price) fby sym
@@ -7779,10 +7783,9 @@ date       | time         | sym | price | size | cond
 / and find the largest one = needs aggregation
 / hence you need to use fby function
 ```
+[QSQL 9.76b] Notice what happens if you do this instead:
 
 ```q
-/ 2b. Notice what happens if you do this instead:
-
 select max price by sym from trade where date = 2021.11.26
 
 sym  | price
@@ -7796,10 +7799,17 @@ AAPL | 339.1
 / need to filter AFTER the where clause
 ```
 
-[QSQL 9.77] Problem Set 3: From trade table, find the max price by sym AND cond on 2023.09.05, but return ALL columns
+[QSQL 9.77] From trade table, find the max price by sym AND cond on 2023.09.05, but return ALL columns
 
 ```q
-select from trade where date=2023.09.05, price=(max;price) fby ( [] sym; cond)
+select from trade where date=2023.09.05, price=(max;price) fby ([] sym; cond)
+
+date       | time         | sym | price    | size  | cond
+----------------------------------------------------------
+2023-09-07 | 10:05:09.563 | C   | 109.9945 | 71600 | B
+2023-09-07 | 10:35:14.496 | B   | 109.9953 | 44000 | A
+2023-09-07 | 10:38:23.110 | MS  | 109.9994 | 58500 | B
+2023-09-07 | 11:36:30.527 | A   | 109.9971 | 60800 | A
 
 / need to use fby AFTER the where clause to return all columns
 / in other words, i want the max price for EACH sym and cond combination
@@ -7809,7 +7819,7 @@ select from trade where date=2023.09.05, price=(max;price) fby ( [] sym; cond)
 / first filters by date, then aggregates the max price by sym AND cond
 ```
 
-[QSQL 9.78] Problem Set 4: Find the VWAP price from the 2 lists below (using fby)
+[QSQL 9.78] VWAP Problem Set: Find the VWAP price from the 2 lists
 
 ```q
 size: 100 200 300 400
@@ -7823,7 +7833,7 @@ size wavg price
 / x wavg y = calculates the weighted average between the 2 lists
 ```
 
-[QSQL 9.79] Problem Set 4: Create a vwap function that uses size and price as arguments
+[QSQL 9.79] VWAP: Create a vwap function that uses size and price as arguments
 
 ```q
 2. Create a vwap function that uses size and price as arguments
@@ -7836,7 +7846,7 @@ vwap[size;price]
 / and output is the same as above
 ```
 
-[QSQL 9.710] Problem Set 4: From trade table, using your function, retrieve the vwap price for each sym
+[QSQL 9.710] VWAP: From trade table, using your function, retrieve the vwap price for each sym
 
 ```q
 3. From trade table, using your function, retrieve the vwap price for each sym
@@ -7856,20 +7866,27 @@ BAC  | 79.8109
 / and uses size and price columns from trade table
 ```
 
-[QSQL 9.711] Problem Set 4: For each sym on 2023.09.05, retrieve only the prices that are greater than the VWAP price. Return all columns
+[QSQL 9.711] VWAP: For each sym on 2023.09.05, retrieve only the prices that are greater than the VWAP price. Return all columns
 
 ```q
-/ 1. For each sym on 2023.09.05, retrieve only the prices that are greater than the VWAP price. Return all columns
+/ 1. For each sym on 2023.09.07, retrieve only the prices that are greater than the VWAP price. Return all columns
 
-select from trade where date=2021.10.31, price>({x[`size] wavg x`price}; ([]size;price)) fby sym
+select from trade where date=2023.09.07, price > ({x[`size] wavg x`price}; ([]size;price)) fby sym
 
 / return all columns = filter to come AFTER where clause
 / retrieves prices that are greater than the vwap price for each sym
 / "for each sym" = fby sym
 / VWAP calculated via the wavg function
-/ for each size, retrieves corresponding element from column size
-/ and for each price, retrieves corresponding element from each price
-/ for every x (row), find the wavg for each size/price
+
+/ syntax:
+/ actually follows the fby syntax: price > (aggr;price) fby sym
+/ except in this case, the aggr = vwap
+/ and price = the table of ([] size;price)
+
+/ so the function calculates the wavg for every size and price
+/ and the x` iterates through every row in the table
+/ just like the syntax for table`column
+/ 
 ```
 
 ### 🔵 [QSQL 9.8] Table Query Problem Set 1
