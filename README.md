@@ -21,7 +21,7 @@
 	10. [Functions Problem Set 4 - AQ](#func_set4AQ)
 	11. [Int Problem Set 1 - GS](#func_int1)
 	12. [Int Problem Set 2 - GS](#func_int2)
-10. [qSQL](#qsql)
+9. [qSQL](#qsql)
 	1. [QSQL Problem Set 1 - TS](#sql_1)
 	2. [QSQL Problem Set 2 - TS](#sql_2)
 	3. [QSQL Problem Set 3 - TS](#sql_3)
@@ -38,11 +38,12 @@
 	14. [QSQL Problem Set 1 - AQ](#sql_14)
 	15. [QSQL Problem Set 2 - AQ](#sql_15)
 	16. [Nested Tables Problem Set](#sql_16)
-12. [Adverbs](#adverbs)
-13. [Attributes](#attributes)
-14. [Joins](#joins)
-15. [@ & . Operator](#at)
-16. [Racking & Alignment](racking)
+10. [Adverbs](#adverbs)
+11. [Attributes](#attributes)
+12. [Joins](#joins)
+13. [@ & . Operator](#at)
+14. [Racking & Alignment](racking)
+15. [x`each Problem Sets](#xeach)
 
 <hr>
 
@@ -6618,7 +6619,7 @@ date       | ticker | exch | price
 2021-09-21 |  MSFT  | US   | 30
 ```
 
-### [func 12.2] Creating a Function
+### [func 8.12] Creating a Function
 
 ```q
 / 2. Create a function called f
@@ -6645,7 +6646,7 @@ date       | ticker | exch | price
 / and iterates through every row
 ```
 
-### [func 12.2] Syntax that don't work using WITHIN
+### [func 8.12] Syntax that don't work using WITHIN
 
 ```q
 /2b. Notice these variations of the WITHIN syntax DONT work
@@ -6659,7 +6660,7 @@ f:{ [sym;start;end] select from price where date within start end, ticker in sym
 f:{ [sym;start;end] select from price where date within (start;end), ticker in sym}
 ```
 
-### [func 12.3] Creating 2nd Table called Input
+### [func 8.12] Creating 2nd Table called Input
 
 ```q
 / 3. Create 2nd table called input with 3 columns: ticker, start and end date
@@ -6674,7 +6675,7 @@ AAPL   | 2021-03-01 | 2021-06-30
 MSFT   | 2021-06-01 | 2021-08-01
 ```
 
-### [func 12.4] Querying the input vs price tables
+### [func 8.12] Querying the input vs price tables
 
 ```q
 / 4. From the [input table], retrieve the [syms] from original [price table]
@@ -6694,7 +6695,7 @@ MSFT   | 2021-06-01 | 2021-08-01
 / you can query these args as a LIST of values corresponding from [input table]
 ```
 
-### [func 12.4a] Solution 1 (manual - no good)
+### [func 8.12a] Solution 1 (manual - no good)
 
 ```q
 / 4a. Solution 1: Manually run query through each row
@@ -6730,7 +6731,7 @@ AAPL   | 2021-01-01 | 2021-03-01
 / however this is super manual and inefficient
 ```
 
-### [func 12.4b] Solution 2 (using EACH + List of values)
+### [func 8.12b] Solution 2 (using EACH + List of values)
 
 ```q
 / 4b. Solution 2: use EACH to iterate through list of values
@@ -6784,7 +6785,7 @@ AAPL   | 2021-03-01 | 2021-06-30
 / raze = (,/)
 ```
 
-### [func 12.5] Solution 3 (re-write function)
+### [func 8.12] Solution 3 (re-write function)
 
 ```q
 / 5. Create new function f2, using x to query corresponding columns
@@ -7866,11 +7867,9 @@ BAC  | 79.8109
 / and uses size and price columns from trade table
 ```
 
-[QSQL 9.711] VWAP: For each sym on 2023.09.05, retrieve only the prices that are greater than the VWAP price. Return all columns
+[QSQL 9.711] VWAP: For each sym on 2023.09.07, retrieve only the prices that are greater than the VWAP price. Return all columns
 
 ```q
-/ 1. For each sym on 2023.09.07, retrieve only the prices that are greater than the VWAP price. Return all columns
-
 select from trade where date=2023.09.07, price > ({x[`size] wavg x`price}; ([]size;price)) fby sym
 
 / return all columns = filter to come AFTER where clause
@@ -7885,8 +7884,6 @@ select from trade where date=2023.09.07, price > ({x[`size] wavg x`price}; ([]si
 
 / so the function calculates the wavg for every size and price
 / and the x` iterates through every row in the table
-/ just like the syntax for table`column
-/ 
 ```
 
 ### 🔵 [QSQL 9.8] Table Query Problem Set 1
@@ -9585,10 +9582,103 @@ GOOG | 2014-04-21T09:45:00.000000 | 87757
 GOOG | 2014-04-21T10:00:00.000000 | 86012
 ```
 
+<a name="xeach></a>
+### 🔴 15. x`each Problem Sets
+[Top](#top)
 
+[x each 15.1] VWAP: For each sym on 2023.09.07, retrieve only the prices that are greater than the VWAP price. Return all columns (use fby)
 
+```q
+select from trade where date=2023.09.07, price > ({x[`size] wavg x`price}; ([]size;price)) fby sym
 
+/ return all columns = filter to come AFTER where clause
+/ retrieves prices that are greater than the vwap price for each sym
+/ "for each sym" = fby sym
+/ VWAP calculated via the wavg function
 
+/ syntax:
+/ actually follows the fby syntax: price > (aggr;price) fby sym
+/ except in this case, the aggr = vwap
+/ and price = the table of ([] size;price)
 
+/ so the function calculates the wavg for every size and price
+/ and the x` iterates through every row in the table
+```
+
+[x each 15.2] GS Probem Set
+
+```q
+/ Given the Price and Input tables:
+
+price: ([] date: 2021.01.21 2021.03.21 2021.09.21; ticker:`AAPL`AAPL`MSFT; exch: `US`UW`US; price: 10 20 30)
+
+price:
+date       | ticker | exch | price
+--------------------------------
+2021-01-21 |  AAPL  | US   | 10
+2021-03-21 |  AAPL  | UW   | 20
+2021-09-21 |  MSFT  | US   | 30
+
+input: ([] ticker: `AAPL`AAPL`MSFT; start: 2021.01.01 2021.03.01 2021.06.01; end: 2021.03.01 2021.06.30 2021.08.01)
+
+input:
+ticker |   start    |    end
+--------------------------------
+AAPL   | 2021-01-01 | 2021-03-01
+AAPL   | 2021-03-01 | 2021-06-30
+MSFT   | 2021-06-01 | 2021-08-01
+```
+
+```q
+/ 1. Create a function that queries the price table and returns the syms that match the start and end dates from input table
+
+/ thought process:
+
+/ you have 2 tables: price (table 1) and input (table 2)
+/ you want to check if data from table 1 fall within specific parameters in table 2
+/ first checks if [ticker] from [price] = [ticker] from [input]
+/ then checks if [date] from [price] falls within [start/end] from [input] 
+/ you need to query ENTIRE row from input table [sym + start + end]
+/ then iterate through EACH row
+```
+
+Solution
+
+```q
+price:
+date       | ticker | ex | price
+--------------------------------
+2021-01-21 |  AAPL  | US | 10
+2021-03-21 |  AAPL  | UW | 20
+2021-09-21 |  MSFT  | US | 30
+
+input:
+ticker |   start    |    end
+--------------------------------
+AAPL   | 2021-01-01 | 2021-03-01
+AAPL   | 2021-03-01 | 2021-06-30
+MSFT   | 2021-06-01 | 2021-08-01
+
+f2:{select from price where date within x`start`end, ticker in x`ticker}
+raze f2 each input
+
+/ the function:
+/ f2 takes implicit argument x as the [input table]
+/ remember, logic = column from table 1 vs input
+/ so find where [date] from [price table] is within (start,end) from x (your input)
+/ AND where [ticker] from [price table] matches [ticker] from x (your input)
+
+/ calling your function:
+/ so instead of 3 arguments, you only have one x
+/ x is your entire input table
+/ to iterate through EACH row of [input table], you have use [EACH]
+/ you return a list of tables, so need RAZE to level it
+
+/ oddly, these all work when calling your function
+
+raze f2 each input
+raze f2'[input]
+f2[input]
+```
 
 [Top](#top)
