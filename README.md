@@ -2278,7 +2278,7 @@ r13   | 557 704 944 867 1681 674 1152
 ### 🔴 5. Tables
 [Top](#top)
 
-### [table] What is the difference between a table and a keyed table?
+[Table 5.0] What is the difference between a table and a keyed table?
 
 ```q
 A table - is a flipped dictionary. Vectors of data are organized by columns.
@@ -2287,7 +2287,7 @@ A keyed table - is a dictionary mapping a table of key records to a table of val
 
 ```
 
-### [table] Creating Blank Table with Datatypes
+[Table 5.0] 1. Create a Blank Table with Datatypes
 
 ```q
 / create an empty table with the following columns/datatypes:
@@ -2300,46 +2300,49 @@ t: ([] sym:`$(); side: `char$(); size:`int$();price:`float$())
 
 sym | side | size | price
 --------------------------
+
+/ notice to cast sym datatype is simply a backtick `
 ```
-### [table] 1. Insert Single Row (using JOIN ASSIGN)
+
+[Table 5.0] 2. Add `IBM, "B", 10i, 100f (using JOIN ASSIGN)
 
 ```q
-/ add `IBM, "B", 10I, 100f to empty table
-
 t,:(`IBM;"B";10i; 100f)
 
 sym | side | size | price
 --------------------------
 IBM | B    | 10   | 100
 
+/ you're essentially adding a mixed list as a row into a table
 / must use correct datatypes
 / JOIN ASSIGN can ignore column header
 / DON'T need to backtick table t
 ```
 
-### [table] 2. Insert Single Row (using INSERT)
+[Table 5.0] 3. Insert `IBM, "B", 10I, 100f (using INSERT)
 
 ```q
 `t insert(`IBM;"B";10i;100f)
 
+/ NEED to backtick table otherwise wont work!
+/ inserting a mixed list into the table
 / INSERT don't need headers
 / don't need enlist
-/ but NEED to backtick table name
 ```
 
-### [table] 5. Upsert Single Row (UPSERT)
+[Table 5.0] 4. Upsert `GOOG; "B"; 30i; 300f as a row (using UPSERT)
 
 ```q
-/ Upsert `GOOG; "B"; 30i; 300f
-
 `t upsert (`GOOG;"B"; 30i; 300f)
 
 / same syntax as INSERT
 / notice you don't need to use enlist
 / don't need column headers
+/ UPSERT doesn't require backtick table, but wont save
+/ to save, still need to backtick `table
 ```
 
-### [table] 3. Insert Multiple Rows (INSERT)
+[Table 5.0] 5. Insert Multiple Rows (using INSERT)
 
 ```q
 / insert the following rows:
@@ -2348,7 +2351,7 @@ IBM | B    | 10   | 100
 / 10i 20i 30i
 / 100f 200f 300f
 
-`t insert(`IBM`MSFT`AAPL;"B","S","B";10i, 20i, 30i;100f, 200f, 300f)
+`t insert(`IBM`MSFT`AAPL; "B","S","B"; 10i, 20i, 30i; 100f, 200f, 300f)
 
 sym  | side | size | price
 -------------------------------
@@ -2362,7 +2365,7 @@ AAPL | B    | 30   | 300.0
 / floats have to be separated by commas
 ```
 
-### [table] 4. Upsert Multiple Rows (UPSERT)
+[Table 5.0] 4. Upsert Multiple Rows (UPSERT)
 
 ```q
 / upsert the following rows:
@@ -2384,7 +2387,7 @@ AAPL | B    | 30   | 300.0
 / must have commas between ints and floats!
 ```
 
-### [table] 3 Ways to Add Single Rows
+[Table 5.0] 3 Ways to Add Single Rows
 
 ```q
 / Create empty table cars with brand = sym, model = sym, and date = date
@@ -2404,6 +2407,7 @@ bmw  | 505  | 2021-11-13
 / INSERT don't need column headers
 / INSERT don't need enlist when using inserting single row
 / need corret datatype
+/ need BACKTICK table though
 ```
 
 ```q
@@ -2419,6 +2423,7 @@ audi | s4   | 2021-11-13
 / don't need column header
 / don't need enlist
 / need correct datatype
+/ need backtick table
 ```
 
 ```q
@@ -2432,9 +2437,10 @@ bmw  | 505  | 2021-11-13
 
 / UPSERT has same syntax as INSERT
 / note - you cannot upsert multiple rows; have to upsert a dictionary
+/ need backtick table
 ```
 
-### [table] how do you INSERT multiple rows into a table at once?
+[Table 5.0] how do you INSERT multiple rows into a table at once?
 
 ```
 / method 1
