@@ -8229,10 +8229,9 @@ tables[]
 / tables [] shows you what tables are within the script
 ```
 
-```q
-/1 add new column to sales containing profit
-/ profit = price * qty
+[QSQL 9.14] 1. Add new column called profit (price * qty)
 
+```q
 update profit:price*quantity from `sales
 
 trader |product |price| quantity| profit
@@ -8242,10 +8241,9 @@ Bob    | pen	| 3   |	82	| 246
 Paul   | book	| 3   |	64	| 192
 ```
 
-```q
-/2 work out total profit for each trader and product
-/ (group by trader and product)
+[QSQL 9.14] 2. Calculate total profit each trader and product
 
+```q
 select sum profit by trader, product from sales
 
 trader product profit
@@ -8255,9 +8253,9 @@ Bob    paper   1353
 Bob    pen     728
 ```
 
-```q
-/3 sort by profit
+[QSQL 9.14] 3. Sort profit by ascending order by trader and product
 
+```q
 select [<profit] profit:sum profit by trader, product from sales
 
 trader product profit
@@ -8284,7 +8282,6 @@ trader product profit
 John   book	34
 Bob    book	79
 Paul   pencil	105
-
 ```
 
 ### 🔵 [QSQL 9.15] Problem Set 2 - AQ
@@ -8292,62 +8289,137 @@ Paul   pencil	105
 [Top](#top)
 
 ```q
+/ Create function f, then call 300 to create function called marks:
+
 f:{([]subject:(4*x)#`maths`english`french`ict;class:raze 4#/:x?"ABCDE";gender:raze 4#/:x?"MF";mark:35+(4*x)?60;id:raze 4#/:til x)}
 marks:f[300]
-
-/2 find marks for class A
+```
+[QSQL 9.15] 1. Find marks for class A
+```q
 select from marks where class ="A"
+```
 
-/3 find marks for males of class B
+[QSQL 9.15] 2. Find marks for males of class B
+```q
 select from marks where gender="M",mark="B"
+```
 
-/4 find avg french mark in class c
+[QSQL 9.15] 3. Find the average french mark in class c
+
+```q
 select avg mark from marks where class = "C", subject=`french
+```
 
-/5 find avg mark for each subject, ignoring classes
+[QSQL 9.15] 4. Find the average mark for each subject, ignoring classes
+```q
 select avg mark by subject from marks
+```
 
-/6 for class A, produce table of avg, min, max and sd of math marks
+[QSQL 9.15] 5. For class A, produce table of avg, min, max and sd of math marks
+
+```q
 select average:avg mark, low: min mark, high: max mark, sd:dev mark from marks where subject =`maths, class ="A"
+```
 
-/7 display lowest, median and highest mark according to gender and subject
+[QSQL 9.15] 6. Display lowest, median and highest mark according to gender and subject
+```q
 select low:min mark, median:med mark, high: max mark by gender, subject from marks
+```
 
-/8 how many people are in each class (use id)?
+[QSQL 9.15] 7. How many people are in each class (use id)?
+```q
 select count distinct id by class from marks
+```
 
-/9 for class b ict marks, find med, range, sum of marks and num of distinct marks
+[QSQL 9.15] 8. For class b, subject ict, find med, range, sum of marks and num of distinct marks
+
+```q
 select median:med mark, range:(max mark) - min mark, total: sum mark, num: count distinct mark from marks where class = "B", subject =`ict
+```
 
-/9 calc avg mark by subject for class E
+[QSQL 9.15] 9. Calc average mark by subject for class E
+```q
 select avg mark by subject from marks where class ="E"
+```
 
-/10 calc highest avg subject mark for class e, calling it topmark
-select topmark: max mark from select avg mark by subject from marks where class = "E"  
+[QSQL 9.15] 10. Calc highest average subject mark for class e, calling it topmark
+```q
+select topmark: max mark by subject from marks where class = "E"  
+```
 
-/11 calc average mark for french in class d without using avg
+[QSQL 9.15] 11. Calc average mark for french in class d without using avg
+```q
 select average:(sum mark % count mark) from marks where class="D", subject=`french
+```
 
-/12 calc the range of marks among males in class D in ict and french
+[QSQL 9.15] 12. Calc the range of marks among males in class D in subjects ict and french
+```q
 select range:((max mark) - min mark) by subject from marks where class = "D", subject in `ict`french, gender="M"
+```
 
-/13 delete class E results
+[QSQL 9.15] 13. Delete class E results
+```q
 delete from marks where class="E"
+```
 
-/14 add 5 marks to each of class A french paper
-update mark:5+mark from `marks where class="A",subject=`french
+[QSQL 9.15] 14. Add 5 marks to each of class A french paper
+```q
+update mark:5+mark from `marks where class="A", subject=`french
+```
 
-/15 add new col called average, contains average mark for class and subject
+[QSQL 9.15] 15. Add new col called average, contains average mark for class and subject
+```q
 update average:avg mark by class, subject from marks 
 ```
 
-### 🔵 [QSQL 9.16 Retrieving values from Nested Table Problem Set
+### 🔵 [QSQL 9.16] Nested Table Problem Set
 <a name="sql_16"></a>
 [Top](#top)
 
 
 ```q
-/1 create new column bidIndex, which shows the index position in descending values (large to small)
+/ Given nested table t:
+
+t:([] t: 05:15:43 00:59:05 01:19:44; bidPrices: (7.83 8.20 9.84 6.93; 0.97 7.44 9.33 2.93; 2.88 5.63 4.98 5.56
+
+t         bidPrices            bidSizes        
+--------------------------------------------
+05:15:43  7.83 8.20 9.84 6.93  57 0 72 50 62
+00:59:05  0.97 7.44 9.33 2.93  97 99 27 31
+01:19:44  2.88 5.63 4.98 5.56  47 57 31 15 68 49
+```
+[QSQL 9.16] 1. Create new column bidIndex, which shows the index position in descending values of bidPrices (large to small)
+
+```q
+update bidIndex: idesc each bidPrices from t
+
+t         bidPrices            bidSizes           bidIndex
+----------------------------------------------------------
+05:15:43  7.83 8.20 9.84 6.93  57 0 72 50 62      2 1 0 3 
+00:59:05  0.97 7.44 9.33 2.93  97 99 27 31        2 1 3 0
+01:19:44  2.88 5.63 4.98 5.56  47 57 31 15 68 49  1 3 2 0
+
+/ idesc will sort by descending (large to small) order
+/ you have to use EACH since its a nested table
+```
+
+```q
+/ look what happens when you do this:
+
+update bidIndex: idesc bidPrices from t
+
+t         bidPrices            bidSizes           bidIndex
+----------------------------------------------------------
+05:15:43  7.83 8.20 9.84 6.93  57 0 72 50 62            0 
+00:59:05  0.97 7.44 9.33 2.93  97 99 27 31              2
+01:19:44  2.88 5.63 4.98 5.56  47 57 31 15 68 49        1
+
+/ if you omit the EACH
+/ it looks at the entire list (not the individual nested list)
+```
+
+```q
+/ old solution - not sure why x is there
 
 update bidIndex:({idesc x} each bidPrices) from t
 
@@ -8361,10 +8433,10 @@ t         bidPrices            bidSizes           bidIndex
 / 2nd index position = 3rd value = 9.84 largest
 ```
 
-```q
-/2 now isolate only the largest value
+[QSQL 9.16] 2. From your bidIndex column, retrieve the largest value only
 
-update bidIndex:({first idesc x} each bidPrices) from t
+```q
+update bidIndex: {first idesc x} each bidPrices from t
 
 t         bidPrices            bidSizes           bidIndex
 ----------------------------------------------------------
@@ -8372,13 +8444,16 @@ t         bidPrices            bidSizes           bidIndex
 00:59:05  0.97 7.44 9.33 2.93  97 99 27 31        2
 01:19:44  2.88 5.63 4.98 5.56  47 57 31 15 68 49  1
 
-/ adding first = only retrieves first value 
-/ largest bid since ordered by idesc
+/ need to insert a function (first idesc x)
+/ x goes through each nested list within bidPrices column
+/ since idesc = sorts by ascending order
+/ the first value = largest value
+/ so first idesc x = isolates the largest value
 ```
 
-```q
-/3 add a new column, bestBid, and retrieve the bestBid from the index position in bidIndex
+[QSQL 9.16] 3. Add a new column, bestBid, and retrieve the highest bid from the index position in the bidIndex column
 
+```q
 update bestBid:bidPrices@'bidIndex from update bidIndex:({first idesc x} each bidPrices) from t
 
 t         bidPrices            bidSizes     bidIndex   bestBid
@@ -8387,13 +8462,20 @@ t         bidPrices            bidSizes     bidIndex   bestBid
 00:59:05  0.97 7.44 9.33 2.93  23 99 27 31   2          9.33
 01:19:44  2.88 5.63 4.98 5.56  57 31 15 49   1          5.63
 
-/ bestbid = looks at bidIndex col, retrieves index position 2 from bidPrice col = 9.8
-/ everything after from is what we calculated above as the bidIndex col
+/ previously you retrieved the index position for the largest value in bidPrices
+/ now you need to retrieve the VALUE for that index position
+
+/ bidPrices@'bidIndex -> this syntax is funky; need to learn
+/ but the @ retrives the VALUE in bidprice column
+/ based on the index position in bidIndex col
+
+/ so bidIndex 2 = 9.84 from the bidPrices col
+/ syntax is strange since it has 2 from
 ```
 
+[QSQL 9.16] 4. Add new column, bestBidSize, and retrieve the largest bid size based on the bidIndex column
+ 
 ```q
-/4 add new column, bestBidSize, and retrieve the largest bidsize based on the bidIndex column
-
 update bestBidSize:bidSizes@'bidIndex from update bidIndex:({first idesc x} each bidPrices) from t
 
 t         bidPrices            bidSizes     bidIndex   bestBidSize
@@ -8402,12 +8484,13 @@ t         bidPrices            bidSizes     bidIndex   bestBidSize
 00:59:05  0.97 7.44 9.33 2.93  23 99 27 31   2          27
 01:19:44  2.88 5.63 4.98 5.56  57 31 15 49   1          31
 
+/ same syntax and logic as before
 / bestBidSize = looks at bidIndex col, retrieves index position 2 from bidSizes col = 50
 ```
 
-```q
-/5 Now combine all 3 queries into single one:
+[QSQL 9.16] 5. Combine all 3 queries into a single line
 
+```q
 update bestBid:bidPrices@'bidIndex, bestBidSize:bidSizes@'bidIndex from update bidIndex:({first idesc x}each bidPrices) from t
 
 t         bidPrices            bidSizes     bidIndex   bestBid  bestBidSize
@@ -8417,7 +8500,7 @@ t         bidPrices            bidSizes     bidIndex   bestBid  bestBidSize
 01:19:44  2.88 5.63 4.98 5.56  57 31 15 49   1          5.63       31
 
 / useful to use index position to retrieve value in another column
-/ lookup colum @`source column
+/ lookup column @`source column
 / you can have multiple update statements to add new columns
 / the bestBid and bestBidSize columns actually retrieve from a new column called bidIndex
 ```
@@ -8428,7 +8511,7 @@ t         bidPrices            bidSizes     bidIndex   bestBid  bestBidSize
 ### 🔴 10. Adverbs
 [Top](#top)
 
-🔵 [adverb 1.0] What is an ADVERB?
+[Adverbs 10.0] Quick Reminder on Adverbs
 
 ```q
 An adverb modifies an existing verb or function to alter how it's applied to its arguments
@@ -8441,7 +8524,7 @@ x \ y / scan
 x / y / over
 ```
 
-🔵 [adverb 2.0] Each Both
+[Adverbs 10.0] Each Both
 
 ```q
 x,'y
@@ -8465,7 +8548,7 @@ x,'y
 "mare"
 ```
 
-🔵 [adverb 3.0] Each Left
+[Adverbs 10.0] Each Left
 
 ```q
 x,\:y 
@@ -8482,7 +8565,7 @@ Adds EACH element of LEFT (x) to ENTIRE y
 3`a`b`c
 ```
 
-🔵 [adverb 4.0] Each Right
+[Adverbs 10.0] Each Right
 
 ```q
 x,/:y 
@@ -8499,7 +8582,7 @@ Adds EACH element of y to ENTIRE x
 1 2 3`c
 ```
 
-🔵 [adverb 5.0] Scan
+[Adverbs 10.0] Scan
 
 ```q
 1 +\ 0 1 2 3
@@ -8510,7 +8593,7 @@ Adds EACH element of y to ENTIRE x
 / returns the result of each result
 ```
 
-🔵 [adverb 6.0] Over
+[Adverbs 10.0] Over
 
 ```q
 1 +/ 0 1 2 3
@@ -8520,7 +8603,7 @@ Adds EACH element of y to ENTIRE x
 / returns the final result
 ```
 
-[adverb 6.1] Calculate the factorial of 6 using [over]
+[Adverbs 10.0] 1. Calculate the factorial of 6 using [over]
 
 ```q
 / 6! = 6*5*4*3*2*1
@@ -8532,14 +8615,14 @@ Adds EACH element of y to ENTIRE x
 / need ( ) surrounding */
 ```
 
-[adverb 6.2] Calculate the sum of every integer leading up to 5
+[Adverbs 10.0] 2. Calculate the sum of every integer leading up to 5
 
 ```q
 (+/) til 5
 10
 ```
 
-[adverb 6.3] Retrieve the max value in a list from 1 to 5
+[Adverbs 10.0] 3. Retrieve the max value in a list from 1 to 5
 
 ```q
 (|/) 1 2 3 4 5
@@ -8557,7 +8640,7 @@ max 1 2 3 4 5
 / the word "max" also works the same
 ```
 
-[adverb 6.4] Retrieve the min value in a list from 1 to 5
+[Adverbs 10.0] 4. Retrieve the min value in a list from 1 to 5
 
 ```q
 (&/) 1 2 3 4 5
@@ -8573,10 +8656,7 @@ min 1 2 3 4 5
 / keyword "min" also works the same
 ```
 
-
-
-
-🔵 [adverb 7.0] What is the difference between over and scan?
+[Adverbs 10.0] 5. What is the difference between over and scan?
 
 ```q
 / [over] takes a function (like addition) and iterates through list
@@ -8595,7 +8675,7 @@ min 1 2 3 4 5
 / scan converts a binary function to a unary uniform function (one that returns list of same length as input)
 ```
 
-🔵 [adverb 8.0] Create a function that calculates the moving sum with window size of 2
+[Adverbs 10.0] 6. Create a function that calculates the moving sum with window size of 2
 
 ```q
 / each prior = perform action on each element with its prior element
@@ -8614,7 +8694,7 @@ L: 20 30 4 6 1 2
  
 ```
 
-🔵 [adverb 9.0] Join the 2 lists together to form a nested list
+[Adverbs 10.0] 7. Join the 2 lists together to form a nested list
 
 ```q
 / use each both to join 2 lists together
@@ -8626,14 +8706,14 @@ numbers, 'powers
 (5 8;7 3;9 4)
 ```
 
-🔵 [adverb 9.1] Raise the first element of [numbers] to first element of [powers] and so on. 
+[Adverbs 10.0] 8. Raise the first element of [numbers] to first element of [powers] and so on. 
 
 ```q
 numbers xexp' powers
 390625 343 6561f
 ```
 
-🔵 [adverb 10.0] A bank account pays 5% interest a year. Write a function that takes the current balance and returns the new balance after one year. Then use scan\ with that function to display the interest every year, up to 7 years in the future
+[Adverbs 10.0] 9. A bank account pays 5% interest a year. Write a function that takes the current balance and returns the new balance after one year. Then use scan\ with that function to display the interest every year, up to 7 years in the future
 
 ```q
 / assume starting balance of 100
@@ -8654,7 +8734,7 @@ numbers xexp' powers
 / second argument = starting value for function
 ```
 
-🔵 [adverb 11.0] Create a function, fib, that takes a fibonnaci sequence as its argument and returns the next entry
+[Adverbs 10.0] 10. Create a function, fib, that takes a fibonnaci sequence as its argument and returns the next entry
 
 ```q
 / the fib seq = sum of prior 2 numbers
@@ -8671,7 +8751,7 @@ fib 1 1 2 3
 / and sums it
 ```
 
-[adverb 11.1] Use the [over function] to create a function, fibn, to generate a fib sequence x numbers long
+[Adverbs 10.0] 11. Use the over function to create a function, fibn, to generate a fib sequence x numbers long
 
 ```q
 / i dont get this
@@ -8685,7 +8765,7 @@ fibn 5
 1 1 2 3 5 8 13
 ```
 
-🔵 [adverb 13.0] Use [scan] to calculate the depreciation of cars 
+[Adverbs 10.0] 12. Use scan to calculate the depreciation of cars 
 
 ```q
 / c = initial car value
@@ -8696,7 +8776,7 @@ depr[100;8]
 92
 ```
 
-[adverb 13.1] What is the value after 5 years?
+[Adverbs 10.0] 13. What is the value after 5 years?
 
 ```q
 depr[;8]\[5;100]
