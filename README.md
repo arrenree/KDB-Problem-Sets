@@ -2278,15 +2278,69 @@ r13   | 557 704 944 867 1681 674 1152
 ### 🔴 5. Tables
 [Top](#top)
 
-[Table 5.0] What is the difference between a table and a keyed table?
+[Table 5.0] Table Problem Set 1 - Easy
 
 ```q
-A table - is a flipped dictionary. Vectors of data are organized by columns.
+t:([] company:`ford`bmw; employees:300 100)
+t
 
-A keyed table - is a dictionary mapping a table of key records to a table of value records.
+company | employees
+-------------------
+ford    |   300
+bmw     |   100
 ```
 
-[Table 5.0] Tables Problem Set 1 - Easy
+```q
+/ 1. What datatype is table t?
+
+type t
+98h
+
+/ 98h is a table
+```
+
+```q
+/ 2. how many rows are in table t?
+
+count t
+2
+
+
+/ counts how many rows in table
+```
+
+```q
+/ 3. Retrieve a list of columns for table t
+
+cols t
+`company`employees
+```
+
+```q
+/ 4. Check datatypes and any foreign key restrictions
+
+meta t
+
+c         | t |	f | a
+----------------------
+company	  | s |	  |	
+employees | j |	  |	
+```
+
+```q
+/ 5. Sort column employee in ascending order
+
+`employees xasc t
+
+company | employees
+-------------------
+bmw     |   100
+ford    |   300
+
+/ sorts employees in ascending order
+```
+
+[Table 5.0] Tables Problem Set 2 - Easy
 
 ```q
 / 1. Create 3 lists (a, b, c) with 4 elements each
@@ -2317,7 +2371,7 @@ Key | Value
  c  | 10 11 12 13
 ```
 
-[Table 5.0] Tables Problem Set 2 - Easy
+[Table 5.0] Tables Problem Set 3 - Easy
 
 ```q
 / 1. Create an empty table with the following columns/datatypes:
@@ -2416,7 +2470,7 @@ AAPL | B    | 30   | 300.0
 / UPSERT requires table to have backtick
 ```
 
-[Table 5.0] Tables Problem Set 3 - Easy
+[Table 5.0] Tables Problem Set 4 - Easy
 
 ```q
 / 1. Create empty table cars with brand = sym, model = sym, and date = date
@@ -2537,7 +2591,7 @@ banana |   30  |
 / notice you can skip columns when upserting (quantity left blank)
 ```
 
-[Table 5.0] Tables Problem Set 4 - Easy
+[Table 5.0] Tables Problem Set 5 - Easy
 
 ```q
 / 1. What is the difference between xcol and xcols?
@@ -2587,20 +2641,7 @@ employee | company
 / just moves it to left of table
 ```
 
-```q
-/ 4. What are some common table functions?
-
-t:([] company:`ford`bmw; employees:300 100)
-t
-
-type t               / what datatypes the table is
-count t              / return total number of rows in table
-cols t               / retrieve list of column names
-meta t               / shows info on type, foreign keys, and attributes
-`employees xasc t    / sorts table by employee column
-```
-
-[Table 5.0] Tables Problem Set 5 (Union, Except, Inter) - Easy
+[Table 5.0] Tables Problem Set 6 (Union, Except, Inter) - Easy
 
 ```q
 t:( [] company:`ford`bmw`benz; employees:100 200 300)
@@ -2621,7 +2662,7 @@ bmw     | 200
 ferrari | 400
 ```
 
-[Table 5.0] Union Table Example
+[Table 5.0] Tables Problem Set 6 - Union Table Example
 
 ```q
 / 1. UNION TABLE = merges 2 tables together, but does NOT dupe values!
@@ -2645,7 +2686,7 @@ ferrari | 400
 / if no match on key (ferrari), returns key + value as new row
 ```
 
-[Table 5.0] EXCEPT Table Example
+[Table 5.0] Tables Problem Set 6 - EXCEPT Table Example
 
 ```q
 / 2. EXCEPT TABLE = only returns values in left table NOT in right table
@@ -2677,7 +2718,7 @@ benz    | 300
 / if no match on key (benz), returns key + value
 ```
 
-[Table 5.0] INTER table Example
+[Table 5.0] Tables Problem Set 6 - INTER table Example
 
 ```q
 / 3. INTER TABLE = only returns common elements in both t and u (inner join) 
@@ -2705,11 +2746,23 @@ bmw     | 200
 / only returns matches in both key (bmw) and value (200)
 ```
 
-### [table] Show how to append using table joins , (comma)
+[Table 5.0] Tables Problem Set 7 - Table Joins Easy
 
 ```q
+/ 1. Start with empty table t with cols company and employees
+
 t:([] company:(); employees:())
+company | employee
+------------------
+	| 
+
 / empty table t
+```
+
+```q
+/ 2. Add the following into table t
+/ `bmw`soda
+/ 200 300
 
 t: t, ([] company:`bmw`skoda; employees:200 300)
 
@@ -2719,14 +2772,18 @@ bmw	| 200
 benz	| 300
 
 / joins empty table t with new table
-/ essentially you add rows by joining a table into table
+/ essentially you are joining a table into table
 ```
 
-### [table] How do you join 2 tables with same columns? (add rows)
-
 ```q
+/ 3. Given t1 and t2 with same column headers,
+/ join the two tables together keeping the same schema
+
 / if 2 tables columns MATCH, can JOIN to ADD ROW
 / called vertical joins
+
+t1:([] sym: `IBM`AAPL; side:`buy`sell; price: 10 20; size: 100 200)
+t2:([] sym:`GOOG`MSFT; side:`buy`sell; price: 30 40; size: 300 400)
 
 t1
 sym  side price size
@@ -2754,45 +2811,46 @@ MSFT sell  40	 400
 / and append the new rows
 ```
 
-### [table] How do you join 2 tables with different columns? (add columns)
-
 ```q
-/ if 2 tables have same number of rows
-/ and NO matching columns
-/ can join tables together by adding extra columns
-/ similar to LEFT JOIN
+/ 4. Given tables t1 and t2 below, join the two tables together
+/ note: tables have different columns
 
 t1:( [] sym: `IBM`AAPL`GOOG; ex: `nyse`nyse`nasdaq)
 t2:( [] price:10 20 30; size: 100 200 300)
 
 t1
-sym  ex
-----------
-IBM  nyse
-AAPL nyse
-GOOG nasdaq
+sym  | ex
+-------------
+IBM  | nyse
+AAPL | nyse
+GOOG | nasdaq
 
 t2
-price size
-----------
-10    100
-20    200
-30    300
+price | size
+-------------
+10   | 100
+20   | 200
+30   | 300
+```
+```q
+/ reminder - if 2 tables have same no of rows
+/ and NO matching columns
+/ can join tables together using each both ,' 
 
 t1,'t2
 
-sym  ex     price size
-----------------------
-IBM  nyse    10   100
-AAPL nyse    20   200
-GOOG nasdaq  30   300
+sym  |  ex    | price | size
+----------------------------
+IBM  | nyse   |  10   | 100
+AAPL | nyse   |  20   | 200
+GOOG | nasdaq |  30   | 300
 
 / use ,' each both adverb to combine tables together
 / t1 and t2 have diff column names
 / but same number of rows
 ```
 
-### [tables] Tables Problem Set 1 TS
+[Table 5.0] Tables Problem Set 8 - TS 1
 
 ```q
 stock: ( [] sym: `MS`C`AAPL; sector:`Financial`Financial`Tech; employees: 100 100 100)
