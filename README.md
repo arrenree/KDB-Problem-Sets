@@ -2853,39 +2853,35 @@ GOOG | nasdaq |  30   | 300
 [Table 5.0] Tables Problem Set 8 - TS 1
 
 ```q
+Given:
 stock: ( [] sym: `MS`C`AAPL; sector:`Financial`Financial`Tech; employees: 100 100 100)
 
-sym |sector    |employees
--------------------------
-MS  |Financial |100
-C   |Financial |100
-AAPL|Tech      |100
+sym  | sector    | employees
+-----------------------------
+MS   | Financial | 100
+C    | Financial | 100
+AAPL | Tech      | 100
 ```
 
-[tables] 1. Extract the employees numbers (without the header)
-
 ```q
-/ since they only want values and no header, use INDEX retrieve
+/ 1. Extract the employees numbers (without the header)
 
-stock[`employees]
-100 100 100
-```
-
-other syntax:
-
-```q
-stock.employees
-```
-```q
 stock`employees
-```
-```q
+100 100 100
+
+/ syntax is table`column name
+/ retrieves values as a list
+
+/ alternative syntax:
+
+stock.employees
+stock[`employees]
 stock [ ; `employees]
 ```
 
-[tables] 2. Key the first column in stock table above
-
 ```q
+/ 2. Key the first column in stock table
+
 1!stock
 
 `sym` |sector    |employees
@@ -2893,11 +2889,12 @@ stock [ ; `employees]
 `MS`  |Financial |100
 `C`   |Financial |100
 `AAPL`|Tech      |100
+
+/ syntax is 1 ! table name
 ```
 
-[tables] 3. Display only the first and second rows of the stock table
-
 ```q
+/ 3. Display only the first and second rows of the stock table
 / use TAKE # method
 
 2#stock
@@ -2906,21 +2903,20 @@ sym |sector    |employees
 -------------------------
 MS  |Financial |100
 C   |Financial |100
-```
 
-alternative solution:
+/ # take retrieves rows from table
 
-```q
-/ use index retrieve method
+/ alternative solution:
 
 stock [0 1]
 
+/ uses index retrieve method
 / returns index position 0 and 1 (first 2 rows)
 ```
 
-[tables] 4. Select the last row of stock table as a dictionary
-
 ```q
+/ 4. Select the last row of stock table as a dictionary
+
 last stock
 
 key       | value
@@ -2933,39 +2929,36 @@ employees | 100
 / and return it as a dictionary
 ```
 
-[tables] 5. Insert GOOG in the tech sector with 100 employees
-
 ```q
+/ 5. Insert GOOG in the tech sector with 100 employees (using insert)
+
 `stock insert(`GOOG; `Tech; 100)
 
-sym |sector    |employees
--------------------------
-MS  |Financial |100
-C   |Financial |100
-AAPL|Tech      |100
-GOOG|Tech      |100
+sym  | sector    | employees
+----------------------------
+MS   | Financial | 100
+C    | Financial | 100
+AAPL | Tech      | 100
+GOOG | Tech      | 100
 
-/ remember need to `stock otherwise error
-/ saves + updates underlying table
-```
+/ remember need to backtick `stock (otherwise error)
 
-alternative solution:
+/ alternative solution:
 
-```q
 insert [`stock; ([] sym: enlist `GOOG; sector: enlist `tech; employees: enlist 100)]
 
-sym |sector    |employees
--------------------------
-MS  |Financial |100
-C   |Financial |100
-AAPL|Tech      |100
-GOOG|Tech      |100
+sym  | sector    | employees
+----------------------------
+MS   | Financial | 100
+C    | Financial | 100
+AAPL | Tech      | 100
+GOOG | Tech      | 100
 
 / syntax is insert + [table name; table with corresponding columns]
 / must use enlist when adding single row!!
 ```
 
-### [tables] Tables Problem Set 2 TS
+[Table 5.0] Tables Problem Set 9 - TS 2
 
 ```q
 boss: ( [] name:`bob`bill`belinda; height: 188 186 174)
@@ -2986,13 +2979,17 @@ jane| 160
 john| 170
 ```
 
-[tables] 1. Find the average height of the bosses, the employees, and both the bosses and employees
-
 ```q
+/ 1. Find the average height of the bosses, the employees, and both the bosses and employees
+
 avg boss[`height]
+avg boss`height
+
 182.667
 
 avg employees [`height]
+avg boss`height
+
 170f
 
 avg (boss,employees)[`height]
@@ -3003,9 +3000,9 @@ avg (boss,employees)[`height]
 / then find average
 ```
 
-[tables] 2. Find the 2 tallest employees
-
 ```q
+/ 2. Find the 2 tallest employees
+
 2 # `height xdesc employees
 
 name | height
@@ -3018,7 +3015,7 @@ john | 170
 / then you take the first 2 rows 
 ```
 
-### [tables] Tables Problem Set 3 TS
+[Table 5.0] Tables Problem Set 10 - TS 3
 
 ```q
 stock: ( [sym:`MS`C`AAPL] sector:`Fin`Fin`Tech; employees: 100 100 100)
@@ -3041,13 +3038,16 @@ dt        |sym  |price| size
 2021-01-05|AAPL	|50   | 500
 ```
 
-[tables] 1. Insert the following rows into trade table
-
 ```q
-dt        |sym  |price| size
-----------------------------
-2021-11-01|JPM	|1    | 100
-2021-11-02|UBS	|2    | 200
+/ 1. Insert the following rows into trade table
+
+dt         | sym  | price | size
+--------------------------------
+2021-11-01 | JPM  |   1   | 100
+2021-11-02 | UBS  |   2   | 200
+
+/ since the values you insert HAS to match the datatype of table trade
+/ meta helps you know what each column datatype is
 
 meta trade
 
@@ -3057,9 +3057,6 @@ dt	d
 sym	s		
 price	j		
 size	j		
-
-/ since the values you insert HAS to match the datatype of table trade
-/ meta helps you know what each column datatype is
 
 `trade insert (2011.11.01 2021.11.02; `JPM`UBS; 1 2; 100 200)
 
@@ -3077,20 +3074,18 @@ dt        | sym  | price| size
 / remember to backtick `trade table name
 ```
 
-alternative solution:
-
 ```q
+/ alternative syntax 1
 / insert table method
 
 `trade insert( [] dt:2021.11.01+1 ; sym:`JPM`UBS; price:1 2; size: 100 200) 
 
-/ requires column header names
+/ insert table method requires column header names
+/ still needs backtick table
 ```
 
-alternative solution:
-
 ```q
-/ alternative syntax, but also requires column headers
+/ alternative syntax 2
 
 insert [`trade; ([] dt:2021.11.01+1 ; sym:`JPM`UBS; price:1 2; size: 100 200)]
 
@@ -3105,14 +3100,15 @@ dt        |sym  |price| size
 2021-11-02|UBS	|2    | 200
 
 / have to use backtick table in order to amend the underly table
+/ requires column headers
 ```
 
-[tables] 2. Insert the following record into stock
-
 ```q
-sym|sector|employees
---------------------
-FB |Tech  | 100
+/ 2. Insert the following record into stock
+
+sym | sector | employees
+-------------------------
+FB  |  Tech  | 100
 
 `stock insert (`FB; `Tech; 100)
 
@@ -3128,20 +3124,17 @@ FB   |Tech  | 100
 / remember to backtick `stock
 ```
 
-[tables] 3. In the stock table, change the number of employees for C to 300
-
 ```q
+/ 3. In the stock table, change the number of employees for C to 300
+
 stock upsert (`C;`Fin;300)
 
 / to update table values, use UPSERT
 / don't need backtick on table name
 ```
 
-alternative solution:
-
 ```q
-/ alternative syntax
-/ but this requires headers
+/ alternative syntax 1
 
 stock upsert ([sym: enlist`C] employees: enlist 300)
 
@@ -3150,36 +3143,37 @@ sym|sector|employees
 C  |Fin   |300
 
 / have to use enlist to create a vector for an atom
+/ note this requires header
 ```
 
-[tables] 4. Sort the stock table by sym
-
 ```q
+/ 4. Sort the stock table by sym
+
 `sym xasc `stock
 
-sym |sector| employees
+sym | sector| employees
 --------------------
-AAPL|Tech  | 100
-C   |Fin   | 100
-MS  |Fin   | 100
+AAPL| Tech  | 100
+C   | Fin   | 100
+MS  | Fin   | 100
 
 / `column name + xasc + `table name
 ```
 
-### [tables] Tables Problem Set 1 AQ
-
-[tables] 1. Create 3 lists called a, b, c with 4 elements each
+[Table 5.0] Tables Problem Set 11 - AQ 1
 
 ```q
+/ 1. Create 3 lists called a, b, c with 4 elements each
+
 a: 1 2 3 4
 b: `a`b`c`d
 c: 100 200 300 400
 ```
 
-[tables] 2. Create a table using these 3 lists
-
 ```q
-t:( [] a;b;c)
+/ 2. Create a table using these 3 lists
+
+t:( [] a; b; c)
 
 a b c
 --------
@@ -3192,9 +3186,9 @@ a b c
 / which are vectors of equal length
 ```
 
-[tables] 3. Create a dictionary using this table
-
 ```q
+/ 3. Create a dictionary using this table
+ 
 flip t
 
 key|value
@@ -3207,9 +3201,9 @@ c  | 100 200 300 400
 / so you can flip a table back into a dictionary
 ```
 
-[tables] 4. Create empty table sym (sym), side (char), size (int), price (float)
-
 ```q
+/ 4. Create empty table sym (sym), side (char), size (int), price (float)
+
 trade:( [] sym:`$(); side:`char$(); size:`int$(); price:`float$())
 
 sym | side | size | price
@@ -3218,9 +3212,9 @@ sym | side | size | price
 / to cast datatype sym use backtick `
 ```
 
-[tables] 5. Create another table, lasttrade, which is a copy of trade, but sym is keyed
-
 ```q
+/ 5. Create another table, lasttrade, which is a copy of trade, but sym is keyed
+
 lasttrade: 1!trade
 
 `sym` | side | size | price
@@ -3228,9 +3222,9 @@ lasttrade: 1!trade
 / created empty table lasttrade, with keyed sym column
 ```
 
-[tables] 6. Is there a difference in the metadata between 2 tables?
-
 ```q
+/ 6. Is there a difference in the metadata between 2 tables?
+
 meta trade ~ meta lasttrade
 1b (true)
 
@@ -3238,9 +3232,9 @@ meta trade ~ meta lasttrade
 / meta queries TYPE, foreign key, attributes
 ```
 
-[tables] 7. Is there a difference in type?
-
 ```q
+/ 7. Is there a difference in type?
+
 type trade ~ type lasttrade
 0b (false)
 
@@ -3251,18 +3245,19 @@ type trade ~ type lasttrade
 / lasttrade = 99 = dict (since you keyed)
 ```
 
-[tables] Joining rows to table
+[Table 5.0] Tables Problem Set 12 - AQ 2
 
 ```q
-/ use 3 join commands to add rows to trade 
+/ 1. use 3 join commands to add rows to trade 
 / sym: IBM, MSFT, AAPL
 / side: "B" or "S"
 / size: 10i 20i 30i
 / price: 100f 200f 300f
 
 trade
-sym|side|size|price
--------------------
+sym | side | size | price
+-------------------------
+    |      |      |
 
 trade,:(`IBM;"B";10i; 100f)
 trade,:(`MSFT;"S";20i;200f)
@@ -3274,10 +3269,10 @@ trade,:(`APPL,"B";30i;300f)
 / need to specify datatype since the table was assigned datatypes earlier
 ```
 
-[tables] Use a single join command to add 3 more rows into join
-
 ```q
-/ method 1: simply build a table
+/ 2. Use a single join command to add 3 more rows into join
+
+/ Method 1: simply build a table
 
 trade:([] sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10 20 30; price: 100 200 300)
 
@@ -3288,9 +3283,9 @@ MSFT | S    | 20   | 200.0
 AAPL | B    | 30   | 300.0
 ```
 
-Method 2: INSERT multiple rows
-
 ```q
+/ Method 2 - INSERT multiple rows
+
 `t insert(`IBM`MSFT`AAPL;"B","S","B";10i, 20i, 30i;100f, 200f, 300f)
 
 sym  | side | size | price
@@ -3304,9 +3299,9 @@ AAPL | B    | 30   | 300.0
 / ints and floats separated by commas!
 ```
 
-Method 3: UPSERT multiple
-
 ```q
+/ 3. Method 3 - UPSERT multiple rows
+
 `t upsert( []sym:`IBM`MSFT`AAPL;side:"B","S","B";size: 10i, 20i, 30i; price: 100f, 200f, 300f)
 
 sym  | side | size | price
@@ -3319,10 +3314,10 @@ AAPL | B    | 30   | 300.0
 / MUST include column names
 / must have commas between ints and floats!
 ```
-
-[tables] Fill lasttrade with data from trade
-
+ 
 ```q
+/ 4. Fill lasttrade with data from trade
+
 lasttrade:trade
 
 sym  | side | size | price
@@ -3334,18 +3329,18 @@ AAPL | B    | 30   | 300.0
 / you can simply "assign" table lasttrade to trade
 ```
 
-alternative syntax:
-
 ```q
+/ alternative syntax:
+
 lasttrade,'trade
 
 / this joins the 2 tables together
 ```
 
-### [tables] Tables Problem Set 2 AQ
+[Table 5.0] Tables Problem Set 12 - AQ 3
 
 ```q
-/1 create the following table
+/ 1. Create the following table
 
 stock:([] item:`soda`bacon`mush`eggs;brand:`fry`pork`veg`veg;price:1.5 1.99 0.88 1.55; order:50 82 45 92)
 
@@ -3357,9 +3352,9 @@ mush  | veg  | 0.88  | 45
 eggs  | veg  | 1.55  | 92
 ```
 
-[tables] 2. Add row of tomato, veg, 1.35 70
-
 ```q
+/ 2. Add row of tomato, veg, 1.35 70
+
 / insert method (most straightforward)
 
 `stock insert (`tomato;`veg;1.35;70)
@@ -3376,9 +3371,8 @@ tomato | veg  | 1.35 | 70
 / need to backtick `stock table
 ```
 
-alternative syntax:
-
 ```q
+/ alternative syntax: 
 / JOIN ASSIGN method
 
 stock,:(`tomato;`veg;1.35;70)
@@ -3392,9 +3386,9 @@ eggs   | veg  | 1.55 | 92
 tomato | veg  | 1.35 | 70
 ```
 
-[tables] 3. Key the table according to item and brand
-
 ```q
+/ 3. Key the table according to item and brand
+
 2!stock
 
 `item`   | `brand`| price| order
@@ -3408,9 +3402,8 @@ tomato | veg  | 1.35 | 70
 / use ! method to key
 ```
 
-alternative syntax:
-
 ```q
+/ alternative syntax:
 `item`brand xkey stock
 
 `item`   | `brand`| price| order
@@ -3424,9 +3417,9 @@ alternative syntax:
 / use xkey method to key
 ```
 
-[tables] 4. Does the meta data change when you key/unkey tables?
-
 ```q
+/ 4. Does the meta data change when you key/unkey tables?
+
 (meta stock) ~ (meta (2!stock))
 1b
 
@@ -3434,7 +3427,7 @@ alternative syntax:
 / so no, changing keys does not affect a tables meta
 ```
 
-[tables] Tables Problem Set 3 AQ
+[Table 5.0] Tables Problem Set 12 - AQ 4
 
 ```q
 / given table called trader
@@ -3450,9 +3443,8 @@ eggs   | veg  | 1.55 | 210
 tomato | veg  | 1.35 | 100
 ```
 
-[tables] 1. Create new table, totalorders, which has sum of both orders from traders
-
 ```q
+/ 1. Create new table, totalorders, which has sum of both orders from traders
 / also, drop the price column before adding together
 
 totalorders:(2!(enlist `price)_stock) + (2!(enlist `price)_trader)
@@ -3471,9 +3463,9 @@ tomato | veg  | 170
 / 3) re-key the table, then add the tables together
 ```
 
-[tables] 2. Create new list called newprices, which is 75% of stock's price
-
 ```q
+/ 2. Create new list called newprices, which is 75% of stock's price
+
 newprices:0.75 * stock`price
 1.125 1.4925 0.66 1.1625 1.0125
 
@@ -3481,9 +3473,8 @@ newprices:0.75 * stock`price
 / table`column = retrieves column values a list
 ```
 
-[tables] 3. Join newprices to the totalorders table
-
 ```q
+/ 3. Join newprices to the totalorders table
 / essentially you are joining a list to a table
 
 totalorders: totalorders,' ( [] newprices)
@@ -3505,9 +3496,8 @@ tomato | veg  |	170  | 1.0125
 / hence need to assign new table to save the changes
 ```
 
-alternative solution:
-
 ```q
+/ alternative solution:
 / QSQL method:
 
 update newp:newprices from totalorders
@@ -3523,9 +3513,9 @@ tomato | veg  |	170  | 1.0125
 / update col that doesnt exist will append it to table
 ```
 
-[tables] 4. With the 75% discount, how much savings per week will the stock and trader have?
-
 ```q
+/ 4. With the 75% discount, how much savings per week will the stock and trader have?
+
 stock
 
 `item`   | `brand`| price| order
@@ -3574,9 +3564,8 @@ type
 / this doesnt work anymore (since its keyed)
 ```
 
-alternative syntax:
-
-```q
+```
+/ alternative syntax:
 / QSQL method (honestly, easier)
 
 stock:update savings: price*order*0.25 from stock
@@ -3596,10 +3585,9 @@ select sum savings from stock
 
 / can perform operations on entire columns
 / so much cleaner!
-
 ```
 
-### [tables] Tables Problem Set (GS)
+[Table 5.0] Tables Problem Set 13 - GS 1
 
 ```q
 t1: ([] sym:`a`b`c;ex:`x)
@@ -3724,7 +3712,8 @@ sym|ex|price|size|avg_price_by_sym|avg_size_by_ex|wavg_price_by_sym
  y |b | 2.0 | 50 |      2.05      |      150     |    2.06667
  y |c | 3.3 |200 |      3.2       |      150     |    3.18
 ```
-### [tables] Tables Problem Set 4 (GS)
+
+[Table 5.0] Tables Problem Set 14 - GS 2
 
 ```q
 orders: ( [] order:10*1 + til 8; sym:`NYSE`NYSE,6#`NASDAQ; start: 08:00 09:00 09:00 08:00 10:00 12:30 13:30 18:00; end:11:00 13:00 15:30 13:30 11:30 13:30 14:30 19:00)
