@@ -2287,6 +2287,41 @@ A keyed table - is a dictionary mapping a table of key records to a table of val
 
 ```
 
+Tables Problem Set
+
+```q
+/ 1. Create 3 lists (a, b, c) with 4 elements each
+
+a: 1 2 3 4
+b: `a`b`c`d
+c: 10 11 12 13
+
+/ 2. create table t with the 3 lists
+
+t: ([] a; b; c)
+
+a | b |	c
+----------
+1 | a |	10
+2 | b |	11
+3 | c |	12
+4 | d |	13
+
+/ 3. make table t a dictionary
+
+flip t
+
+Key | Value
+-----------------
+ a  | 1 2 3 4
+ b  | `a`b`c`d
+ c  | 10 11 12 13
+```
+
+
+
+
+
 [Table 5.0] 1. Create a Blank Table with Datatypes
 
 ```q
