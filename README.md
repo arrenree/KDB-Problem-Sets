@@ -3393,6 +3393,8 @@ alternative syntax:
 [tables] Tables Problem Set 3 AQ
 
 ```q
+/ given table called trader
+
 trader:([]item:`soda`bacon`mush`eggs`tomato;brand:`fry`pork`veg`veg`veg;price:1.5 1.99 0.88 1.55 1.35; order:200 180 110 210 100)
 
 item   | brand| price| order
@@ -3419,42 +3421,44 @@ mush   | veg  | 155
 eggs   | veg  | 302
 tomato | veg  | 170
 
-/ first, need to KEY the tables before adding together
-/ since you have 2 columns of syms, and 1 column of ints
-/ need to KEY BOTH SYM COLUMNS 2!
-/ second, need to also DROP the price column before adding
-/ since only dropping 1 column, need to use ENLIST
+/ to add 2 tables together, need to first key them
+/ since they want you to drop the price column before adding
+/ need to 1) unkey orig table, 2) drop price column (using enlist)
+/ 3) re-key the table, then add the tables together
 ```
 
 [tables] 2. Create new list called newprices, which is 75% of stock's price
 
 ```q
-newprices:0.75 * stock[`price]
+newprices:0.75 * stock`price
 1.125 1.4925 0.66 1.1625 1.0125
 
-/ using indexing to retrieve price values from stock table
-/ alternative syntax: stock`price
+/ need to first make sure stock is unkeyed
+/ table`column = retrieves column values a list
 ```
 
 [tables] 3. Join newprices to the totalorders table
 
 ```q
-/ newprices = list of values
-/ trying to join these values onto a table as a column
+/ essentially you are joining a list to a table
 
 totalorders: totalorders,' ( [] newprices)
 
-/ so ([] newprices) turns the list into a single column
-/ then you simply join it onto existing totalorders table
-/ since the number of rows add up, it appends the column
-
 item   |brand |order | newprices
 --------------------------------
-soda   | fry  | 250  | 1.125
+soda   | fry  | 250  | 1.1250
 bacon  | pork |	262  | 1.4925
-mush   | veg  |	155  | 0.66
+mush   | veg  |	155  |   0.66
 eggs   | veg  |	302  | 1.1625
 tomato | veg  |	170  | 1.0125
+
+/ so ([] newprices) turns the list into a table
+/ then use adverb "each both" ,` to join the list to table
+/ only works if number of rows line up
+
+/ something interesting is that ,` is only performed in place
+/ so it doesnt "save" to the underlying table
+/ hence need to assign new table to save the changes
 ```
 
 alternative solution:
@@ -3533,6 +3537,8 @@ alternative syntax:
 
 stock:update savings: price*order*0.25 from stock
 
+/ have to reassign table as stock for the updated column to save!
+
 item  | brand | price | order | savings
 ---------------------------------------
 soda  | fry   | 1.5   | 50    | 18.75
@@ -3544,7 +3550,9 @@ tomato| veg   | 1.35  | 70    | 23.624
 select sum savings from stock
 128.72
 
+/ can perform operations on entire columns
 / so much cleaner!
+
 ```
 
 ### [tables] Tables Problem Set (GS)
