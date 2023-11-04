@@ -2284,10 +2284,9 @@ r13   | 557 704 944 867 1681 674 1152
 A table - is a flipped dictionary. Vectors of data are organized by columns.
 
 A keyed table - is a dictionary mapping a table of key records to a table of value records.
-
 ```
 
-Tables Problem Set
+[Table 5.0] Tables Problem Set 1 - Easy
 
 ```q
 / 1. Create 3 lists (a, b, c) with 4 elements each
@@ -2318,14 +2317,10 @@ Key | Value
  c  | 10 11 12 13
 ```
 
-
-
-
-
-[Table 5.0] 1. Create a Blank Table with Datatypes
+[Table 5.0] Tables Problem Set 2 - Easy
 
 ```q
-/ create an empty table with the following columns/datatypes:
+/ 1. Create an empty table with the following columns/datatypes:
 / sym (sym)
 / side (char)
 / size (int)
@@ -2339,48 +2334,47 @@ sym | side | size | price
 / notice to cast sym datatype is simply a backtick `
 ```
 
-[Table 5.0] 2. Add `IBM, "B", 10i, 100f (using JOIN ASSIGN)
-
 ```q
+/ 2. Add `IBM, "B", 10i, 100f to table (using JOIN ASSIGN)
+
 t,:(`IBM;"B";10i; 100f)
 
 sym | side | size | price
 --------------------------
 IBM | B    | 10   | 100
 
-/ you're essentially adding a mixed list as a row into a table
+/ use join assign (,:) to add single row to table
 / must use correct datatypes
 / JOIN ASSIGN can ignore column header
 / DON'T need to backtick table t
+/ auto saves to table t
 ```
 
-[Table 5.0] 3. Insert `IBM, "B", 10I, 100f (using INSERT)
-
 ```q
+/ 3.  Insert `IBM, "B", 10I, 100f to table t (using INSERT)
+
 `t insert(`IBM;"B";10i;100f)
 
 / NEED to backtick table otherwise wont work!
-/ inserting a mixed list into the table
 / INSERT don't need headers
 / don't need enlist
+/ note datatypes must still match
 ```
 
-[Table 5.0] 4. Upsert `GOOG; "B"; 30i; 300f as a row (using UPSERT)
-
 ```q
+/ 4. Upsert `GOOG; "B"; 30i; 300f to table t (using UPSERT)
+
 `t upsert (`GOOG;"B"; 30i; 300f)
 
 / same syntax as INSERT
 / notice you don't need to use enlist
 / don't need column headers
-/ UPSERT doesn't require backtick table, but wont save
+/ UPSERT doesn't REQUIRE backtick table, but wont save
 / to save, still need to backtick `table
 ```
 
-[Table 5.0] 5. Insert Multiple Rows (using INSERT)
-
 ```q
-/ insert the following rows:
+/ 5. Insert the following rows to table t (using INSERT)
 / `IBM`MSFT`AAPL
 / "B" "S" "B"
 / 10i 20i 30i
@@ -2394,16 +2388,15 @@ IBM  | B    | 10   | 100.0
 MSFT | S    | 20   | 200.0
 AAPL | B    | 30   | 300.0
 
-/ no column header!
+/ NEED to backtick table otherwise wont work!
+/ INSERT don't need headers
 / must use correct datatype!
 / ints have to be separated by commas
 / floats have to be separated by commas
 ```
 
-[Table 5.0] 4. Upsert Multiple Rows (UPSERT)
-
 ```q
-/ upsert the following rows:
+/ 6. Upsert the following rows to table t (using UPSERT)
 / `IBM`MSFT`AAPL
 / "B" "S" "B"
 / 10i 20i 30i
@@ -2417,17 +2410,18 @@ IBM  | B    | 10   | 100.0
 MSFT | S    | 20   | 200.0
 AAPL | B    | 30   | 300.0
 
-/ to UPSERT multiple, have to upsert a TABLE 
+/ to UPSERT multiple rows, have to upsert a TABLE 
 / MUST include column names
 / must have commas between ints and floats!
+/ UPSERT requires table to have backtick
 ```
 
-[Table 5.0] 3 Ways to Add Single Rows
+[Table 5.0] Tables Problem Set 3 - Easy
 
 ```q
-/ Create empty table cars with brand = sym, model = sym, and date = date
+/ 1. Create empty table cars with brand = sym, model = sym, and date = date
 
-cars:([] brand:`$();model:`$();date:`date$())
+cars:([] brand:`$(); model:`$(); date:`date$())
 ```
 
 ```q
@@ -2446,7 +2440,7 @@ bmw  | 505  | 2021-11-13
 ```
 
 ```q
-/3. Insert Single Row using Alternative Syntax
+/3. Insert Single Row using Alternative Syntax 
 
 insert[`cars;(`audi;`s5;2021.11.13)]
 
@@ -2475,10 +2469,11 @@ bmw  | 505  | 2021-11-13
 / need backtick table
 ```
 
-[Table 5.0] how do you INSERT multiple rows into a table at once?
-
 ```
-/ method 1
+/ 5. Insert multiple rows into table t
+/ `ferrari`benz
+/ `F50`s500
+/ 2021.11.13 2021.11.13
 
 `cars insert(`ferrari`benz;`F50`S500;2021.11.13 2021.11.13)
 
@@ -2494,10 +2489,8 @@ benz   | S500 | 2021-11-13
 / remember to backtick table name `cars
 ```
 
-Alternative Solution:
-
 ```q
-/ alternative syntax
+/ 6. Show alternative syntax to insert multiple rows in table
 
 insert[`cars;(`ferrari`benz;`F500`S500;2021.11.13 2021.11.13)]
 
@@ -2509,9 +2502,9 @@ ferrari| F50  | 2021-11-13
 benz   | S500 | 2021-11-13
 ```
 
-### [table] how do you UPSERT multiple rows into a table?
-
 ```q
+/ 7. How do you UPSERT multiple rows into table?
+
 / you cannot upsert multiple rows into a table
 / instead must upsert a dictionary
 ```
@@ -2519,17 +2512,16 @@ benz   | S500 | 2021-11-13
 ```q
 given table t:
 
-t:( []fruit:`apple`orange; price: 11 23; quantity:100 200)
+t:([] fruit:`apple`orange; price: 11 23; quantity:100 200)
 
-fruit | price | quantity
---------------------
-apple |	11    |	100
-orange| 23    |	200
-
+fruit  | price | quantity
+--------------------------
+apple  |  11   |   100
+orange |  23   |   200
 ```
 
 ```q
-/ upsert pear, banana, 20 30 into t
+/ 7. Upsert pear, banana, 20 30 into t
 
 `t upsert ( [] fruit:`pear`banana; price: 20 30)
 
@@ -2545,17 +2537,17 @@ banana |   30  |
 / notice you can skip columns when upserting (quantity left blank)
 ```
 
-### [table] What is the difference between xcol and xcols?
+[Table 5.0] Tables Problem Set 4 - Easy
 
 ```q
+/ 1. What is the difference between xcol and xcols?
+
 / xcol is used to rename table columns
 / xcols is used to rearrange table columns
 ```
 
-[tables] xcol example
-
 ```q
-/ xcol renames columns
+/ given table t:
 
 t: ( [] company: `ford`bmw; employee: 300 100)
 
@@ -2563,8 +2555,10 @@ company | employee
 ------------------
 ford    |   300
 bmw     |   100
+```
 
-/ rename company to a and employee to b
+```q
+/ 2. Rename company to a and employee to b
 
 `a`b xcol t
 
@@ -2578,17 +2572,8 @@ bmw | 100
 / have to use backtick + new col name
 ```
 
-[tables] xcols example:
-
 ```q
-/ xcols re-arranges columns
-
-t: ( [] company: `ford`bmw; employee: 300 100)
-
-company | employee
-------------------
-ford    |   300
-bmw     |   100
+/ 3. Rearrange columns in t to employees, company
 
 `employees`company xcols t
 
@@ -2602,11 +2587,12 @@ employee | company
 / just moves it to left of table
 ```
 
-### [table] What are some common table functions?
-
 ```q
+/ 4. What are some common table functions?
+
 t:([] company:`ford`bmw; employees:300 100)
 t
+
 type t               / what datatypes the table is
 count t              / return total number of rows in table
 cols t               / retrieve list of column names
@@ -2614,7 +2600,7 @@ meta t               / shows info on type, foreign keys, and attributes
 `employees xasc t    / sorts table by employee column
 ```
 
-### [table] Show examples of union, except, and inter function on tables
+[Table 5.0] Tables Problem Set 5 (Union, Except, Inter) - Easy
 
 ```q
 t:( [] company:`ford`bmw`benz; employees:100 200 300)
@@ -2635,10 +2621,10 @@ bmw     | 200
 ferrari | 400
 ```
 
-[tables] Union Table Example
+[Table 5.0] Union Table Example
 
 ```q
-/1 UNION TABLE = merges 2 tables together, but does NOT dupe values!
+/ 1. UNION TABLE = merges 2 tables together, but does NOT dupe values!
 
 t:( [] company:`ford`bmw`benz; employees:100 200 300)
 u:( [] company:`ford`bmw`ferrari; employees:5 200 400)
@@ -2659,10 +2645,10 @@ ferrari | 400
 / if no match on key (ferrari), returns key + value as new row
 ```
 
-[tables] EXCEPT Table Example
+[Table 5.0] EXCEPT Table Example
 
 ```q
-/2 EXCEPT TABLE = only returns values in left table NOT in right table
+/ 2. EXCEPT TABLE = only returns values in left table NOT in right table
 
 table t
 company | employees
@@ -2691,10 +2677,10 @@ benz    | 300
 / if no match on key (benz), returns key + value
 ```
 
-[tables] INTER table Example
+[Table 5.0] INTER table Example
 
 ```q
-/3 INTER TABLE = only returns common elements in both t and u (inner join) 
+/ 3. INTER TABLE = only returns common elements in both t and u (inner join) 
 
 table t
 company | employees
