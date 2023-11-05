@@ -4656,24 +4656,25 @@ date      |  time | sym |price| size|cond|bookId | owner | name
 ### 🔴 8. Functions
 [Top](#top)
 
-### 🔵 [func 8.1] Intro to Functions
+🔵 [Func 8.1] Intro to Functions
 <a name="func_intro"></a>
-
-[func 1.1] What is a lambda expression?
+[Top](#top)
 
 ```q
+/ 1. What is a lambda expression?
+
 / a lambda expression is an anonymous function
 ```
 
-[func 1.2] What are local variables?
-
 ```q
+/ 2. What are local variables?
+
 / a variable that is created and exist only for the duration of an application
 ```
 
-[func 1.3] What is function prefix syntax?
-
 ```q
+/ 3. What is function prefix syntax?
+
 / a unary function is a function with only one parameter
 / when you separate the function from its argument , this is called a prefix syntax
 
@@ -4683,13 +4684,13 @@ date      |  time | sym |price| size|cond|bookId | owner | name
 / in this case, 5 is an implicit variable
 ```
 
-### 🔵 [func 8.2] Functions on Strings - AQ
+🔵 [Func 8.2] Functions on Strings - AQ
 <a name="func_strings"></a>
 [Top](#top)
 
-[func 2.0] convert string [welcome] to [welcoME]
-
 ```q
+/ 1. Convert string [welcome] to [welcoME]
+
 / create a function that uses SSR (string search replace)
 
 / quick reminder on SSR
@@ -4703,9 +4704,9 @@ ssr["welcome";"me";"ME"]
 "welcoME"
 ```
 
-[func 2.1] Create a function to perform SSR on the above
-
 ```q
+/ 2. Create a function to perform SSR on the above
+
 / func accepts strings "welcome"
 / and outputs "welcoME"
 
@@ -4721,9 +4722,9 @@ f["welcome";"me";"ME"]
 / note - inputs have to be strings!
 ```
 
-[func 2.2] Create an SSR function that accepts syms and outputs strings 
-
 ```q
+/ 3. Create an SSR function that accepts syms and outputs strings 
+
 / func accepts syms
 / and outputs strings
 / using same example above
@@ -4738,9 +4739,9 @@ f[`welcome;"me";"ME"]
 / and replaces "me" with "ME"
 ```
 
-[func 2.3] re-write above function as lambda function
-
 ```q
+/ 4. re-write above function as lambda function
+
 / and call the func on the same line
 
 {ssr[string x;y;z]} [`welcome; "me";"ME"]
@@ -4752,9 +4753,9 @@ f[`welcome;"me";"ME"]
 / string x = ONLY applies to argument x
 ```
 
-[func 2.4] Alternative method to call arguments on lambda function
-
 ```q
+/ Alternative method to call arguments on lambda function
+
 / alternative syntax (lambda + alt method to call argument)
 
 {ssr[string x;y;z]} [ ; "me";"ME"] `welcome
@@ -4765,9 +4766,9 @@ f[`welcome;"me";"ME"]
 / this is useful when iterating through a LIST of syms
 ```
 
-[func 2.5] re-write function to pass a LIST of syms as its arg
-
 ```q
+/ 5. re-write function to pass a LIST of syms as its arg
+
 / instead of converting one sym
 / need to iterate function through LIST of syms
 / `welcome`home`mermaid
@@ -4785,9 +4786,9 @@ f[ ;"me";"ME"] each `welcome`home`mermaid
 / while locking in arguments y and z as constants
 ```
 
-[func 2.6] re-write above as lambda function + call list of syms
-
 ```q
+/ 6. re-write above as lambda function + call list of syms
+
 / lambda notation
 
 {ssr [string x;y;z]} [ ;"me";"ME"] each `welcome`home`mermaid
@@ -4803,13 +4804,13 @@ f[ ;"me";"ME"] each `welcome`home`mermaid
 / while locking in arguments y and z as constants```
 ```
 
-### 🔵 [func 8.3] Projected Functions - TS
+🔵 [Func 8.3] Projected Functions - TS
 <a name="func_proj"></a>
 [Top](#top)
 
-[func 3.1] Create function [raise], that takes x to the y
-
 ```q
+/ 1. Create function [raise], that takes x to the y
+
 / and raise 10 to the 2, 3 and 4
 
 raise: {x xexp y}
@@ -4820,9 +4821,9 @@ raise [10; 2 3 4]
 / y = 2 3 4
 ```
 
-[func 3.2] Create func called [g], which projects func [raise]
-
 ```q
+/ 2. Create func called [g], which projects func [raise]
+
 / func g keeps x constant @ 10
 / but accepts args to raise power to 1 2 3
 
@@ -4841,9 +4842,9 @@ g 1 2 3
 / not a function, so dont need { }
 ```
 
-[func 3.3] create func [square], which projects func [raise]
-
 ```q
+/ 3. Create func [square], which projects func [raise]
+
 / new func will square arguments passed through x
 
 / from earlier:
@@ -4858,14 +4859,13 @@ square 1 2 3
 / calls in 1 2 3 as argument x
 ```
 
-### 🔵 [func 8.4] Function Loop Problem Set - TS 
+🔵 [Func 8.4] Function Loop Problem Set - TS 
 <a name="func_loop"></a>
 [Top](#top)
 
-
-[func 4.1] using a LOOP, create a func that generates a list of 100 random numbers from 0-99, and sums all values from list thats greater than 50
-
 ```q
+/ 1. using a LOOP, create a func that generates a list of 100 random numbers from 0-99, and sums all values from list thats greater than 50
+
 / reminder:
 / WHILE LOOPS -> if [first cond] is TRUE, execute all arguments that follow
 / IF STATEMENT -> if [first cond] TRUE, execute [FIRST ARG]. Else, execute [LAST ARG].
@@ -4904,9 +4904,9 @@ while [i < count d; if [d[i]>50; r1+:d[i] ]; i+:1] r1
 / IF STATEMENT = tests IF condition true, add to list
 ```
 
-[func 4.1] Re-write the above function as a Vector Solution (NO LOOPS)
-
 ```
+/ 2.Re-write the above function as a Vector Solution (NO LOOPS)
+
 d: 100?100
 
 sum d where d > 50
@@ -4923,13 +4923,13 @@ min sum d where d>50
 avg sum d where d>50
 ```
 
-### 🔵 [func 8.5] Prime Numbers Problem Set - TS
+🔵 [Func 8.5] Prime Numbers Problem Set - TS
 <a name="func_prime"></a>
 [Top](#top)
 
-[func 5.1] create func that checks if argument x is prime or not
-
 ```q
+/ 1. Create func that checks if argument x is prime or not
+
 / call this func: [isPrime]
 / accepts 1 argument input
 / and checks whether argument is Prime (True) or not (False)
@@ -5001,9 +5001,9 @@ Component 3 (number > 3)
 / goes to end, returns 1b (True) 
 ```
 
-[func 5.2] Using your [isprime] func, create another func that returns every prime number up to argument x 
-
 ```q
+/ 2. Using your [isprime] func, create another func that returns every prime number up to argument x
+
 / call this func [findprime]
 
 / since you are returning a [LIST] of numbers
@@ -5066,9 +5066,9 @@ findprime 10
 / returns r (2, 3)
 ```
 
-[func 5.3] re-write [isprime] function using vector based solution (no loops!)
-
 ```q
+/ 3. Re-write [isprime] function using vector based solution (no loops!)
+
 / original [isprime] function
 / func check is arg x is prime or not
 / simply outputs true or false
@@ -5082,14 +5082,14 @@ isprime:{if[x<2; :0b]; a:2; while[a<x; if[(x mod a)=0; :0b]; a+:1]; 1b}
 ```
 
 ```q
-/ 1. start by using til to generate a list
+/ 3.1 start by using til to generate a list
 
 {til x} 10
 0 1 2 3 4 5 6 7 8 9
 ```
 
 ```q
-/ 2. remove first 2 elements (since not prime)
+/ 3.2 remove first 2 elements (since not prime)
 
 {2_ til x} 10
 2 3 4 5 6 7 8 9
@@ -5098,7 +5098,7 @@ isprime:{if[x<2; :0b]; a:2; while[a<x; if[(x mod a)=0; :0b]; a+:1]; 1b}
 ```
 
 ```q
-/ 3. check each number if it is a factor of argument x (10)
+/ 3.3 check each number if it is a factor of argument x (10)
 
 {x mod 2_ til x} 10
 0 1 2 0 4 3 2 1 0
@@ -5110,7 +5110,7 @@ isprime:{if[x<2; :0b]; a:2; while[a<x; if[(x mod a)=0; :0b]; a+:1]; 1b}
 ```
 
 ```q
-/ 4. show us factors of argument x
+/ 3.4 show us factors of argument x
 
 {0 = x mod 2_ til x} 10
 100100001b
@@ -5121,7 +5121,7 @@ isprime:{if[x<2; :0b]; a:2; while[a<x; if[(x mod a)=0; :0b]; a+:1]; 1b}
 ```
 
 ```q
-/ 5. check if there are ANY factors of 10? (mod = 0)
+/ 3.5 check if there are ANY factors of 10? (mod = 0)
 
 {any 0 = x mod 2_ til x} 10
 1b
@@ -5130,7 +5130,7 @@ isprime:{if[x<2; :0b]; a:2; while[a<x; if[(x mod a)=0; :0b]; a+:1]; 1b}
 ```
 
 ```q
-/ 6. does the list NOT contain any factors of 10?
+/ 3.6 does the list NOT contain any factors of 10?
 
 {not any 0 = x mod 2_ til x} 10
 0b
@@ -5140,7 +5140,7 @@ isprime:{if[x<2; :0b]; a:2; while[a<x; if[(x mod a)=0; :0b]; a+:1]; 1b}
 ```
 
 ```q
-/ 7. plug this back into your original function 
+/ 3.7 plug this back into your original function 
 / still need component for numbers less than 2
 / so re-use the x<2 IF/Else clause
 
@@ -5153,9 +5153,9 @@ isprimeB 10
 / FALSE, 10 is NOT prime
 ```
 
-[func 5.4] re-write [findprimes] function using vector based solution
-
 ```q
+/ 4. re-write [findprimes] function using vector based solution
+
 / original findprime function:
 
 findprime: {[n] r:(); a:1; while [a<n; if[isprime[a];r,:a]; a:a+1];r}
@@ -5183,14 +5183,12 @@ findprimesB 10
 2 3 5 7
 ```
 
-### 🔵 [func 8.6] Function Problem Set 1 - TS
+🔵 [Func 8.6] Function Problem Set 1 - TS
 <a name="func_set1TS"></a>
 [Top](#top)
 
-[func 6.1] Volume of cone function
-
 ```q
-/ create func called volc that accepts 2 arguments (r and h)
+/ 1. Create func called volc that accepts 2 arguments (r and h)
 / returns volume of cone
 / vol of cone = 1/3 * pi * r^2 * h
 / pi = -4 * atan -1
@@ -5205,10 +5203,8 @@ volc[2;3]
 / no space for volc[2;3]
 ```
 
-[func 6.2] Area and Volume of cone function
-
 ```q
-/ create function, called sph, that accepts argument radius
+/ 2. Create function, called sph, that accepts argument radius
 / and returns the area and volume of a cone as a dict
 
 / volume = 4/3 * pi * r^3
@@ -5233,10 +5229,8 @@ volume | 4.188
 / create keys as syms (`area`volume) mapped to values defined by your variables (a;v)
 ```
 
-[func 6.3] Implicit Arguments and Global Variables
-
 ```q
-/ create function, setc, that takes 1 implicit argument
+/ 3. Create function, setc, that takes 1 implicit argument
 / and sets the value of global variable c to that argument
 
 c:10
@@ -5254,10 +5248,8 @@ setc[15]
 / the output is 10 (global variable)
 ```
 
-[func 6.4] Projected Functions
-
 ```q
-/ raise:{x xexp y}
+/ 4. raise:{x xexp y}
 / create projection of raise called root
 / which calculates the square root of argument 
 / ie, root[9] = 3
@@ -5274,9 +5266,9 @@ root[9]
 / so the projected function will always be x xexp 0.5
 ```
 
-[func 6.5] Convert all elements of list l to a string
-
 ```q
+/ 5. Convert all elements of list l to a string
+
 l: (100;`price;1b)
 
 string l
@@ -5289,9 +5281,9 @@ string l
 / mixed lists have to be contained in parathesis ( )
 ```
 
-[func 6.6] Given string st, replace "cow" with "kangaroo"
-
 ```q
+/ 6. Given string st, replace "cow" with "kangaroo"
+
 / st: "the cow jumped over the moon"
 
 st: "the cow jumped over the moon"
@@ -5304,9 +5296,9 @@ ssr [st; "cow";"kangaroo"]
 / third condition = what to replace with
 ```
 
-[func 6.7] Create function that takes [name;age] and returns "hello age year old name"
-
 ```q
+/ 7. Create function that takes [name;age] and returns "hello age year old name"
+
 / create function, sayHi, that takes 2 arguments: name and age
 / and returns "hello age year old name"
 ```
@@ -5326,10 +5318,8 @@ hello 90 year old joe
 / when you define argument "joe" have to use parathesis otherwise wont work
 ```
 
-[func 6.8] Arithmetic on Lists
-
 ```q
-/ I have a box of 7 eggs, and the weights are
+/ 8. I have a box of 7 eggs, and the weights are
 / eggs: 10 20 30 40 50 60 70
 / find the median and average weight of these eggs
 
@@ -5343,10 +5333,8 @@ avg eggs
 / apparently same with med and avg functions
 ```
 
-[func 6.9] Weighted Averaged WAVG Function
-
 ```q
-/ I sold 2 boxes of eggs
+/ 9. I sold 2 boxes of eggs
 / one box had 10 eggs and i sold each egg for 50 each
 / the other box had 20 eggs and i sold each for 100 each
 / find the average price paid per egg
@@ -5360,10 +5348,8 @@ avg eggs
 / qty1 qty2 wavg value1 value2
 ```
 
-[func 6.10] Moving Average Window Functions
-
 ```
-/ generate list k with 10 random ints
+/ 10. Generate list k with 10 random ints
 / find moving average with window size of 3
 
 k: 10?10
@@ -5401,10 +5387,9 @@ deltas k
 / etc
 ```
 
-[func 6.11] Factorial Function using While Loops
-
 ```q
-/ Create function factw, which uses a loop to write a factorial function
+
+/ 11. Create function factw, which uses a loop to write a factorial function
 / factorial = multiply every iteration up to number x
 
 factw:{i:1; r:1; while[i<x; r*:i; i+:1];:r*x}
@@ -5446,10 +5431,8 @@ i(3) <= x(3) TRUE
 i(4) <= x(3) FALSE, so returns r = 6
 ```
 
-[func 6.12] Factorial Function using Vector Conditional
-
 ```q
-/ re-write the factorial function as factp WITHOUT using loops
+/ 12. re-write the factorial function as factp WITHOUT using loops
 / must use vector conditional approach
 
 / to replace WHILE loop using vector conditional
@@ -5480,10 +5463,8 @@ factp 4
 / since til only generates list up to, but not including x
 ```
 
-[func 6.13] Timing Calculations
-
 ```q
-/ Demonstrate which calculation is faster,
+/ 13. Demonstrate which calculation is faster,
 / factorial using loops or via KDB (vector conditional)
 / use \ts to time
 / do function useful (do x number times)
@@ -5499,10 +5480,8 @@ factp 4
 / 0 miliseconds 1008 bytes of memory
 ```
 
-[func 6.14] Protetcted Evaluations on Functions
-
 ```q
-/ Create function called safefact
+/ 14. Create function called safefact
 / that wraps factp with protected evaluation
 / to return null On instead of error 
 / when calling on a negative number
@@ -5518,10 +5497,8 @@ safefact -10
 / if FALSE, return ON
 ```
 
-[func 6.15] If/Else Statements (w reverse operator)
-
 ```q
-/ Write a function called isPalindrome 
+/ 15. Write a function called isPalindrome 
 / that accepts single argument as a list of ints 
 / returns `yes if list of ints is a palindrome
 / otherwise return `no
@@ -5541,15 +5518,14 @@ yes
 / to compare if x = reverse x
 ```
 
-[func 6.16] Find the sum of all multiples of 3 or 5 below 1000
-
 ```q
+/ 16. Find the sum of all multiples of 3 or 5 below 1000
 / check every number up to 1000
 / if its a factor of 3 or 5
 / x mod 3 = 0
 / x mod 5 = 0
 
-/1. generate list of ints from 0-999
+/ 1. generate list of ints from 0-999
 
 til 1000
 0 1 2 3...999
@@ -5582,45 +5558,41 @@ sum where {(0 = x mod 3) or (0 = x mod 5)} [til 1000]
 / (x mod 3 = 0) doesn't work for some reason
 ```
 
-### 🔵 [func 8.7] Functions Problem Set 1 (easy) - AQ
+🔵 [Func 8.7] Functions Problem Set 1 (easy) - AQ
 <a name="func_set1AQ"></a>
 [Top](#top)
 
-
-[func 7.1] write function f that calculates the square of a number
-
 ```q
-f:{[a] a*a}
+/ 1. Write function f that calculates the square of a number
 
+f:{[a] a*a}
 ```
 
-[func 7.2] write new funciton g, which takes square of first argument divided by square of second argument
-
 ```q
+/ 2. Write new funciton g, which takes square of first argument divided by square of second argument
 
 g: {(x*x) % (y*y)}
 g [2;4]
 0.25
 ```
 
-[func 7.3] execute g with arguments a and b, store this to c
-
 ```q
+/ 3. Execute g with arguments a and b, store this to c
+
 c: g[a;b] 
 
 ```
 
-[func 7.4] create dyadic function f1 indicating whether the product of 2 numbers is greater than sum
-
 ```q
+/ 4. Create dyadic function f1 indicating whether the product of 2 numbers is greater than sum
+
 / dyadic means 2 arguments
 
 f1: {(x*y) > x+y}
 ```
 
-[func 7.5] write this func with proper KDB order of operations g1: x^5-3x^2 + 5
-
 ```q
+/ 5. write this func with proper KDB order of operations g1: x^5-3x^2 + 5
 / then call the function when x=4
 
 g1:{((x xexp 5) - 3*(x xexp 2))+5}
@@ -5631,9 +5603,8 @@ g1[4]
 / an int next to parenthesis won't automatically mutiply
 ```
 
-[func 7.6] create function that calculates area of triangle
-
 ```q
+/ 6. Create function that calculates area of triangle
 / then call func with arguments height = 7, base = 10
 
 t:{x * y % 2 }
@@ -5641,17 +5612,15 @@ t [7;10]
 35
 ```
 
-[func 7.7] create function that calculates the sum of 2 squares of a number x
-
 ```q
+/ 7. Create function that calculates the sum of 2 squares of a number x
 
 f: {x xexp 2 + x xexp 2}
 f: {(x*x) + x*x}
 ```
 
-[func 7.8] create a function that calculates a^3+b^2+c
-
 ```q
+/ 8. Create a function that calculates a^3+b^2+c
 / then call your function with arguments: 13,3,6
 
 f:{(x xexp 3) + (y xexp 2) + z}
@@ -5661,23 +5630,23 @@ f [13;3;6]
 / have to use parathensis ( ) around xexp
 ```
 
-[func 7.9] BMI is weight divide by height squared. create an implicit formula
-
 ```q
+/ 9. BMI is weight divide by height squared. create an implicit formula
+
 bmi: { x % (y*y) }
 ```
 
-[func 7.10] create a func called perimeters, which will take perimeter of a square and return its area
-
 ```q
+/ 10. Create a func called perimeters, which will take perimeter of a square and return its area
+
 perimeter:{ (x%4) xexp 2}
 perimeter[8]
 4
 ```
 
-[func 7.11] Car Depreciation Problem
-
 ```q
+/ 11. Car Depreciation Problem
+
 / a car depreciates 15% every year for the first 3 years
 / then 8% every year for the next 3 years
 / create func k to find value after 6 years
@@ -5688,10 +5657,9 @@ k [15000]
 7173.1765
 ```
 
-### 🔵 [func 8.8] Functions Problem Set 2 (med) - AQ
+🔵 [Func 8.8] Functions Problem Set 2 (med) - AQ
 <a name="func_set2AQ"></a>
 [Top](#top)
-
 
 ```q
 / load fakedb.q
@@ -5721,9 +5689,9 @@ date       | sym  | time	               | src | price | size
 2014-04-21 | AAPL | 2014-04-21T08:11:23.934000 |  L  | 25.35 | 8945
 ```
 
-[func 8.1] create function with 3 arguments (symbols, startdate, enddate)
-
 ```q
+/ 1. Create function with 3 arguments (symbols, startdate, enddate)
+
 / name this func tradeticks
 / queries a date range and sym filter
 / taking in 3 arguments (startdate, enddate, symbols)
@@ -5748,9 +5716,9 @@ date      sym time         size  price
 / COL in ARG
 ```
 
-[func 8.2] Extracting temporal data from Timestamp
-
 ```q
+/ 2. Extracting temporal data from Timestamp
+
 select from depth
 
 depth
@@ -5772,9 +5740,10 @@ bid1 |   | f |
 
 / time column is datatype p = timestamp
 ```
-[func 8.3] Extract the TIMESTAMP from timestamp
 
 ```q
+/ 3. Extract the TIMESTAMP from timestamp
+
 select time from depth
 
 time
@@ -5786,9 +5755,9 @@ time
 / since time is already of timestamp datatype, just need to extract
 ```
 
-[func 8.4] extract the DATE from timestamp
-
 ```q
+/ 4. Extract the DATE from timestamp
+
 select `date$time from depth
 
 time
@@ -5799,9 +5768,10 @@ time
 
 / extract time, then cast timestamp to date datatype
 ```
-[func 8.5] extract the TIME from timestamp
 
 ```q
+/ 5. Extract the TIME from timestamp
+
 select time.time from depth
 select `time$time from depth
 
@@ -5816,9 +5786,9 @@ time
 / need to cast it as a time datatype
 ```
 
-[func 8.6] create tradeticks2 with additional parameters: starttime and endtime
-
 ```q
+/ 6. Create tradeticks2 with additional parameters: starttime and endtime
+
 / this func will only extract the trades that fall within time range
 / original equation's parameters = sym, startdate, enddate
 / hint - need to extract the TIME portion from timestamp 
@@ -5846,9 +5816,9 @@ date	   | sym  | time
 / such that it matches your arguments for starttime and endtime
 ```
 
-[func 8.7] create tradeticks3, but uses a start timestamp and end timestamp as parameters
-
 ```q
+/ 7. Create tradeticks3, but uses a start timestamp and end timestamp as parameters
+
 / arguments = ticker, starttimestamp, endtimestamp
 / timestamp args = TIMESTAMP format (date + time)
 
@@ -5916,9 +5886,9 @@ tradeticks3:{ [starttimestamp; endtimestamp; symbols]
 / otherwise, execute last statement
 ```
 
-[func 8.8] create function, quotechanges, to retrieve data when bid or ask changes
-
 ```q
+/ 8. Create function, quotechanges, to retrieve data when bid or ask changes
+
 / create a function called quotechanges
 / select from quote table
 / for a given date list and symbol
@@ -5943,7 +5913,7 @@ quotechanges:{ [dates; symbols]
 / differ bid or differ ask = any change in bid or ask
 ```
 
-### 🔵 [func 8.9] Functions Problem Set 3 (med/hard) - AQ
+🔵 [Func 8.9] Functions Problem Set 3 (med/hard) - AQ
 <a name="func_set3AQ"></a>
 [Top](#top)
 
@@ -5956,10 +5926,8 @@ quotechanges:{ [dates; symbols]
 `depth`quotes`trades
 ```
 
-[func 9.1] Write func that calcs the avg spread between bid and ask
-
 ```q
-/ write a func that calc the avg spread between bid and ask per date 
+/ 1. write a func that calc the avg spread between bid and ask per date 
 / and sym from the quote table 
 / for a given date range and sym list
 
@@ -5981,10 +5949,8 @@ date       | sym  | avgspread
 2021-11-11 | GOOG | 1.60
 ```
 
-[func 9.2] Create func that calcs the high, low, open, close  
-
 ```q
-/ create function called dailystats1
+/ 2. Create function called dailystats1
 / which calcs the High, Low, Open, Close 
 / for a given date range and list of instruments
 
@@ -6009,10 +5975,8 @@ date       | sym  | high  | low  | open | close
 2021-11-11 | AAPL | 109.9 | 50.0 | 62.3	| 76.1
 ```
 
-[func 9.3] Using previous function, add on vwap column
-
 ```q
-/ create function called dailystats2
+/ 3. Create function called dailystats2
 / which is the same as dailystats1
 / but also calculates the vwap value
 
@@ -6038,10 +6002,8 @@ date       | sym  | high  | low  | open | close | vwap
 / [size wavg price] = VWAP calculation
 ```
 
-[func 9.4] Bucketing data by time period using xbar
-
 ```q
-/ create function, dailystats3
+/ 4. Create function, dailystats3
 / which is the same as dailystats2
 / but includes a BUCKETING value of [type timespan] using xbar
 / add [bucket] as an arg
@@ -6066,10 +6028,8 @@ date	   | sym | time                       |high | low |open |close|vwap
 / timespan format = 12:00:00.000000000
 ```
 
-[func 9.5] Opening price same as prev close price [med]
-
 ```q
-/ create dailystats 4
+/ 5. create dailystats 4
 / which is the same as dailystats3
 / since you've grouped values by [buckets]
 / the [open price] "should" = [close price] of prev bucket for same symbol
@@ -6091,10 +6051,8 @@ dailystats4: { [startdate; enddate; symbols; bucket]
 / so replaces the [OPEN] value with [PREV CLOSE] value
 ```
 
-[func 9.6] Calculating TWAP [hard]
-
 ```q
-/ create function that calculates the VWAP and TWAP per day per symbol
+/ 6. Create function that calculates the VWAP and TWAP per day per symbol
 / for a supplied list of dates and symbols
 
 / While VWAP = volume weighted by size = size wavg price
@@ -6122,10 +6080,8 @@ date       | sym  | vwap  | twap
 / [next deltas time] = the entire time 
 ```
 
-[func 9.7] Calculating max disparity btwn VWAP and TWAP [hard]
-
 ```q
-/ create function twapandvwap2
+/ 7. Create function twapandvwap2
 / which calculates the max disparity per date using fby
 
 twapandvwap1: { [startdate; enddate; symbols]
@@ -6142,10 +6098,8 @@ twapandvwap1: { [startdate; enddate; symbols]
 / then you filter by sym for the [max diff]
 ```
 
-[func 9.8] Calculating standard deviations [hard]
-
 ```q
-/ create function called bigdays
+/ 8. Create function called bigdays
 / which returns across [one month window]
 / any days where the [vol of shares traded] was greater
 / than [n stddevs] from the avg for that month
@@ -6179,10 +6133,8 @@ bigdays: { [mnth;stddevs]
 / is greater than x standard deviations from trades per day
 ```
 
-[func 9.9] Forcing xbar bucket to start at specific time
-
 ```q
-/ create function called bucket
+/ 9. Create function called bucket
 / arguments = startdate, enddate, starttime, endtime, bucket, symbols
 / want to xbar 25 min buckets
 / trading day starts at 9:00
@@ -6232,10 +6184,9 @@ date       | sym  | starttime | size
 / need to cast [time column] to from [timespan] to [time] datatype
 / during the where filter
 ```
-[func 9.10] bucketing values in variable widths (using BIN instead of XBAR)
 
 ```q
-/ want buckets to start at:
+/ 10. want buckets to start at:
 / 08:00 08:15 08:32 08:50 09:27 12:00
 
 / use [BIN] to group [instead of xbar]
@@ -6290,10 +6241,8 @@ date       | sym  | minute | size
 `one`one`two`two`three`three
 ```
 
-[func 9.11] Creating buckets of evenly cumulative traded volume
-
 ```q
-/ create function called volumebuckets1
+/ 11. create function called volumebuckets1
 / to split the trading day into [even volume buckets]
 / for ex, if arg numbuckets = 5,
 / how much volume would be traded in each bucket?
@@ -6334,10 +6283,8 @@ date       | num | starttime  	              | endtime                    | tota
 0 0 0 1 1 1
 ```
 
-[func 9.12] Calc avg start and end time for each bucket
-
 ```q
-/ create volumebuckets2
+/ 12. create volumebuckets2
 / which calcs the avg start and end time
 / for each vol bucket across a set of dates
 / this will give the average volume profile
@@ -6373,7 +6320,7 @@ volbucket | starttime    | endtime
 / retrieving FROM another function, so need to include [all arguments]
 ```
 
-### 🔵 [func 8.10] Functions Problem Set 4 - AQ
+🔵 [func 8.10] Functions Problem Set 4 - AQ
 <a name="func_set4AQ"></a>
 [Top](#top)
 
@@ -6398,10 +6345,8 @@ date       | sym  | time	               | src | price | size
 2014-04-21 | AAPL | 2014-04-21T08:11:23.934000 |  L  | 25.35 | 8945
 ```
 
-[func 10.0] tradeticks function
-
 ```q
-/ name this func tradeticks1
+/ 1. Name this func tradeticks1
 / queries a date range and sym filter
 / taking in 3 arguments (startdate, enddate, symbols)
 
@@ -6425,10 +6370,8 @@ date       | sym  | time         | size  | price
 / COL in ARG
 ```
 
-[func 10.1] Using a projected function to retrieve from another function
-
 ```q
-/ create function called calcreturns
+/ 2. Create function called calcreturns
 / using tradeticks1, add in column
 / which calc return of price vs the nth previous price
 / using xprev
@@ -6461,12 +6404,10 @@ calcreturns: { [startdate; enddate; symbols; n]
 / but also retrieves FROM another function [tradeticks1]
 ```
 
-[func 10.2] Using a projected function to retrieve from another function (hard)
-
 ```q
 / (i dont really get this)
 
-/ using tradeticks1 function,
+/ 3. using tradeticks1 function,
 / create func to extract data and add in 
 / [running vwap] and [running twap] columns
 / [running vwap] = running sum of price*size / running sum of size
@@ -6503,12 +6444,10 @@ date      |sym |time                 |price|size|activetime   |rvwap|rtwap
 / FROM this activetime calculation
 ```
 
-[func 10.3] running sums by price group
-
 ```q
 / (i dont get this)
 
-/ calc [running sum of vol] traded in each "price group"
+/ 4. calc [running sum of vol] traded in each "price group"
 / use tradeticks1 to extract data from trade table
 / [price group] = series of [trades] all executed at [same price]
 
@@ -6536,10 +6475,8 @@ date	  |sym | time               	   | price| size | pricegroupsize
 / if grouping by sums differ price, shouldn't price = unique?
 ```
 
-[func 10.4] VWAP if all bids or asks taken out
-
 ```q
-/ extract from depth table
+/ 5. Extract from depth table
 / add column [BIDVWAP], which displays all the levels on the bid
 / ie, the VWAP you would get if you were to clear the depth
 / and do the same for [ASKVWAP]
@@ -6571,12 +6508,10 @@ sidevwaps[2014.04.20;2014.04.21;`AAPL]
 / why can't just from quote?
 ```
 
-[func 10.5] 
-
 ```q
 / (i dont get this)
 
-/ extract 30 mins worth of depth ticks
+/ 6. Extract 30 mins worth of depth ticks
 / for any date and sym
 / assume i sell 1,000 shares
 / calc for each tick how many levels down the book
@@ -6614,7 +6549,7 @@ findfilllevel: { [d;s;st;et;o]
  
  ```
 
-### [func 8.11] Int Problem Set 1 - GS
+🔵 [Func 8.11] Int Problem Set 1 - GS
 <a name="func_int1"></a>
 [Top](#top)
 
@@ -6666,7 +6601,7 @@ f:{[t;d] select last price, max timestamp by date, sym from t where date<=d, tim
 / the ORDER of the fby also matters a lot. 
 ```
 
-### [func 8.12] Int Problem Set 2 - GS
+🔵 [Func 8.12] Int Problem Set 2 - GS
 <a name="func_int2"></a>
 [Top](#top)
 
