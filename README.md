@@ -6,6 +6,20 @@
 3. [Lists](#list)
 4. [Dictionary](#dictionary)
 5. [Tables](#tables)
+	1. [Tables Problem Set 1](#table_PS1)
+ 	2. [Tables Problem Set 2](#table_PS2)
+	3. [Tables Problem Set 3](#table_PS3)
+	4. [Tables Problem Set 4](#table_PS4)
+	5. [Tables Problem Set 5](#table_PS5)
+	6. [Tables Problem Set 6](#table_PS6)
+	7. [Tables Problem Set 7](#table_PS7)
+ 	8. [Tables Problem Set 8](#table_PS8)
+ 	9. [Tables Problem Set 9](#table_PS9)
+	10. [Tables Problem Set 10](#table_PS10)
+	11. [Tables Problem Set 11](#table_PS11)
+	12. [Tables Problem Set 12](#table_PS12)
+	13. [Tables Problem Set 13](#table_PS13)
+	14. [Tables Problem Set 14](#table_PS14)
 6. [Keyed Tables](#key_table)
 7. [Foreign Key Restrictions](#fkey_table)
 8. [Functions](#functions)
@@ -21,7 +35,7 @@
 	10. [Functions Problem Set 4 - AQ](#func_set4AQ)
 	11. [Int Problem Set 1 - GS](#func_int1)
 	12. [Int Problem Set 2 - GS](#func_int2)
-9. [qSQL](#qsql)
+10. [qSQL](#qsql)
 	1. [QSQL Problem Set 1 - TS](#sql_1)
 	2. [QSQL Problem Set 2 - TS](#sql_2)
 	3. [QSQL Problem Set 3 - TS](#sql_3)
@@ -38,12 +52,12 @@
 	14. [QSQL Problem Set 1 - AQ](#sql_14)
 	15. [QSQL Problem Set 2 - AQ](#sql_15)
 	16. [Nested Tables Problem Set](#sql_16)
-10. [Adverbs](#adverbs)
-11. [Attributes](#attributes)
-12. [Joins](#joins)
-13. [@ & . Operator](#at)
-14. [Racking & Alignment](racking)
-15. [x`each Problem Sets](#xeach)
+11. [Adverbs](#adverbs)
+12. [Attributes](#attributes)
+13. [Joins](#joins)
+14. [@ & . Operator](#at)
+15. [Racking & Alignment](racking)
+16. [x`each Problem Sets](#xeach)
 
 <hr>
 
@@ -2278,7 +2292,8 @@ r13   | 557 704 944 867 1681 674 1152
 ### 🔴 5. Tables
 [Top](#top)
 
-[Table 5.0] Table Problem Set 1 - Easy
+🔵 [Table 5.1] Table Problem Set 1 - Easy
+<a name="table_PS1"></a>
 
 ```q
 t:([] company:`ford`bmw; employees:300 100)
@@ -2340,38 +2355,8 @@ ford    |   300
 / sorts employees in ascending order
 ```
 
-[Table 5.0] Tables Problem Set 2 - Easy
-
-```q
-/ 1. Create 3 lists (a, b, c) with 4 elements each
-
-a: 1 2 3 4
-b: `a`b`c`d
-c: 10 11 12 13
-
-/ 2. create table t with the 3 lists
-
-t: ([] a; b; c)
-
-a | b |	c
-----------
-1 | a |	10
-2 | b |	11
-3 | c |	12
-4 | d |	13
-
-/ 3. make table t a dictionary
-
-flip t
-
-Key | Value
------------------
- a  | 1 2 3 4
- b  | `a`b`c`d
- c  | 10 11 12 13
-```
-
-[Table 5.0] Tables Problem Set 3 - Easy
+🔵 [Table 5.2] Table Problem Set 2 - Easy
+<a name="table_PS2"></a>
 
 ```q
 / 1. Create an empty table with the following columns/datatypes:
@@ -2470,7 +2455,8 @@ AAPL | B    | 30   | 300.0
 / UPSERT requires table to have backtick
 ```
 
-[Table 5.0] Tables Problem Set 4 - Easy
+🔵 [Table 5.3] Table Problem Set 3 - Easy
+<a name="table_PS3"></a>
 
 ```q
 / 1. Create empty table cars with brand = sym, model = sym, and date = date
@@ -2590,8 +2576,8 @@ banana |   30  |
 / need column names
 / notice you can skip columns when upserting (quantity left blank)
 ```
-
-[Table 5.0] Tables Problem Set 5 - Easy
+🔵 [Table 5.4] Table Problem Set 4 - Easy
+<a name="table_PS4"></a>
 
 ```q
 / 1. What is the difference between xcol and xcols?
@@ -2641,7 +2627,8 @@ employee | company
 / just moves it to left of table
 ```
 
-[Table 5.0] Tables Problem Set 6 (Union, Except, Inter) - Easy
+🔵 [Table 5.5] Table Problem Set 5 (Union, Except, Inter) - Easy
+<a name="table_PS5"></a>
 
 ```q
 t:( [] company:`ford`bmw`benz; employees:100 200 300)
@@ -2661,8 +2648,6 @@ ford    | 5
 bmw     | 200 
 ferrari | 400
 ```
-
-[Table 5.0] Tables Problem Set 6 - Union Table Example
 
 ```q
 / 1. UNION TABLE = merges 2 tables together, but does NOT dupe values!
@@ -2685,8 +2670,6 @@ ferrari | 400
 / if match on key (ford), but no match on value (100 v 5), returns BOTH values
 / if no match on key (ferrari), returns key + value as new row
 ```
-
-[Table 5.0] Tables Problem Set 6 - EXCEPT Table Example
 
 ```q
 / 2. EXCEPT TABLE = only returns values in left table NOT in right table
@@ -2718,8 +2701,6 @@ benz    | 300
 / if no match on key (benz), returns key + value
 ```
 
-[Table 5.0] Tables Problem Set 6 - INTER table Example
-
 ```q
 / 3. INTER TABLE = only returns common elements in both t and u (inner join) 
 
@@ -2746,7 +2727,8 @@ bmw     | 200
 / only returns matches in both key (bmw) and value (200)
 ```
 
-[Table 5.0] Tables Problem Set 7 - Table Joins Easy
+🔵 [Table 5.6] Table Problem Set 6 (Table Joins) - Easy
+<a name="table_PS6"></a>
 
 ```q
 / 1. Start with empty table t with cols company and employees
@@ -2849,8 +2831,8 @@ GOOG | nasdaq |  30   | 300
 / t1 and t2 have diff column names
 / but same number of rows
 ```
-
-[Table 5.0] Tables Problem Set 8 - TS 1
+🔵 [Table 5.7] Table Problem Set 7 (TS 1) - Easy
+<a name="table_PS7"></a>
 
 ```q
 Given:
@@ -2957,8 +2939,8 @@ GOOG | Tech      | 100
 / syntax is insert + [table name; table with corresponding columns]
 / must use enlist when adding single row!!
 ```
-
-[Table 5.0] Tables Problem Set 9 - TS 2
+🔵 [Table 5.8] Table Problem Set 8 (TS 2) - Easy
+<a name="table_PS8"></a>
 
 ```q
 boss: ( [] name:`bob`bill`belinda; height: 188 186 174)
@@ -3014,8 +2996,8 @@ john | 170
 / syntax is column_name xdesc table_name
 / then you take the first 2 rows 
 ```
-
-[Table 5.0] Tables Problem Set 10 - TS 3
+🔵 [Table 5.9] Table Problem Set 9 (TS 3) - Easy
+<a name="table_PS9"></a>
 
 ```q
 stock: ( [sym:`MS`C`AAPL] sector:`Fin`Fin`Tech; employees: 100 100 100)
@@ -3159,8 +3141,8 @@ MS  | Fin   | 100
 
 / `column name + xasc + `table name
 ```
-
-[Table 5.0] Tables Problem Set 11 - AQ 1
+🔵 [Table 5.10] Table Problem Set 10 (AQ 1) - Easy
+<a name="table_PS10"></a>
 
 ```q
 / 1. Create 3 lists called a, b, c with 4 elements each
@@ -3244,8 +3226,8 @@ type trade ~ type lasttrade
 / trade = 98h = table
 / lasttrade = 99 = dict (since you keyed)
 ```
-
-[Table 5.0] Tables Problem Set 12 - AQ 2
+🔵 [Table 5.11] Table Problem Set 11 (AQ 2) - Easy
+<a name="table_PS11"></a>
 
 ```q
 / 1. use 3 join commands to add rows to trade 
@@ -3336,8 +3318,8 @@ lasttrade,'trade
 
 / this joins the 2 tables together
 ```
-
-[Table 5.0] Tables Problem Set 12 - AQ 3
+🔵 [Table 5.12] Table Problem Set 12 (AQ 3) - Easy
+<a name="table_PS12"></a>
 
 ```q
 / 1. Create the following table
@@ -3426,8 +3408,8 @@ tomato | veg  | 1.35 | 70
 / true, the 2 tables match
 / so no, changing keys does not affect a tables meta
 ```
-
-[Table 5.0] Tables Problem Set 12 - AQ 4
+🔵 [Table 5.13] Table Problem Set 13 (AQ 4) - Easy
+<a name="table_PS13"></a>
 
 ```q
 / given table called trader
@@ -3586,8 +3568,8 @@ select sum savings from stock
 / can perform operations on entire columns
 / so much cleaner!
 ```
-
-[Table 5.0] Tables Problem Set 13 - GS 1
+🔵 [Table 5.14] Table Problem Set 14 (GS 1) - Med
+<a name="table_PS14"></a>
 
 ```q
 t1: ([] sym:`a`b`c;ex:`x)
@@ -3712,8 +3694,8 @@ sym|ex|price|size|avg_price_by_sym|avg_size_by_ex|wavg_price_by_sym
  y |b | 2.0 | 50 |      2.05      |      150     |    2.06667
  y |c | 3.3 |200 |      3.2       |      150     |    3.18
 ```
-
-[Table 5.0] Tables Problem Set 14 - GS 2
+🔵 [Table 5.15] Table Problem Set 15 (GS 2) - Med
+<a name="table_PS15"></a>
 
 ```q
 orders: ( [] order:10*1 + til 8; sym:`NYSE`NYSE,6#`NASDAQ; start: 08:00 09:00 09:00 08:00 10:00 12:30 13:30 18:00; end:11:00 13:00 15:30 13:30 11:30 13:30 14:30 19:00)
