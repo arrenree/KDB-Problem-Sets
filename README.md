@@ -2053,7 +2053,12 @@ count p where a=`int$a
 ### 🔴 4. Dictionary
 [Top](#top)
 
+🔵 [Dict 4.1] Dictionary Problem Set 1
+<a name="dict_ps1"></a>
+
 ### [dict] What is a dictionary?
+
+
 ```q
 a dictionary is a data structure that maps domains to a range of values. The keys and values are separated by !
 ```
@@ -2101,10 +2106,65 @@ Key | Value
 a   |	1
 ```
 
-### [dict] Dictionary Problem Set 1 (easy) TS
+### [dict] How do you upsert different keys/values from the original dict's datatype?
 
 ```q
-/1. given the below dictionary, find the type, the keys, and its values
+/ The upserted keys and values must match in type
+/ Way around this is to keep dictionary generic using null item
+
+dz: enlist[::]!enlist[::]
+dz
+dz[`a]:100
+dz[100]:`a
+
+key value
+a 100
+100 a
+```
+
+### [dict] Show 3 ways to retrieve values from a dictionary
+
+```q
+d: `a`b`c!1 2 3
+
+d[`a] = 1
+d@`a = 1
+d `a = 1
+```
+
+### [dict] What happens when you try retrieving from a dictionary that has non-unique keys?
+
+```q
+d: `a`b`c`a!1 2 3 4
+d[`a] = 1 
+
+/ returns the first entry
+```
+
+### [dict] Take first 2 items from dict. Retrieve value from key 'c
+
+```q
+d: `a`b`c!1 2 3
+2 # d 
+
+/ returns a dictionary of first 2 rows
+
+(enlist `c) # d 
+
+key | value
+---------
+c   | 3
+
+/ have to use enlist when retrieving single domain
+```
+
+🔵 [Dict 4.2] Dictionary Problem Set 2 - TS 1
+<a name="dict_ps2"></a>
+
+```q
+[Dict 4.1]
+
+/ 1. given the below dictionary, find the type, the keys, and its values
 
 d:`p`q`r`s!10 20 40 100
 
@@ -2126,7 +2186,9 @@ value d
 ```
 
 ```q
-/2. add new entry u 200 to dict d
+[Dict 4.1]
+
+/ 2. add new entry u 200 to dict d
 
 d[`u]: 200
 
@@ -2142,7 +2204,9 @@ u  | 200
 ```
 
 ```q
-/3. Change value of p to 2
+[Dict 4.1]
+
+/ 3. Change value of p to 2
 
 d[`p]:2
 
@@ -2156,7 +2220,9 @@ u  | 200
 ```
 
 ```q
-/4. Create dictionary d2, by TAKING values of p q r from dictionary d
+[Dict 4.1]
+
+/ 4. Create dictionary d2, by TAKING values of p q r from dictionary d
 
 d2:`p`q`r#d
 
@@ -2170,7 +2236,9 @@ r  | 40
 ```
 
 ```q
-/5. Find common keys in d and d2, and retrieve keys + values from combined d+d2
+[Dict 4.1]
+
+/ 5. Find common keys in d and d2, and retrieve keys + values from combined d+d2
 
 d+d2
 
@@ -2186,6 +2254,8 @@ u  | 200
 ```
 
 ```q
+[Dict 4.1]
+
 d inter d2
 2 20 40
 
@@ -2194,6 +2264,8 @@ d inter d2
 ```
 
 ```q
+[Dict 4.1]
+
 key[d] inter key[d2]
 (key d) inter (key d2)
 
@@ -2222,10 +2294,13 @@ r  | 80
 / and show its values
 ```
 
-### [dict] Dictionary Problem Set 2 (Easy) - TS
+🔵 [Dict 4.3] Dictionary Problem Set 3 - TS 2
+<a name="dict_ps3"></a>
 
 ```q
-/1. Given the 2 dictionaries below, find those who are greater than 1.7m in height
+[Dict 4.3]
+
+/ 1. Given the 2 dictionaries below, find those who are greater than 1.7m in height
 
 dheight:`john`mark`luke`paul`ian`peter!1.5 1.6 1.7 1.8 1.9 1.4
 dweight:`john`mark`luke`paul`ian`peter!81 72 88 91 55 110
@@ -2269,7 +2344,9 @@ paul ian
 ```
 
 ```q
-/2. Find the average height of people who weight over 90
+[Dict 4.3]
+
+/ 2. Find the average height of people who weight over 90
 
 where dweight > 90
 paul peter
@@ -2281,7 +2358,8 @@ avg dheight where dweight > 90
 1.6
 ```
 
-### [dict] Nested Dictionaries Problem Set
+🔵 [Dict 4.4] Dictionary Problem Set 4 - Nested
+<a name="dict_ps4"></a>
 
 ```q
 d: `alpha`bravo`charlie ! ((1 2 3);(4 5 6);(7 8 9))
@@ -2401,61 +2479,13 @@ golf    | 100
 / avg each + dictionary name = average value per row
 ```
 
-### [dict] How do you upsert different keys/values from the original dict's datatype?
+🔵 [Dict 4.5] Dictionary Problem Set 5 - AQ 1
+<a name="dict_ps5"></a>
 
 ```q
-/ The upserted keys and values must match in type
-/ Way around this is to keep dictionary generic using null item
+[Dict 4.5]
 
-dz: enlist[::]!enlist[::]
-dz
-dz[`a]:100
-dz[100]:`a
-
-key value
-a 100
-100 a
-```
-
-### [dict] Show 3 ways to retrieve values from a dictionary
-
-```q
-d: `a`b`c!1 2 3
-
-d[`a] = 1
-d@`a = 1
-d `a = 1
-```
-
-### [dict] What happens when you try retrieving from a dictionary that has non-unique keys?
-
-```q
-d: `a`b`c`a!1 2 3 4
-d[`a] = 1 
-
-/ returns the first entry
-```
-
-### [dict] Take first 2 items from dict. Retrieve value from key 'c
-
-```q
-d: `a`b`c!1 2 3
-2 # d 
-
-/ returns a dictionary of first 2 rows
-
-(enlist `c) # d 
-
-key | value
----------
-c   | 3
-
-/ have to use enlist when retrieving single domain
-```
-
-### [dict] Dictionary Problem Set 1 AquaQ
-
-```q
+/ 1. Given:
 
 d1: `london`paris`athens`toronto`sydney`tokyo`chicago!0 1 2 -5 9 8 -6
 
@@ -2470,9 +2500,11 @@ tokyo	| 8
 chicago	|-6
 ```
 
-[dict] 1. Extract the hours for tokyo and athens
-
 ```q
+[Dict 4.5]
+
+/ 2. Extract the hours for tokyo and athens
+
 d1[`tokyo`athens]
 8 2
 
@@ -2488,9 +2520,11 @@ athens | 2
 / when you perform take # on dictionary, returns a dictionary
 ```
 
-[dict] 2. If it's 12:30 in Paris, what time is it in Chicago?
-
 ```q
+[Dict 4.5]
+
+/ 3. If it's 12:30 in Paris, what time is it in Chicago?
+
 (d1`paris)-d1`chicago
 7
 
@@ -2523,15 +2557,19 @@ d1[`paris]-d1[`chicago]
 / right to left
 ```
 
-[dict] 3. change London's time from 0 to 1
-
 ```q
+[Dict 4.5]
+
+/ 4. Change London's time from 0 to 1
+
 d1[`london]:1
 ```
 
-[dict] 4. add in rome with value of +1
-
 ```q
+[Dict 4.5]
+
+/ 5. Add in rome with value of +1
+
 / UPSERT method
 
 d1[`rome]:1
@@ -2543,10 +2581,13 @@ d1,:(enlist `rome)!enlist 1
 / when using join assign, must enlist if single atom!
 ```
 
-### [dict] Dictionary Problem Set 2 AquaQ
+🔵 [Dict 4.6] Dictionary Problem Set 6 - AQ 2
+<a name="dict_ps6"></a>
 
 ```q
-Given:
+[Dict 4.6]
+
+/ 1. Given:
 
 d3:`belfast`cardiff`edinburg`london!(12 10 11 9; 11 10 10 10; 10 10 12 9; 15 12)
 
@@ -2558,9 +2599,11 @@ edinburg | 10 10 12 9
 london	 | 15 12
 ```
 
-[dict] 1. What's the average temp in each city?
-
 ```q
+[Dict 4.6]
+
+/ 2. What's the average temp in each city?
+
 avg each d3
 
 Key	Value
@@ -2573,9 +2616,11 @@ london	 | 13.5
 / avg each returns average of each key
 ```
 
-[dict] 2. Convert all temp from C to F (temp x 9/5 + 32)
-
 ```q
+[Dict 4.6]
+
+/ 3. Convert all temp from C to F (temp x 9/5 + 32)
+
 (d3* (9%5) ) + 32
 
 Key	 | Value
@@ -2589,9 +2634,11 @@ london	 | 507 405.6
 / d3 + 100 = add 100 to every value in d3
 ```
 
-[dict] 3. Find the max temp for belfast
-
 ```q
+[Dict 4.6]
+
+/ 4. Find the max temp for belfast
+
 max d3[`belfast]
 12
 
@@ -2604,9 +2651,11 @@ max d3`belfast
 / so max of this is 12
 ```
 
-[dict] 4. Given new dict d4, find max temp for belfast
-
 ```q
+[Dict 4.6]
+
+/ 5. Given new dict d4, find max temp for belfast
+
 d4:(enlist `temperature)!enlist d3
 
 max d4[`temperature;`belfast]
@@ -2617,15 +2666,21 @@ max d4[`temperature;`belfast]
 ```
 
 ```q
-Add a row to d4:
+[Dict 4.6]
+
+/ 6. Add a row to d4:
 
 d4,:(enlist`rainfall)!enlist`belfast`cardiff`edinburgh`london!60 65 58 40
+
 ```
 
-### [dict] Dictionary Problem Set (AquaQ)
+🔵 [Dict 4.7] Dictionary Problem Set 7 - AQ 3
+<a name="dict_ps7"></a>
 
 ```q
-/1 create dictionary with keys as letters from a-z with corresponding numbers
+[Dict 4.7]
+
+/ 1. Create dictionary with keys as letters from a-z with corresponding numbers
 
 dict: .Q.a ! 1+til 26
 
@@ -2640,7 +2695,9 @@ c  |  3
 ```
 
 ```q
-/2 retrieve values of abc 
+[Dict 4.7]
+
+/ 2. Retrieve values of abc 
 
 dict "abc"
 1 2 3
@@ -2655,21 +2712,27 @@ dict ["abc"]
 ```
 
 ```q
-/3 sum values of abc
+[Dict 4.7]
+
+/ 3. Sum values of abc
 
 sum dict "abc"
 6
 ```
 
 ```q
-/4 sum values of "yourname"
+[Dict 4.7]
+
+/ 4. Sum values of "yourname"
 
 sum dict "yourname"
 112
 ```
 
 ```q
-/5 rename keys to capital letters
+[Dict 4.7]
+
+/ 5. Rename keys to capital letters
 
 dict:.Q.A ! value dict
 
@@ -2685,7 +2748,9 @@ C  |  3
 ```
 
 ```q
-/6 create another dict, change uppercase "HELLO WORLD" to lowercase
+[Dict 4.7]
+
+/ 6. Create another dict, change uppercase "HELLO WORLD" to lowercase
 
 dict2: .Q.A ! .Q.a
 
@@ -2706,7 +2771,9 @@ dict2 "HELLO WORLD"
 ```
 
 ```q
-/7 create dictionary morse, which contains letters n-s as keys, and a code for the values
+[Dict 4.7]
+
+/ 7. Create dictionary morse, which contains letters n-s as keys, and a code for the values
 
 morse: "nopqrs"! (10; 111; 0110; 1101;010;0)
 
@@ -2725,7 +2792,9 @@ s  0
 ```
 
 ```q
-/8 join numbers 0 to 4 onto the existing dictionary
+[Dict 4.7]
+
+/ 8. Join numbers 0 to 4 onto the existing dictionary
 
 morse,:("01234")!(1; 10; 100; 1000; 10000)
 
@@ -2747,8 +2816,13 @@ morse "sos"
 / you are querying keys "sos" to retrieve associated values
 ```
 
+🔵 [Dict 4.8] Dictionary Problem Set 8
+<a name="dict_ps8"></a>
+
 ```q
-/9 create 2 dictionaries, one for r13, one for r12
+[Dict 4.8]
+
+/ 1. Create 2 dictionaries, one for r13, one for r12
 
 places:`london`edinbugh`belfast`manchester`tobermory`portsmouth`cardiff
 r13:557 704 944 867 1681 674 1152
@@ -2782,15 +2856,19 @@ portsmouth | 544
 ```
 
 ```q
-/10 extract keys from first dictionary
+[Dict 4.8]
+
+/ 2. Extract keys from first dictionary
 key d1
 
-/11 extract values from first dictionary
+/ 3. Extract values from first dictionary
 value d1
 ```
 
 ```q
-/12 create new dict with sum of annual rainful over both years
+[Dict 4.8]
+
+/ 4. Create new dict with sum of annual rainful over both years
 
 d3: d1+d2
 
@@ -2810,7 +2888,9 @@ portsmouth | 544
 ```
 
 ```q
-/13 find the average rainfall over the two years for each city
+[Dict 4.8]
+
+/ 5. Find the average rainfall over the two years for each city
 
 avg (d1;d2)
 
@@ -2828,9 +2908,11 @@ cardiff	    | 576.0
 ```
 
 ```q
-/14 which location had more rainfall over the 2 years?
+[Dict 4.8]
 
-d1>d2
+/ 6. Which location had more rainfall over the 2 years?
+
+d1 > d2
 
 / can simply use comparison operator to output booleans
 
@@ -2846,7 +2928,9 @@ cardiff	   | 1b
 ```
 
 ```q
-/15 find the average rainfall over the 2 years for the UK
+[Dict 4.8]
+
+/ 7. Find the average rainfall over the 2 years for the UK
 
 sum(d1+d2) % 2
 6170.5
@@ -2856,7 +2940,9 @@ sum(d1+d2) % 2
 ```
 
 ```q
-/16 create a dict of variables in the workspace as keys, and values as values
+[Dict 4.8]
+
+/ 8. Create a dict of variables in the workspace as keys, and values as values
 
 system "v"
 
@@ -2879,6 +2965,8 @@ places| `lond`edin`bel`manc`tober`port`car
 r12   | 600 854 1020 955 1789 544
 r13   | 557 704 944 867 1681 674 1152
 ```
+
+<hr>
 
 <a name="tables"></a>
 ### 🔴 5. Tables
