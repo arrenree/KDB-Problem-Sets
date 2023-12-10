@@ -973,17 +973,17 @@ raze string `a`b`c
 ### 🔴 3. Lists
 [Top](#top)
 
-### [list] Creating Lists
+### [List 3.1] List Problem Set 1 - easy
 
 ```q
-/1. Create a list of 1 to 10
+/ 1. Create a list from 1 to 10
 
 1 + til 10
 1 2 3 4 5 6 7 8 9 10
 ```
 
 ```q
-/2. Create a list of 10 even numbers
+/ 2. Create a list of 10 even numbers
 
 2 * 1 + til 10
 2 4 6 8 10 12 14 16 18
@@ -994,7 +994,7 @@ raze string `a`b`c
 ```
 
 ```q
-/3. Create a list of 10 odd numbers
+/ 3. Create a list of 10 odd numbers
 
 1 + 2 * til 10
 1 3 5 7 9 11 13 15 17 19
@@ -1004,56 +1004,71 @@ raze string `a`b`c
 ```
 
 ```q
-/4. Obtain the first 10 even numbers starting from 42
+/ 4. Obtain the first 10 even numbers starting from 42
 
 42 + 2 * til 10
 42 44 46 48 50 52 54 56 58 60
 ```
-
-### [list] Drop item at index position x
-
 ```q
-/ drop item from list at index position 2
+/ 5. Given list k: 1 2 3 4 5, drop item from list at index position 2
 
 k: 1 2 3 4
 k _ 2
 
-/ if you put LIST _ x
-/ then it will remove item from index position x from list
+/ _ is drop
+/ note syntax - have to include space before and after the _
+/ _ will remove item from index position x from list
 ```
 
-### [list] Sublist
+```q
+/ 6. Using sublist, take 3 elements from list 1 2 3 4 5
+
+3 sublist 1 2 3 4 5
+1 2 3
+
+/ x sublist y
+/ where x = atom or pair and y = list
+/ takes x elements from list y
+```
 
 ```q
+/ 7. Using sublist, what happens when you take more elements than in list
+
 5 sublist 1 2 3
 1 2 3
 
-/ sublist is like take, but ONLY takes whats available
+/ sublist ONLY takes what's available
+/ since only 3 elements in list, takes 3 elements then STOPS
 / does not wrap around
 ```
 
 ```q
+/ 8. Using sublist, take 2 elements from index position 2
+
 2 2 sublist 1 2 3 4 5 6
 3 4
 
 / from index position 2, take 2 elements
 ```
 
-
-### [list] Problem Set (easy)
+### [List 3.2] List Problem Set 2 - easy
 
 ```q
-/1 create Empty List d
+/ 1. Create empty List d
 
 d: ()
 ```
+
 ```q
-/2 redefine d to be empty list of type integer
+/ 2. Redefine d to be empty list of ints
 
 d: `int $ ()
+
+/ cast empty list as `ints
 ```
+
 ```q
-/3  add 5 random elements to d
+/ 3. Add 5 random elements to d
 
 d, 5 ? til 10
 
@@ -1061,55 +1076,55 @@ d, 5 ? til 10
 / d , joins these 2 lists, thereby adding into list
 ```
 
-### [list] Create list e with 1 element
-
 ```q
-
-e: enlist 10
-
-/ have to use enlist on single elements
-/ or e:(), 10
-```
-
-### [list] Create list l with 20 random values from 3 to 30
-```q
+/ 4. Create list l with 20 random values from 3 to 30
 
 l: 20 ? 3_til 31
 
-/ drop first 3 elements, so range is 3-30
-/ alternatively can do 1:20?3+til 28
+/ til 31 = list from 0 to 30
+/ 3_ drops first 3 elements
+/ so you have 3 - 30
+/ 20 ? = picks 20 random numbers from list
 ```
+
 ```q
-/2 find the 20th number in list l
+/ 5. Find the 20th number in list l
 
 l[19]
+16
 
-/ use indexing to retrieve 19th index position = 20th number
-/ index position 0 1 2 3 4 5
-/ number         1 2 3 4 5 6
-/ so number 3 is actually at index position 2
+/ indexing starts at 0
+/ so index position 0 = first element
+/ so element 20 = 19th index position
 ```
 
 ```q
-/3 are any of these numbers in the list? 3 5 7 11 13 17
+/ 6. Are any of these numbers in the list? 3 5 7 11 13 17
 
 3 5 7 11 13 17 in l
-0011001
+0011100
 
-/ will return list of booleans
+/ returns list of booleans
+
+where in 3 5 7 11 13 17 in l
+2 3 4
+
+/ retrieves index position where the elements show up in l
 ```
 
-### [list] Add each element of l to its index position. for ex, 0 to index 0, 1 to index 1, etc.
-
 ```q
-l+: til count l
+/ 7.  Add each element of l to its index position.
+/ so you have 2 lists; 20 elements of l, and its index position
+
+l + til count l
 
 / count l = 20 elements in list l
 / til 20 = 0 - 19, gives you the index position
-/ so now you have 2 lists, just need to add together
+/ simply add list l to its index position 
 ```
+
 ```q
-/2 How many even numbers are there? 
+/ 8. How many even numbers are there? 
 
 l mod 2
 1 1 0 1 0 1 1 0 0 1 0 1 0 1 0 1 0 1 1 0
@@ -1117,12 +1132,20 @@ l mod 2
 / returns a list of booleans
 / mod 2 tells us when the remainder is
 / so 0 = no remainder = even number
-/ now need to count the 0s
+/ and 1 = remainder = odd number
+
+count where l mod 2
+12
+
+/ counts booleans = 1 (true) aka odd numbers
 
 count where not l mod 2
 
+/ counts NOT where boolean = true aka false aka 0 
 / not = 0, so counts all the 0s (even numbers)
 ```
+
+
 ### [list] Matrix Problem Set
 
 ```q
