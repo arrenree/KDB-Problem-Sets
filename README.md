@@ -24,6 +24,14 @@
   	6. [List Problem Set 6 - TS 1](list_ps6) 
 
 4. [Dictionary](#dictionary)
+	1. [Dictionary Problem Set 1](#dict_ps1)
+ 	2. [Dictionary Problem Set 2](#dict_ps2)
+  	3. [Dictionary Problem Set 3 - TS 1](#dict_ps3)
+   	4. [Dictionary Problem Set 4 - Nested](#dict_ps4)
+   	5. [Dictionary Problem Set 5 - AQ 1](#dict_ps5)
+   	6. [Dictionary Problem Set 6 - AQ 2](#dict_ps6)
+   	7. [Dictionary Problem Set 7 - AQ 3](#dict_ps7)
+   	8. [Dictionary Problem Set 8](#dict_ps8)
 
 5. [Tables](#tables)
 	1. [Tables Problem Set 1](#table_PS1)
