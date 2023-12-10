@@ -14,9 +14,9 @@
 	1. [List Problem Set 1](#list_ps1)
 	2. [List Problem Set 2](#list_ps2)
 	3. [List Problem Set 3](#list_ps3)
-	4. [List Problem Set 4 (Matrix](#list_ps4)
- 	5. [List Problem Set 5 (AQ 1)](#list_ps5)
-  	6. [List Problem Set 6 (TS 1)](list_ps6) 
+	4. [List Problem Set 4 - Matrix](#list_ps4)
+ 	5. [List Problem Set 5 - AQ 1](#list_ps5)
+  	6. [List Problem Set 6 - TS 1](list_ps6) 
 
 4. [Dictionary](#dictionary)
 
