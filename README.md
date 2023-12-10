@@ -973,7 +973,7 @@ raze string `a`b`c
 ### 🔴 3. Lists
 [Top](#top)
 
-### [List 3.1] List Problem Set 1 - easy
+🔵 [List 3.1] List Problem Set 1 - easy
 
 ```q
 / 1. Create a list from 1 to 10
@@ -1051,7 +1051,7 @@ k _ 2
 / from index position 2, take 2 elements
 ```
 
-### [List 3.2] List Problem Set 2 - easy
+🔵 [List 3.2] List Problem Set 2 - easy
 
 ```q
 / 1. Create empty List d
@@ -1145,34 +1145,58 @@ count where not l mod 2
 / not = 0, so counts all the 0s (even numbers)
 ```
 
+```q
+/ 9. Given the 2 lists size and price below,
+/ Calculate the average size where price is greater than 5
 
-### [list] Matrix Problem Set
+size: 100 300 50 70
+price: 4 8 6 2
+
+avg size where price > 5
+175
+```
+
+🔵 [List 3.3] List Problem Set 3 (Matrix) - easy
 
 ```q
+/ Given matrix m:
+
 m:(1 2 3; 4 5 6; 7 8 9)
 1 2 3
 4 5 6
 7 8 9
-
-/1 get middle column of m and save it as new variable a
-
-a: m[;1]
-
-/ [row;column]
-/ blank for row; 1 = index position 2, so 2nd row
 ```
 
 ```q
-/2 replace middle row of m with a
+/ 1. Get middle column of m and save it as new variable a
+
+a: m[ ;1]
+
+/ [row;column]
+/ blank for row
+/ column 1 = index position 2, so retrives 2nd column
+```
+
+```q
+/ 2. Replace middle row (second row) of m with a
 
 m[1]:a
+(1 2 3;
+2 5 8;
+7 8 9)
 
 / [row;column] 
 / index position 1 = 2nd row
+
+/ alternative syntax:
+
+m[1;]: a
+
+/ ignores column since you are after the 2nd row
 ```
 
 ```q
-/3 transpose m and store as mm
+/ 3. Transpose m and store as mm
 
 mm: flip m
 
@@ -1180,39 +1204,43 @@ mm: flip m
 ```
 
 ```q
-/4 join extra row to mm, consisting of all 10s
+/ 4. join extra row to mm, consisting of all 10s
 
 mm,: 3#10
 
 / the syntax ,: appends items to list
 ```
 
-### [list] Nested Lists
-
 ```q
+/ 5. Given matrix nest:
 
 nest: (1 2 3; `a`c`b;10 11 12 14f; 100011b)
+```
 
-/1 find the datatype of each row
+```q
+/ 5.1 Find the datatype of each row
 
 type each nest
+7 11 9 1h
+
+/ type each = returns datatype of EACH nested list
+/ 7 = long
+/ 11 = sym
+/ 9 = float
+/ 1h = boolean
 ```
+
 ```q
-/2 collapse this nested list
+/ 5.2 Collapse this nested list
 
 raze nest
+1 2 3 `a`c`b 10 11 12 14f 100011b
+
+/ raze collapses the nested list one level
 ```
 
-### [list] Calculate the average size where price is greater than 5
+🔵 [List 3.4] List Problem Set 4 (AQ 1) - easy
 
-```q
-size: 100 300 50 70
-price: 4 8 6 2
-
-avg size where price > 5
-```
-
-### [list] List Problem Set AQ
 ```q
 games:`crash`streets`echo`crash2`sonic`micro`pokemon`supermario`bomber`zelda
 platform: `ps1`sega`sega`ps1`sega`ps1`gameboy`gameboy`sega`gameboy
