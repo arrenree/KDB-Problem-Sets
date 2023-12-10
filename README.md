@@ -1,7 +1,12 @@
 # Allen's KDB Practice Problems + Solutions
 <a name="top"></a>
 
-1. [General Knowledge / System](#gen)
+1. [General Knowledge](#gen)
+	1. [General Problem Set 1](#gen_ps1)
+	2. [General Problem Set 2](#gen_ps2)
+ 	3. [General Problem Set 3](#gen_ps3)
+  	4. [Case Study 1 - Comparing Potential Crosses](#gen_ps4)
+	5. [Case Study 2 - Netting Buys and Sells](#gen_ps5)
 
 2. [Datatypes & Casting](#cast)
 	1. [Datatype Problem Set 1](#data_ps1)
@@ -80,17 +85,22 @@
 <hr>
 
 <a name="gen"></a>
-### 🔴 1. General Knowledge / System
+### 🔴 1. General Knowledge
 [Top](#top)
 
-### [gen] Find and Random Operator ?
+
+🔵 [Gen 1.1] General Problem Set 1
+<a name="gen_ps1"></a>
 
 ```q
-/ atom ? atom
+[Gen 1.1]
+
+/ 1. Retrieve 3 random elements from 0-2
 
 3 ? 3
 2 0 1
 
+/ atom ? atom
 / x ? y
 / retrieve x random elements from y 
 / retrieve 3 random elements from 0-2
@@ -98,27 +108,35 @@
 ```
 
 ```q
-/ list ? atom
+[Gen 1.1]
+
+/ 2. From list 1 2 3, find index position of 3
 
 1 2 3 ? 3
 2
 
+/ list ? atom
 / from list x, find index position of element y
 / element 3 is in index position 2 of list 1 2 3
 ```
 
 ```q
-/ atom ? list
+[Gen 1.1]
+
+/ 3. Return 3 random elements from list 1 2 3
 
 3 ? 1 2 3 
 1 1 3
 
+/ atom ? list
 / return x number of random elements from list y
 ```
 
-### [gen] Order of Operations
-
 ```q
+[Gen 1.1]
+
+/ 4. Combine the below 3 expressions into a single line
+
 a = 5
 b = a -3
 c = 3b + 1
@@ -134,9 +152,11 @@ c: 1 + 3 * b: -3 + a:5
 / right to left 
 ```
 
-### [gen] What are the common operators?
-
 ```q
+[Gen 1.1]
+
+/ 5. What are some common operators?
+
 #   / take
 _   / drop
 ?   / find, randomize
@@ -147,36 +167,49 @@ $   / cast, enumerate
 ^   / fill
 ```
 
-### [gen] What is a dictionary vs a table? 
-
 ```q
-Dictionaries
-/ are data structures that map from a domain of keys to a range of values 
+[Gen 1.1]
+
+/ 6. What is a dictionary?
+
+/ A dictionary is a data structures that map from a domain of keys to a range of values 
 / contains a ! to separate keys and values
 / flip a dictionary and you get a table
+```
 
-Tables
+```q
+[Gen 1.1]
+
+/ 7. What is a table?
+
 / is a list of dictionaries (flipped)
 / any single row is a dictionary
 / tables are ordered, which means you can index them
 / tables are encased by parathesis ( ) and contain brackets [ ] which assigns the key.
 ```
 
-### [system] Show all variables defined in current session of q
-
 ```q
+[Gen 1.1]
+
+/ 8. Show all variables in the current session of q
+
 \v
 `a`b`c`d
 ```
 
-### [system] Close the current session
 ```q
+[Gen 1.1]
+
+/ 9. How do you close the current q session?
+
 \\
 ```
 
-### [gen] What is the difference between equals = and match ~
-
 ```q
+[Gen 1.1]
+
+/ 10. What is the diff between equals = and match ~
+
 / equals will match on value, but not datatype
 / match will match on both value and datatype
 
@@ -191,25 +224,34 @@ Tables
 / ~ will match on both value + datatype
 ```
 
-### [gen] What is 2 | 5
-
 ```q
+[Gen 1.1]
+
+/ 11. What is 2 | 5
+
 5
 
-/ larger of x | y
+/ pipe calculates the larger of x | y
 ```
 
-### [gen] What is 2 & 5
-
 ```q
+[Gen 1.1]
+
+/ 12. What is 2 & 5
+
 2
 
 / amper = smaller of x & y
 ```
 
-### [gen] What is 2 cut 1 2 3 4 5 6
+🔵 [Gen 1.2] General Problem Set 2
+<a name="gen_ps2"></a>
 
 ```q
+[Gen 1.2]
+
+/ 1. What is 2 cut 1 2 3 4 5 6
+
 (1 2; 3 4; 5 6)
 
 / cuts list into elements of 2
@@ -217,34 +259,44 @@ Tables
 / y = list
 ```
 
-### [gen] What is 1 4 cut 1 2 3 4 5 6
-
 ```q
+[Gen 1.2]
+
+/ 2. What is 1 4 cut 1 2 3 4 5 6
+
 (2 3 4; 5 6)
 
 / 2nd element (4) = cut list by 4
 / first element (1) = AFTER cutting, then drop everything before this element (1) from output
 ```
 
-### [gen] What is 2 3 cut 1 2 3 4 5 6
-
 ```q
+[Gen 1.2]
+
+/ 3. What is 2 3 cut 1 2 3 4 5 6
+
 (3; 4 5 6)
 
 / 2nd element (3) = cut list into elements of 3
 / 1st element (2) = drop all elements before 2
 ```
-### [gen] What is signum -2 0 1 3
 
 ```q
+[Gen 1.2]
+
+/ 4. What is signum -2 0 1 3
+
 -1 0 1 1
 
 / signum will tell you if something is positive, 0, or negative
 / neg, 0, pos pos
 ```
-### [gen] What is 1 cross 3 4?
 
 ```q
+[Gen 1.2]
+
+/ 5. What is 1 cross 3 4?
+
 1 3
 1 4
 
@@ -252,9 +304,11 @@ Tables
 / note - does NOT multiply or add
 ```
 
-### [gen] Cross Lists + Tables
-
 ```q
+[Gen 1.2]
+
+/ 6. Create every possible combination between list s and v
+
 s:`IBM`MSFT
 v: 1 2
 
@@ -266,6 +320,10 @@ s cross v
 ```
 
 ```q
+[Gen 1.2]
+
+/ 7. Create a table of every possible combination between list s and v
+
 s:`IBM`MSFT
 v: 1 2
 
@@ -285,7 +343,9 @@ apple | 2
 ```
 
 ```q
-/ building xbar timeseries
+[Gen 1.2]
+
+/ 8. Building xbar timeseries
 
 time: 09:00 09:15
 sym: `GOOG`IBM
@@ -305,10 +365,15 @@ GOOG | 09:15
 / and when you cross them, it returns a table
 ```
 
+🔵 [Gen 1.3] General Problem Set 3
+<a name="gen_ps3"></a>
+
 ### [system] How do you read a txt file?
 
 ```q
-/ assume txt file named test.txt
+[Gen 1.3]
+
+/ 1. Assume txt file named test.txt
 / this file needs to be in the same directory/folder where your q is
 
 hopen `:test.txt
@@ -318,9 +383,11 @@ read0 `:test.txt
 / read0 = reads the txt file
 ```
 
-### [system] How do you Open and Edit a txt file?
-
 ```q
+[Gen 1.3]
+
+/ 2. How do you Open and Edit a txt file?
+
 fh: hopen `:hi.txt
 fh "10"
 fh "20"
@@ -336,9 +403,11 @@ read0 `:hi.txt
 / hclose fh = closes file hand so you can no longer edit it
 ```
 
-### [system] How do you load a csv file (headers vs no headers)?
-
 ```q
+[Gen 1.3]
+
+/ 3. How do you load a csv file (headers vs no headers)?
+
 / 1. read file first to see what datatypes are contained in file
 / 2. extract what datatypes are in file
 / 3. headers or no headers?
@@ -346,7 +415,9 @@ read0 `:hi.txt
 ```
 
 ```q
-/ With Column Headers
+[Gen 1.3]
+
+/ 3.1 How do you load a csv file with Column Headers
 
 / if you want to load file with column headers, you'll need a delimiter
 / a delimiter = character (comma) that marks beg and end of a unit of data
@@ -391,7 +462,9 @@ SEA	300	    30
 ```
 
 ```q
-/ Without Column Headers
+[Gen 1.3]
+
+/ 4.1 How do you load a csv file without Column Headers
 
 / if the CSV file contains data but no column names, dont need to enlist a delimiter
 
@@ -403,17 +476,26 @@ NY	200    	    20
 SEA	300	    30
 ```
 
-### [case study] How would you comparing current orders against potential crosses
+🔵 [Gen 1.4] Case Study 1 - Comparing Potential Crosses
+<a name="gen_ps4"></a>
 
 ```q
+[Gen 1.4]
+
+/ How would you compare current orders vs potential crosses?
+
 Objectives:
 1. Load CSV file of current orders (tradepad)
 2. Load CSV file of proposed crosses (cross)
 3. For each symbol, check opposing direction, and pull in quantity to cross
 4. Create new column displaying shares that can cross
 5. Retrieve columns in clean format to export back into csv
+```
 
-/ create tradepad and cross csv files
+```q
+[Gen 1.4]
+
+/ 1. Create tradepad and cross csv files
 
 tradepad
 ric	side	qty
@@ -435,17 +517,18 @@ ric	  brokerside brokerqty
 ```
 
 ```q
-1. Pull in CSV file of current orders (tradepad)
+[Gen 1.4]
 
-/ 1a. first read file to see what datatypes it contains
+2. Pull in CSV file of current orders (tradepad)
+
+/ 2a. first read file to see what datatypes it contains
 
 read0 `:tradepad.csv
-
 ("ric,side,qty";"1810.HK,Buy,500";"0700.HK,Buy,500";"9988.HK,Buy,500";"0001.HK,Buy,500";"0016.HK,Buy,500")
 
 / file contains sym, sym, int
 
-/ 1b. load the file with headers (need delimiter)
+/ 2b. load the file with headers (need delimiter)
 
 t:("SSI";enlist",") 0: `:tradepad.csv
 
@@ -459,17 +542,18 @@ ric	side	qty
 ```
 
 ```q
-/ 2. Load csv file of proposed crosses (cross)
+[Gen 1.4]
 
-/ 2a. first read file to see what datatypes it contains
+/ 3. Load csv file of proposed crosses (cross)
+
+/ 3a. first read file to see what datatypes it contains
 
 read0 `:cross.csv
-
 ("ric,brokerside,brokerqty";"1810.HK,Sell,500";"0700.HK,Sell,300";"9988.HK,Buy,200";"0003.HK,Sell,500";"0016.HK,Sell,800")
 
 / file contains sym, sym, int
 
-/ 2b. load the file with headers (need delimiter)
+/ 3b. load the file with headers (need delimiter)
 
 c:("SSJ";enlist",") 0: `:cross.csv
 
@@ -483,7 +567,9 @@ ric	  brokerside brokerqty
 ```
 
 ```q
-/ 3. Combine the 2 tables (using left join)
+[Gen 1.4]
+
+/ 4. Combine the 2 tables (using left join)
 
 t lj 1!c
 
@@ -499,7 +585,9 @@ ric	 side qty brokerside brokerqty
 ```
 
 ```q
-/ 4. check if opposing sides (same side = no cross)
+[Gen 1.4]
+
+/ 5. check if opposing sides (same side = no cross)
 / add new column called "crossqty"
 / where applicable, update crossqty column with crossable qty
 
@@ -525,7 +613,9 @@ ric	 side qty  brokerside brokerqty crossqty
 ```
 
 ```q
-/ 5. Retrieve only the RICs, side, and crossable qty
+[Gen 1.4]
+
+/ 6. Retrieve only the RICs, side, and crossable qty
 
 select ric, side, crossqty from a where crossqty > 0
 
@@ -538,10 +628,14 @@ ric	 side  crossqty
 / here you have it. this is the final result
 ```
 
-### [case study] Netting off buys and sells from same Stock
+🔵 [Gen 1.5] Case Study 2 - Netting buys and sells
+<a name="gen_ps5"></a>
 
 ```q
-/ same stock, multiple lines of buys and sells in the same stock
+[Gen 1.5]
+
+/ Given table t below
+/ there are multiple lines of buys and sells in same stock
 / determine what is the net quantity
 
 t:([] ric:`AAPL; side:`buy`sell`sell`buy`buy; size:10 30 50 100 90)
@@ -553,6 +647,10 @@ AAPL| sell | 30
 AAPL| sell | 50
 AAPL| buy  | 100
 AAPL| buy  | 90
+```
+
+```q
+[Gen 1.5]
 
 / 1. update the size column to include pos or neg signs
 
@@ -565,6 +663,10 @@ AAPL	sell	 -30
 AAPL	sell	 -50
 AAPL	buy	 100
 AAPL	buy	  90
+```
+
+```
+[Gen 1.5]
 
 / 2. retrieve the aggregate net position by summing column
 
