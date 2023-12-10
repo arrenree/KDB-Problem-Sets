@@ -8,9 +8,10 @@
 3. [Lists](#list)
 	1. [List Problem Set 1](#list_ps1)
 	2. [List Problem Set 2](#list_ps2)
-	3. [List Problem Set 3 (Matrix)](#list_ps3)
-	4. [List Problem Set 4 (AQ 1)](#list_ps4)
- 	5. [List Problem Set 5 (TS 1)](#list_ps5)
+	3. [List Problem Set 3](#list_ps3)
+	4. [List Problem Set 4 (Matrix](#list_ps4)
+ 	5. [List Problem Set 5 (AQ 1)](#list_ps5)
+  	6. [List Problem Set 6 (TS 1)](list_ps6) 
 
 4. [Dictionary](#dictionary)
 
@@ -1060,7 +1061,19 @@ k _ 2
 ```q
 [List 3.1]
 
-/ 7. Using sublist, what happens when you take more elements than in list
+/ 7. Using sublist, take last 2 elements from 1 2 3 4 5
+
+-2 sublist 1 2 3 4 5
+4 5
+
+/ -2 takes last 2 elements
+/ sublist like take #
+```
+
+```q
+[List 3.1]
+
+/ 8. Using sublist, what happens when you take more elements than in list
 
 5 sublist 1 2 3
 1 2 3
@@ -1073,7 +1086,7 @@ k _ 2
 ```q
 [List 3.1]
 
-/ 8. Using sublist, take 2 elements from index position 2
+/ 9. Using sublist, take 2 elements from index position 2
 
 2 2 sublist 1 2 3 4 5 6
 3 4
@@ -1081,23 +1094,26 @@ k _ 2
 / from index position 2, take 2 elements
 ```
 
-```q
-[List 3.1]
+🔵 [List 3.2] List Problem Set 2
+<a name="list_ps2"></a>
 
-/ 9. Retrieve index position 3 from list 1 2 3 4 5
+```q
+[List 3.2]
+
+/ 1. Find index position of 3 from list 1 2 3 4 5
 
 1 2 3 4 5 ? 3
 2
 
+/ ? = find 
 / list ? x 
-/ ? = find index position of 3
-/ retrieves index position of x
+/ "finds" index position of x in list 
 ```
 
 ```q
-[List 3.1]
+[List 3.2]
 
-/ 10. What happens if you query index position > list length?
+/ 2. What happens if you query index position > list length?
 
 1 2 3 4 5 ? 7
 5
@@ -1108,9 +1124,9 @@ k _ 2
 ```
 
 ```q
-[List 3.1]
+[List 3.2]
 
-/ 11. Retrieve element from index position 2 from list 1 2 2 2
+/ 3. Retrieve element from index position 2 from list 1 2 2 2
 
 1 2 2 2 ? 2
 1
@@ -1119,11 +1135,112 @@ k _ 2
 / multiple occurence, only returns first
 ```
 
-🔵 [List 3.2] List Problem Set 2 - easy
-<a name="list_ps2"></a>
+```q
+[List 3.2]
+
+/ 4. Pick 5 random items from list 1 2 3 4 5
+
+5? 1 2 3 4 5
+1 3 2 2 4
+
+/ atom ? list
+/ picks 5 random items from list
+```
 
 ```q
 [List 3.2]
+
+/ 5. Pick 5 random items from 0 - 9
+
+5 ? 10
+8 5 5 9 2
+
+/ atom ? atom (this atom becomes list)
+/ 10 = list from 0 to 9
+```
+
+```q
+[List 3.2]
+
+/ 6. Pick 5 DISTINCT items from 0 - 9
+
+-5 ? 10
+8 4 1 9 3
+
+/ using a negative sign = DISTINCT
+/ aka "deal", like dealing cards from a deck
+/ never repeats
+```
+
+```q
+[List 3.2]
+
+/ 7. What happens when you return 11 distinct numbers from 0 - 9
+
+-11 ? 10
+error
+
+/ can't return 11 distinct items from list of 10 elements
+```
+
+```q
+[List 3.2]
+
+/ 8. Pick 5 random syms with length 2
+
+5?`2
+`mp`ik`mi`og`nm
+```
+
+```q
+[List 3.2]
+
+/ 9. Pick 5 random chars
+
+5? " "
+"lsefv"
+```
+
+```q
+[List 3.2]
+
+/ 10. What is the diff between list ? atom and atom ? list
+
+list ? atom
+1 2 3 4 5 ? 2
+1
+
+/ list ? atom = finds index location of atom in list
+
+atom ? list
+2 ? 1 2 3 4 5
+3 4
+
+/ atom ? list = returns 2 random elements from list
+```
+
+```q
+[List 3.2]
+
+/ 11. Given b: (1 2; (3 4; 5 6); 7; 8)
+/ flatten all levels
+
+1 2
+    3 4
+    5 6
+7
+8
+
+raze/ [b]
+1 2 3 4 5 6 7 8
+```
+
+
+🔵 [List 3.3] List Problem Set 3 - easy
+<a name="list_ps3"></a>
+
+```q
+[List 3.3]
 
 / 1. Create empty List d
 
@@ -1131,7 +1248,7 @@ d: ()
 ```
 
 ```q
-[List 3.2]
+[List 3.3]
 
 / 2. Redefine d to be empty list of ints
 
@@ -1141,7 +1258,7 @@ d: `int $ ()
 ```
 
 ```q
-[List 3.2]
+[List 3.3]
 
 / 3. Add 5 random elements to d
 
@@ -1152,7 +1269,7 @@ d, 5 ? til 10
 ```
 
 ```q
-[List 3.2]
+[List 3.3]
 
 / 4. Create list l with 20 random values from 3 to 30
 
@@ -1165,7 +1282,7 @@ l: 20 ? 3_til 31
 ```
 
 ```q
-[List 3.2]
+[List 3.3]
 
 / 5. Find the 20th number in list l
 
@@ -1178,7 +1295,7 @@ l[19]
 ```
 
 ```q
-[List 3.2]
+[List 3.3]
 
 / 6. Are any of these numbers in the list? 3 5 7 11 13 17
 
@@ -1194,7 +1311,7 @@ where in 3 5 7 11 13 17 in l
 ```
 
 ```q
-[List 3.2]
+[List 3.3]
 
 / 7.  Add each element of l to its index position.
 / so you have 2 lists; 20 elements of l, and its index position
@@ -1207,7 +1324,7 @@ l + til count l
 ```
 
 ```q
-[List 3.2]
+[List 3.3]
 
 / 8. How many even numbers are there? 
 
@@ -1231,7 +1348,7 @@ count where not l mod 2
 ```
 
 ```q
-[List 3.2]
+[List 3.3]
 
 / 9. Given the 2 lists size and price below,
 / Calculate the average size where price is greater than 5
@@ -1243,11 +1360,11 @@ avg size where price > 5
 175
 ```
 
-🔵 [List 3.3] List Problem Set 3 (Matrix) - easy
+🔵 [List 3.4] List Problem Set 4 (Matrix)
 <a name="list_ps3"></a>
 
 ```q
-[List 3.3]
+[List 3.4]
 
 / Given matrix m:
 
@@ -1256,11 +1373,21 @@ m:(1 2 3; 4 5 6; 7 8 9)
 4 5 6
 7 8 9
 ```
+```q
+[List 3.4]
+
+/ 1. Retrieve the first element of each nested list
+
+first each m
+1 4 7
+
+/ first + each returns the first element each nested list
+```
 
 ```q
-[List 3.3]
+[List 3.4]
 
-/ 1. Get middle column of m and save it as new variable a
+/ 2. Retrieve the middle column of m and save it as a
 
 a: m[ ;1]
 
@@ -1270,11 +1397,11 @@ a: m[ ;1]
 ```
 
 ```q
-[List 3.3]
+[List 3.4]
 
-/ 2. Replace middle row (second row) of m with a
+/ 3. Replace middle row (second row) of m with a
 
-m[1]:a
+m[1; ]:a
 (1 2 3;
 2 5 8;
 7 8 9)
@@ -1284,15 +1411,15 @@ m[1]:a
 
 / alternative syntax:
 
-m[1;]: a
+m[1]: a
 
 / ignores column since you are after the 2nd row
 ```
 
 ```q
-[List 3.3]
+[List 3.4]
 
-/ 3. Transpose m and store as mm
+/ 4. Transpose m and store as mm
 
 mm: flip m
 
@@ -1300,27 +1427,27 @@ mm: flip m
 ```
 
 ```q
-[List 3.3]
+[List 3.4]
 
-/ 4. join extra row to mm, consisting of all 10s
+/ 5. join extra row to mm, consisting of all 10s
 
 mm,: 3#10
 
-/ the syntax ,: appends items to list
+/ adds row using , : join assign
 ```
 
 ```q
 [List 3.3]
 
-/ 5. Given matrix nest:
+/ 6. Given matrix nest:
 
 nest: (1 2 3; `a`c`b;10 11 12 14f; 100011b)
 ```
 
 ```q
-[List 3.3]
+[List 3.4]
 
-/ 5.1 Find the datatype of each row
+/ 6.1 Find the datatype of each row
 
 type each nest
 7 11 9 1h
@@ -1333,9 +1460,9 @@ type each nest
 ```
 
 ```q
-[List 3.3]
+[List 3.4]
 
-/ 5.2 Collapse this nested list
+/ 6.2 Collapse this nested list
 
 raze nest
 1 2 3 `a`c`b 10 11 12 14f 100011b
@@ -1343,12 +1470,12 @@ raze nest
 / raze collapses the nested list one level
 ```
 
-🔵 [List 3.4] List Problem Set 4 (AQ 1) - easy
-<a name="list_ps4"></a>
+🔵 [List 3.5] List Problem Set 5 (AQ 1)
+<a name="list_ps5"></a>
 
 
 ```q
-[List 3.4]
+[List 3.5]
 
 / Given the 3 lists:
 
@@ -1358,7 +1485,7 @@ level: (7 9 6i; 2 5i; 4 4i; 10 2 1i; 1 10i; 8i; 0 3i; 6 0i; 8 4i; 1 10i)
 ```
 
 ```q
-[List 3.4]
+[List 3.5]
 
 / 1. Combine the 3 lists into a single table
 
@@ -1379,7 +1506,7 @@ zelda     | gameboy  |	 1 10i
 ```
 
 ```q
-[List 3.4]
+[List 3.5]
 
 / 2. Count the number of users per game and save as users
 / (hint - under level)
@@ -1391,7 +1518,7 @@ users: count each level
 ```
 
 ```q
-[List 3.4]
+[List 3.5]
 
 / 3. Calc average user level each game
 
@@ -1400,7 +1527,7 @@ avg each level
 ```
 
 ```q
-[List 3.4]
+[List 3.5]
 
 / 4. Create boolean list indicating where avg user level > 6
 
@@ -1413,7 +1540,7 @@ avg each level
 ```
 
 ```q
-[List 3.4]
+[List 3.5]
 
 / 5. Calc games where avg user level > 6
 
@@ -1425,7 +1552,7 @@ games where 6 < avg each level
 ```
 
 ```q
-[List 3.4]
+[List 3.5]
 
 / 6. Sum the users for each platform. which one most popular?
 
@@ -1446,7 +1573,7 @@ sum users where platform = `gameboy
 ```
 
 ```q
-[List 3.4]
+[List 3.5]
 
 / 7. what is the difference between 3 ? 10 and 3 ? 10 20 30
 
@@ -1462,11 +1589,11 @@ sum users where platform = `gameboy
 / returns 3 random numbers from the list
 ```
 
-🔵 [List 3.5] List Problem Set 5 (TS 1) - easy
-<a name="list_ps5"></a>
+🔵 [List 3.6] List Problem Set 6 (TS 1)
+<a name="list_ps6"></a>
 
 ```q
-[List 3.5]
+[List 3.6]
 
 p: 100 200 300 400 500 600
 t: "say hello world to bob"
@@ -1481,7 +1608,7 @@ m: (1 2 3; 10 20 30; 100 200 300)
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 2. From t, retrieve the list "sold"
 
@@ -1497,7 +1624,7 @@ t[0 8 6 14]
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 3. Create the nested list ("shoot";"bob") by indexing into t
 
@@ -1521,7 +1648,7 @@ t(0 4 8 8 16; 19 8 19)
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 4. Change the last number in p to 1000
 
@@ -1532,7 +1659,7 @@ p[5]: 1000
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 5. Find the 3 highest numbers in p
 
@@ -1543,7 +1670,7 @@ p[5]: 1000
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 6. Find values of p that are below the mean
 
@@ -1552,7 +1679,7 @@ p where p < avg p
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 7. Given list L and K, find the common numbers in both lists
 
@@ -1566,7 +1693,7 @@ l inter k
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 8. Find the numbers in l that aren't in k
 
@@ -1577,7 +1704,7 @@ l except k
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 9. Combine all elements between l and k without any dupes
 
@@ -1585,10 +1712,11 @@ l union k
 7 5 13 20 19 17 30 200 300 400 1000
 
 / union = combines all elements btwn 2 lists, no dupes
+/ aka only returns distinct elements in both lists
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 10. Find the sum of the first 5 numbers in l
 
@@ -1602,7 +1730,7 @@ sum 5#l
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 11. Find the result when you remove the last 2 items from k
 
@@ -1615,7 +1743,7 @@ k: 7 17 200 300 400 1000
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 12. Return only numbers in l that are wholly divisible by 5
 
@@ -1639,7 +1767,7 @@ l where not l mod 5
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 13. Subtract the average of list l from max value in list k
 
@@ -1653,7 +1781,7 @@ max k - avg l
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 14.1 Generate list p of 1000 random integers between 0 and 100.
 
@@ -1663,7 +1791,7 @@ p: 1000?101
 ```
 
 ```q
-[List 3.5]
+[List 3.6]
 
 / 14.2 Find all values in p that are square numbers
 
@@ -1689,6 +1817,7 @@ count p where a=`int$a
 
 / count number of p = square numbers
 ```
+
 
 <a name="dictionary"></a>
 ### 🔴 4. Dictionary
