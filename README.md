@@ -4,6 +4,11 @@
 1. [General Knowledge / System](#gen)
 
 2. [Datatypes & Casting](#cast)
+	1. [Datatype Problem Set 1](#data_ps1)
+ 	2. [Datatype Problem Set 2 - Casting](#data_ps2)
+  	3. [Datatype Problem Set 3 - Temporal](#data_ps3)
+   	4. [Datatype Problem Set 4 - Strings](#data_ps4)
+   	5. [Datatype Problem Set 5 - GS](#data_ps5)
 
 3. [Lists](#list)
 	1. [List Problem Set 1](#list_ps1)
@@ -579,10 +584,14 @@ AAPL | 120
 ### 🔴 2. Datatypes & Casting
 [Top](#top)
 
-### :point_right: [datatype] What is an Atom?
+🔵 [Data 2.1] Datatype Problem Set 1
+<a name="data_ps1"></a>
 
 ```q
-Atom 
+[Data 2.1]
+
+/ 1. What is an atom?
+
 / an atom is an irreducible value of a specific data type
 / has a negative datatype (ex, -7h)
 / atoms can be chars or syms
@@ -590,45 +599,63 @@ Atom
 "a" / char atom
 `sym / sym atom
 ```
-### :point_right: [datatype] What is a List?
 
 ```q
-List
+[Data 2.1]
+
+/ 2. What is a list?
+
 / a list is an ordered sequence of items (members are called items)
 / encased by parathesis, separated by semi-colon
 / has a positive datatype (ex, 7h)
+```
 
-Simple Lists
+```q
+[Data 2.1]
+
+/ 3. What is a simple list?
 
 (1;2;3)
 ("a";"b";"c")
 (`life;`is;`great)
 
-/ simple lists all / same datatype (also called vectors)
-/ list of ints, chars, syms
+/ a simple list has  all same datatypes
+/ aka vectors
+/ can be a list of ints, chars, syms
+```
 
-General Lists
+```q
+[Data 2.1]
+
+/ 4. What is a General List?
 
 (1;1.1;`1)
 (-10.0; 3.1415e; 1b)
 
+/ general list = mixed lists
 / general lists are lists NOT containing homogenous atoms
 / first list is an int, a float, and a sym
 / second list is a float, a real number, and a boolean
+```
 
-A list of chars is called a String
+```q
+[Data 2.1]
+
+/ 5. What is a string?
 
 "this is a string"
 
-/ a string is NOT a datatype
 / a string is a list of chars
+/ a string is NOT a datatype
 / also called a char vector
 ```
-### :point_right: [datatype] What is a sym?
 
 ```q
-sym
-/ sym is an atomic entity holding text 
+[Data 2.1]
+
+/ 6. What is a sym?
+
+/ a sym is an atomic entity holding text 
 / represented with a back tick ` 
 / smaller in size than a char
 
@@ -636,36 +663,39 @@ sym
 `one`two`three / sym vector
 ```
 
-### :point_right: [datatype] How is a sym different than a char and a string?
-
 ```q
-1. Syms start with a backtick`, while chars are encased with parathensis " "
+[Data 2.1]
 
-2. Syms are smaller in size than chars
+/ 7. How is a sym diff from a char and a string?
 
-3. A string is simply a vector of chars
-
-4. Syms (generally) cannot contain spaces while char vectors can
+/ syms start with a backtick`, while chars are encased with parathensis " "
+/ syms are smaller in size than chars
+/ syms (generally) cannot contain spaces while strings can
 
 `thisisasym
 "this is a char vector"
 
-5. Syms are always atomic, while chars can be vectors
+/ A string is a (list) of chars
+/ aka char vector
+
+/ syms are always atomic, while chars can be vectors
 
 type `atomic
 -11h
 
-/ atomic (neg) datatype sym
+/ checking datatype of sym = negative = atomic
 
 type "apple"
 10h
 / vector (positive) datatype char
 ```
 
-### :point_right: [datatype] What is a negative datatype?
-
 ```q
-/ a negative type is an atom
+[Data 2.1]
+
+/ 8. What is a negative datatype?
+
+/ a negative type is an ATOM
 / a positive type is for everything else (ie, a list)
 
 type 5
@@ -679,52 +709,77 @@ type 2 3 4
 / integer vector
 ```
 
-### :point_right: [cast] What is casting?
+🔵 [Data 2.2] Datatype Problem Set 2 - Casting
+<a name="data_ps2"></a>
 
 ```q
-casting converts one datatype to another
+[Data 2.2]
+
+/ 1. What is casting?
+
+/ casting converts one datatype to another
 ```
 
-### :point_right: [cast] Show 3 ways to conver FLOAT 4.5 to an INT
 ```q
+[Data 2.2]
+
+/ 2. Show 3 ways to convert FLOAT 4.5 to an INT
+
 `int$4.5
 "i"$4.5
 6h$4.5
+
+/ casting always requires $
+/ 1int$4.5 is probably the most common
 ```
 
-### :point_right: [cast] What happens when you cast a DATE to an INT?
-
 ```q
+[Data 2.2]
+
+/ 3. What happens when you cast a DATE to an INT?
+
 `int$2000.10.04
 3
 
 / casts as dates from 2000.01.01
 ```
 
-### :point_right: [cast] Convert SYMS a b c to a STRING
-
 ```q
+[Data 2.2]
+
+/ 4. Convert syms `a`b`c to a string
+
 string `a`b`c
 ("a","b","c")
 
-/ simply use the string function
+/ to convert syms to strings,
+/ simply use the STRING function
+
 ```
 
-### :point_right: [cast] How do you cast CHARS "a","b","c" to a SYM?
-
 ```q
+[Data 2.2]
 
-/ a string is a list of chars
+/ 5. How do you cast chars "a","b","c" to a sym?
 
 `$"a","b","c"
+`abc
+
+/ alternative syntax:
+
 "S"$"a","b","c"
 `abc
+
+/ when casting chars to syms
+/ simply use backtick `$
+/ or use capital "S"
+/ a string is a list of chars
 ```
 
-### :point_right: [cast] Cast the Following
-
 ```q
-/1. Cast STRING "2014.01.01" to a DATE
+[Data 2.2]
+
+/ 6. Cast STRING "2014.01.01" to a DATE
 
 "D" $ "2014.01.01"
 -14h
@@ -734,7 +789,9 @@ string `a`b`c
 ```
 
 ```q
-/2. Cast SYM `2013.01.01 to DATE
+[Data 2.2]
+
+/ 7. Cast SYM `2013.01.01 to DATE
 
 "D" $ string `2013.01.01
 
@@ -743,7 +800,9 @@ string `a`b`c
 ```
 
 ```q
-/3. Cast FLOAT 3.14 to an INT
+[Data 2.2]
+
+/ 8. Cast FLOAT 3.14 to an INT
 
 `int $ 3.14 
 3
@@ -753,21 +812,41 @@ string `a`b`c
 ```
 
 ```q
-/4. Cast STRING "abcde" to a SYM
+[Data 2.2]
+
+/ 9. Cast STRING "abcde" to a SYM
 
 `$"abcde"
 
 / can simply use backtick to cast to sym
 ```
 
-### :point_right: [cast] What is parsing?
-
 ```q
-/ parsing is converting a string to another datatype.
+[Data 2.2]
+
+/ 10. What is parsing?
+
+/ parsing is converting a STRING to another datatype.
 ```
 
-### :point_right: [cast] Given mixed list L: ("100.1";"hello";"10"), convert elements to float, char, and int
 ```q
+[Data 2.2]
+
+/ 11. Given mixed list L: ("100.1";"hello";"10")
+/ convert elements to float, char, and int
+
+"FCI"$L
+100.1 / float
+" " / char
+10i / int
+```
+
+```q
+[Data 2.2]
+
+/ 12. convert l:("1.00001"; "200"; "3.1417")
+/ to a float, int, float
+
 l:("1.00001"; "200"; "3.1417")
 "FIF"$l
 
@@ -776,39 +855,76 @@ l:("1.00001"; "200"; "3.1417")
 3.1417 / float
 ```
 
-### :point_right: [cast] Given strings "2001.02.02" and "2003.08.09", parse the strings into KDB dates
 ```q
+[Data 2.2]
+
+/ 13. Given strings "2001.02.02" and "2003.08.09", parse the strings into KDB dates
+
 "D"$("2001.02.02";"2003.08.09")
 
 / these are strings which you are trying to parse into the date datatype
 / have to use upper case when parsing
 ```
 
-### :point_right: [cast] why do you get dates when casting int to date?
+```q
+[Data 2.2]
+
+/ 14. Convert list of syms `a`b`c to strings
+
+string `a`b`c
+"a","b","c"
+```
 
 ```q
+[Data 2.2]
+
+/ 15. Convert a list of syms to a list of chars?
+
+raze string `a`b`c
+"abc"
+
+/ sym to string, then string to char
+/ use raze function to collapse 1 layer
+```
+
+🔵 [Data 2.3] Datatype Problem Set 3 - Temporal
+<a name="data_ps3"></a>
+
+```q
+[Data 2.3]
+
+/ 1. Why do you get dates when casting int to date?
+
 / dates are stored as integers (days) from 2000.01.01
 ```
 
-### :point_right: [temporal] Get today's date store it as variable d
-
 ```q
+[Data 2.3]
+
+/ 2. Get today's date store it as variable d
+
 d: .z.d
 2021-11-01d
+
+/ .z.d = retrieves today's date
 ```
 
-### :point_right: [temporal] Calculate the number of days since last christmas
-
 ```q
+[Data 2.3]
+
+/ 3. Calculate the number of days since last christmas
+
 d - 2020.12.25
 311i
 
 / can use algebra with dates (ints underneath)
 ```
 
-### :point_right: [temporal] What day of the week was Jan 10, 2011?
-
 ```q
+[ Data 2.3]
+
+/ 4. What day of the week was Jan 10, 2011?
+
 2011.01.10 mod 7
 2i
 
@@ -821,29 +937,42 @@ d - 2020.12.25
 / 2 days from sunday = Monday
 ```
 
-### :point_right: [temporal] How many days were there in 2004?
-
 ```
+[Data 2.3]
+
+/ 5. How many days were there in 2004?
+
 2005.01.01 - 2004.01.01
 366
 ```
 
-### :point_right: [string] Define strings s1: "Hello" and s2: "World"
+🔵 [Data 2.4] Datatype Problem Set 4 - Strings
+<a name="data_ps4"></a>
 
 ```q
+[Data 2.4]
+
+/ 1. Define strings s1: "Hello" and s2: "World"
+
 s1: "hello"
 s2: "world"
 ```
 
 ```q
-/2. join the 2 strings together and save to s
+[Data 2.4]
+
+/ 2. Join the 2 strings together and save to s
 
 s:s1, " ",s2
 "hello world"
+
+/ join strings using ,
 ```
 
 ```q
-/3. find index position of "w"
+[Data 2.4]
+
+/ 3. From string s, find index position of "w"
 
 s?"w"
 6
@@ -852,7 +981,9 @@ s?"w"
 ```
 
 ```q
-/4. find index positions of all "l" in s
+[Data 2.4]
+
+/ 4. Find index positions of all "l" in s
 
 ss[s;"l"]
 2 3 9
@@ -861,13 +992,17 @@ ss[s;"l"]
 ```
 
 ```q
-/5. find index position of last l
+[Data 2.4]
+
+/ 5. Find index position of last l
 
 last ss[s;"l"]
 ```
 
 ```q
-/6. remove "hello" and add " of warcraft" to s
+[Data 2.4]
+
+/ 6. Remove "hello" and add " of warcraft" to s
 
 ssr["hello world"; "hello ";""], " of warcraft"
 world of warcraft
@@ -883,7 +1018,9 @@ world of warcraft
 ```
 
 ```q
-/7. Find index location for "ryan" in "hello ryan where is ryan"
+[Data 2.4]
+
+/ 7. Find index location for "ryan" in "hello ryan where is ryan"
 
 "hello ryan where is ryan" ss "ryan"
 6 20
@@ -894,7 +1031,9 @@ world of warcraft
 ```
 
 ```q
-/8. Replace "ryan" with "john"
+[Data 2.4]
+
+/ 8. Replace "ryan" with "john"
 
 ssr["hello ryan where is ryan";"ryan";"john"]
 hello johhn where is john
@@ -905,18 +1044,22 @@ hello johhn where is john
 / third arg = what to replace with
 ```
 
-### :point_right: [enumeration] Create an enumeration t2 containing values p q r that is restricted to domain t1
-
 ```q
+[Data 2.4]
+
+/ 9. Create an enumeration t2 containing values p q r that is restricted to domain t1
+
 t1: `symbol$()
 t2: `t1$`p`q`r
 
 / t2 is now an enumeration which only contain domain t1 (syms)
 ```
 
-### :point_right: [enumeration] Insert new value `u into t2
-
 ```q
+[Data 2.4]
+
+/ 10. Insert new value `u into t2
+
 t2,:`u
 error
 
@@ -929,9 +1072,12 @@ t2,:`u
 / now it works
 ```
 
-### :point_right: [datatypes] Turn 2 lists of symbols into one longer list. 
+🔵 [Data 2.5] Datatype Problem Set 5 - GS
+<a name="data_ps5"></a>
 
 ```q
+/ 1. Turn 2 lists of symbols into one longer list. 
+
 `AAPL`IBM`VOD and `O`N`L
 
 / expected outcome
@@ -961,23 +1107,6 @@ S1,'S2 / using EACH BOTH joins each element of s1 to each element of s2
 
 "S" $ (S1,'S2) / cast back to sym
  `AAPL.O`IBM.N`VOD.L
-```
-
-### :point_right: [datatype] How do you convert a list of syms to strings?
-
-```q
-string `a`b`c
-"a","b","c"
-```
-
-### :point_right: [cast] How do you convert a list of syms to a list of chars?
-
-```q
-raze string `a`b`c
-"abc"
-
-/ sym to string, then string to char
-/ use raze function to collapse 1 layer
 ```
 
 <hr>
@@ -1472,7 +1601,6 @@ raze nest
 
 🔵 [List 3.5] List Problem Set 5 (AQ 1)
 <a name="list_ps5"></a>
-
 
 ```q
 [List 3.5]
